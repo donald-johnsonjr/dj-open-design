@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "od-design-system-project/v1",
+  "id": "kinected",
+  "name": "Kinected",
+  "category": "Digital Transformation & Advisory",
+  "description": "Kinected Design brand system — cobalt-signalled, cool-neutral surfaces, grotesk display. Warm, precise, human, trustworthy design infrastructure for purpose-driven builders.",
+  "source": {
+    "type": "bundled",
+    "origin": "Kinected Solutions (kinected.io) — authored brand system"
+  },
+  "files": {
+    "design": "DESIGN.md",
+    "tokens": "tokens.css",
+    "components": "components.html"
+  },
+  "craft": {
+    "applies": [],
+    "suggested": [
+      "color",
+      "accessibility-baseline",
+      "typography"
+    ],
+    "exemptions": []
+  }
+}

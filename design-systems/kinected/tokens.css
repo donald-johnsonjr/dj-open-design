@@ -1,0 +1,122 @@
+/* ─────────────────────────────────────────────────────────────────────────
+ * design-systems/kinected/tokens.css
+ *
+ * Structured token bindings for the "Kinected" brand — design infrastructure
+ * for purpose-driven builders. Warm, precise, human, trustworthy.
+ *
+ * Brand identity in three sentences:
+ *   1. A cool, quiet canvas (#FAFBFC) with true-white panels lets one signal
+ *      color carry every high-intent action — surfaces recede, content leads.
+ *   2. Kinected Cobalt (#2F6BFF) is the single product accent: trust plus
+ *      signal, reserved for the one highest-value action per view; Ember
+ *      (#F0603A) is a design-system-only counterpoint for rare human,
+ *      kinetic moments (highlights, connection marks) — never a second CTA.
+ *   3. A neutral grotesk display (Inter / General Sans) over a refined system
+ *      body stack, tight display leading and generous body leading, on a
+ *      disciplined 8px spacing rhythm with Linear-ish 8–12px radii.
+ *
+ * Schema decisions:
+ *   - --bg: #FAFBFC (cool canvas); --surface: #FFFFFF (true-white panel).
+ *   - --surface-warm: #F4F6F8 (a distinct subtle tier, not aliased).
+ *   - --fg: #14161B (ink); --fg-2: #2B303B (secondary), --muted: #565D6B,
+ *     --meta: #838A97 — a four-step cool-neutral text ramp, all AA on canvas.
+ *   - --border: #E3E7EC; --border-soft: #EEF1F5 (inner separators recede).
+ *   - --accent: #2F6BFF (cobalt); hover #2456DB, active #1D46B8.
+ *   - --accent-warm: #F0603A (Ember, C-extension) — sparing highlights only.
+ *   - --leading-body 1.6 (generous read) / --leading-tight 1.1 (display).
+ *   - --radius-sm 8 / -md 10 / -lg 12 / -pill 9999 (Linear-ish).
+ *   - --ease-standard: repo motion contract cubic-bezier(0.23, 1, 0.32, 1).
+ * ─────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* ─── Surface ──────────────────────────────────────────────────── */
+  --bg:           #FAFBFC;              /* cool canvas — app / page background */
+  --surface:      #FFFFFF;              /* true-white panel — cards, modals */
+  --surface-warm: #F4F6F8;             /* subtle tertiary tier — inset wells, tracks */
+
+  /* ─── Foreground ───────────────────────────────────────────────── */
+  --fg:    #14161B;                     /* ink — primary text */
+  --fg-2:  #2B303B;                     /* secondary text — dense body, sub-headings */
+  --muted: #565D6B;                     /* subtext, captions — AA on canvas */
+  --meta:  #838A97;                     /* metadata, timestamps, placeholders */
+
+  /* ─── Border ───────────────────────────────────────────────────── */
+  --border:      #E3E7EC;              /* default border / card edge */
+  --border-soft: #EEF1F5;              /* inner row separator that should recede */
+
+  /* ─── Accent ───────────────────────────────────────────────────── */
+  --accent:        #2F6BFF;            /* Kinected Cobalt — one high-signal action per view */
+  --accent-on:     #FFFFFF;            /* label on a cobalt fill */
+  --accent-hover:  #2456DB;            /* hover — deeper cobalt */
+  --accent-active: #1D46B8;            /* active / pressed — deepest cobalt */
+
+  /* ─── Semantic ─────────────────────────────────────────────────── */
+  --success: #12A150;                   /* confirmations, healthy status */
+  --warn:    #E0A100;                   /* caution, needs-attention */
+  --danger:  #E5484D;                   /* destructive, error */
+
+  /* ─── Typography — fonts ───────────────────────────────────────── */
+  --font-display: "Inter", "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-body:    -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* ─── Typography — type scale ──────────────────────────────────── */
+  --text-xs:   12px;                    /* micro label / caption */
+  --text-sm:   14px;                    /* small — links, secondary UI */
+  --text-base: 16px;                    /* body — standard reading */
+  --text-lg:   18px;                    /* featured body / H3 */
+  --text-xl:   24px;                    /* H2 */
+  --text-2xl:  32px;                    /* section title / H1 */
+  --text-3xl:  44px;                    /* display — section headline */
+  --text-4xl:  64px;                    /* display XL — hero */
+
+  /* ─── Typography — leading & tracking ──────────────────────────── */
+  --leading-body:     1.6;              /* generous reading rhythm */
+  --leading-tight:    1.1;              /* tight display leading */
+  --tracking-display: -0.02em;          /* optical tightening at display sizes */
+
+  /* ─── Spacing — base scale ─────────────────────────────────────── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-12: 48px;
+
+  /* ─── Section rhythm ───────────────────────────────────────────── */
+  --section-y-desktop: 96px;
+  --section-y-tablet:  64px;
+  --section-y-phone:   40px;
+
+  /* ─── Radius ───────────────────────────────────────────────────── */
+  --radius-sm:   8px;                   /* buttons, inputs, chips */
+  --radius-md:   10px;                  /* cards, modals */
+  --radius-lg:   12px;                  /* featured containers, panels */
+  --radius-pill: 9999px;                /* avatars, badges, toggles */
+
+  /* ─── Elevation ────────────────────────────────────────────────── */
+  --elev-flat:   none;
+  --elev-ring:   0 0 0 1px var(--border);
+  --elev-raised:
+    0 1px 2px color-mix(in oklab, var(--fg), transparent 94%),
+    0 10px 28px color-mix(in oklab, var(--fg), transparent 90%);
+
+  /* ─── Focus ────────────────────────────────────────────────────── */
+  --focus-ring: 0 0 0 3px color-mix(in oklab, var(--accent), transparent 68%);
+
+  /* ─── Motion ───────────────────────────────────────────────────── */
+  --motion-fast:   140ms;               /* exit / dismiss — decisive */
+  --motion-base:   200ms;               /* enter / general state change */
+  --ease-standard: cubic-bezier(0.23, 1, 0.32, 1);  /* repo --ease-out contract */
+
+  /* ─── Layout ───────────────────────────────────────────────────── */
+  --container-max:            1200px;
+  --container-gutter-desktop: 32px;
+  --container-gutter-tablet:  24px;
+  --container-gutter-phone:   20px;
+
+  /* ─── Brand extension (C) ──────────────────────────────────────── */
+  --accent-warm: #F0603A;               /* Ember — sparing human/kinetic counterpoint */
+}
