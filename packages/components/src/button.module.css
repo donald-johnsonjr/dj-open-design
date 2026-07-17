@@ -25,17 +25,29 @@
   outline-offset: 2px;
 }
 
+/* Kinected signature CTA — the periwinkle→violet gradient pill. Token-driven
+   (var(--accent-grad)) so it tracks the brand palette in light and dark. */
 .primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: white;
-  font-weight: 500;
-  box-shadow: 0 1px 0 rgba(180, 90, 59, 0.18) inset, var(--shadow-xs);
+  background: var(--accent-grad);
+  border-color: transparent;
+  color: #fff;
+  font-weight: 600;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.14) inset,
+    0 6px 18px -8px color-mix(in srgb, var(--accent) 70%, transparent);
 }
 
 .primary:hover:not(:disabled) {
-  background: var(--accent-hover);
-  border-color: var(--accent-hover);
+  background: var(--accent-grad);
+  border-color: transparent;
+  filter: brightness(1.06) saturate(1.03);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 10px 26px -8px color-mix(in srgb, var(--accent) 80%, transparent);
+}
+
+.primary:active:not(:disabled) {
+  filter: brightness(0.97);
 }
 
 .primaryGhost {

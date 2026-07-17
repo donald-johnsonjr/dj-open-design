@@ -685,6 +685,7 @@ export const ja: Dict = {
   'homeHero.templatesScrollHint': '上にスクロールしてさらにテンプレートを表示',
   'homeHero.templatesCollapse': 'テンプレートを折りたたむ',
   'homeHero.subtitlePrefix': 'オープンソースの Claude Design 代替。',
+  'homeHero.eyebrow': 'Technology in service of the why.',
   'homeHero.placeholder': '生成したい内容を記述してください…',
   'homeHero.placeholderActive': 'サンプルクエリを編集するか、独自に記述してください…',
   'homeHero.carousel.hint': 'ファイルを添付、デザインシステムをリンク、または作りたいものを説明してください',

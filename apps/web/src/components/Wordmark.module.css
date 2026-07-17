@@ -1,0 +1,64 @@
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  color: var(--text-strong);
+}
+
+.wordmark[data-layout='stack'] {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.wordmark[data-layout='inline'] {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.name {
+  font-family: var(--display);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--text-strong);
+}
+
+.sub {
+  font-family: var(--mono);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.34em;
+  /* Tracked mono label reads in the brand violet — kept bright enough for AA
+     on the dark canvas. */
+  color: color-mix(in srgb, var(--accent) 82%, var(--text-strong));
+}
+
+/* Optical: a tracked label carries trailing space on the right; pull the box
+   back so the lockup stays visually centered under the serif name. */
+.wordmark[data-layout='stack'] .sub {
+  margin-right: -0.34em;
+}
+
+/* --- sizes --- */
+.wordmark[data-size='sm'] .name {
+  font-size: 17px;
+}
+.wordmark[data-size='sm'] .sub {
+  font-size: 8.5px;
+  letter-spacing: 0.3em;
+}
+
+.wordmark[data-size='md'] .name {
+  font-size: 22px;
+}
+.wordmark[data-size='md'] .sub {
+  font-size: 10px;
+}
+
+.wordmark[data-size='lg'] .name {
+  font-size: 30px;
+}
+.wordmark[data-size='lg'] .sub {
+  font-size: 12px;
+}

@@ -708,6 +708,7 @@ export const zhTW: Dict = {
   "homeHero.templatesScrollHint": "向上捲動以探索更多範本",
   "homeHero.templatesCollapse": "收合範本",
   "homeHero.subtitlePrefix": "開源的 Claude Design 替代方案。",
+  "homeHero.eyebrow": "Technology in service of the why.",
   "homeHero.placeholder": "描述您想要產生的內容…",
   "homeHero.placeholderActive": "編輯範例查詢或撰寫您自己的查詢…",
   "homeHero.carousel.hint": "上傳檔案、連結設計系統，或描述你想創作的內容",

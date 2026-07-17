@@ -685,6 +685,7 @@ export const ar: Dict = {
   'homeHero.templatesScrollHint': 'مرّر لأعلى لاستكشاف المزيد من القوالب',
   'homeHero.templatesCollapse': 'طيّ القوالب',
   'homeHero.subtitlePrefix': 'البديل مفتوح المصدر لـ Claude Design.',
+  'homeHero.eyebrow': 'Technology in service of the why.',
   'homeHero.placeholder': 'صِف ما تريد إنشاءه…',
   'homeHero.placeholderActive': 'عدّل الاستعلام المثال أو اكتب استعلامك الخاص…',
   'homeHero.carousel.hint': 'أرفق ملفًا، أو اربط نظام التصميم الخاص بك، أو صف ما تريد إنشاءه',

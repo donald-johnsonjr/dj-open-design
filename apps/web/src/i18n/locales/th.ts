@@ -685,6 +685,7 @@ export const th: Dict = {
   'homeHero.templatesScrollHint': 'เลื่อนขึ้นเพื่อสำรวจเทมเพลตเพิ่มเติม',
   'homeHero.templatesCollapse': 'ยุบเทมเพลต',
   'homeHero.subtitlePrefix': 'ทางเลือกโอเพนซอร์สแทน Claude Design',
+  'homeHero.eyebrow': 'Technology in service of the why.',
   'homeHero.placeholder': 'อธิบายสิ่งที่คุณต้องการสร้าง…',
   'homeHero.placeholderActive': 'แก้ไขตัวอย่างคำค้นหรือเขียนของคุณเอง…',
   'homeHero.carousel.hint': 'แนบไฟล์ เชื่อมต่อดีไซน์ซิสเต็ม หรืออธิบายสิ่งที่คุณอยากสร้าง',

@@ -18,52 +18,93 @@
 /* Hero — large centered prompt input */
 .home-hero {
   position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 14px;
-  padding: 32px 0 8px;
+  padding: 40px 0 8px;
+}
+/* Faint violet atmosphere behind the hero — a large, very low-opacity radial
+   glow, never a flat block (brand v2). */
+.home-hero::before {
+  content: '';
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1000px, 130%);
+  height: 560px;
+  background: radial-gradient(
+    ellipse 60% 60% at 50% 38%,
+    color-mix(in srgb, var(--accent) 22%, transparent),
+    transparent 68%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+.home-hero__brand,
+.home-hero__eyebrow,
+.home-hero__title,
+.home-hero__subtitle {
+  position: relative;
+  z-index: 1;
 }
 .home-hero__brand {
-  position: relative;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-  font-size: 13px;
+  gap: 11px;
+  margin-bottom: 2px;
 }
-/* The brand glyph is a self-shaped superellipse tile (rendered through
-   .od-brand-glyph), so it needs no panel disc behind it. */
+/* The brand glyph is the real gradient connection mark (rendered through
+   .od-brand-glyph), sitting inline next to the wordmark lockup. */
 .home-hero__brand-mark {
-  position: absolute;
-  top: 50%;
-  right: calc(100% + 8px);
-  transform: translateY(-50%);
-  width: 26px;
-  height: 26px;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
 }
-.home-hero__brand-name {
-  font-family: var(--serif);
-  font-weight: 600;
-  font-size: 16px;
-  color: var(--text-strong);
+.home-hero__eyebrow {
+  margin: 8px 0 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  text-align: center;
 }
 .home-hero__title {
-  margin: 0;
-  font-family: var(--serif);
-  font-weight: 600;
-  font-size: 40px;
-  letter-spacing: -0.02em;
+  margin: 4px 0 0;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 52px;
+  line-height: 1.04;
+  letter-spacing: -0.01em;
   color: var(--text-strong);
   text-align: center;
+  max-width: 15ch;
+  text-wrap: balance;
+}
+/* The signature move: the headline's final word set in swash italic, painted
+   with the periwinkle→violet gradient. */
+.home-hero__title-accent {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 500;
+  background: var(--accent-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* italic overhang so the swash tail isn't clipped by the text box */
+  padding-right: 0.08em;
 }
 .home-hero__subtitle {
-  margin: 0;
+  margin: 6px 0 0;
   color: var(--text-muted);
-  font-size: 13.5px;
+  font-size: 14.5px;
   text-align: center;
-  max-width: 540px;
-  line-height: 1.55;
+  max-width: 480px;
+  line-height: 1.6;
 }
 .home-hero__subtitle kbd {
   font: inherit;
@@ -2082,38 +2123,39 @@
     content: none;
   }
 }
+/* Signature gradient pill CTA (brand v2) — the periwinkle→violet "Send"
+   action. Token-driven via var(--accent-grad) so it tracks the brand. */
 .home-hero__submit {
   appearance: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  min-width: 64px;
-  height: 32px;
-  padding: 0 16px;
+  gap: 7px;
+  min-width: 68px;
+  height: 34px;
+  padding: 0 18px;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--accent);
-  background: var(--accent);
-  color: white;
-  box-shadow: var(--shadow-xs);
+  border: 0;
+  background: var(--accent-grad);
+  color: #fff;
+  box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--accent) 70%, transparent);
   cursor: pointer;
   font: inherit;
   font-size: 12.5px;
   font-weight: 650;
+  letter-spacing: 0.02em;
   line-height: 1;
   transition:
-    background-color 140ms cubic-bezier(0.23, 1, 0.32, 1),
-    border-color 140ms cubic-bezier(0.23, 1, 0.32, 1),
+    filter 140ms cubic-bezier(0.23, 1, 0.32, 1),
     box-shadow 140ms cubic-bezier(0.23, 1, 0.32, 1),
     transform 140ms cubic-bezier(0.23, 1, 0.32, 1),
     opacity 140ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 .home-hero__submit:hover:not(:disabled) {
-  background: var(--accent-hover);
-  border-color: var(--accent-hover);
-  box-shadow: var(--shadow-sm);
+  filter: brightness(1.07) saturate(1.03);
+  box-shadow: 0 10px 26px -8px color-mix(in srgb, var(--accent) 82%, transparent);
 }
-.home-hero__submit:active:not(:disabled) { transform: translateY(1px); box-shadow: var(--shadow-xs); }
+.home-hero__submit:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 4px 12px -8px color-mix(in srgb, var(--accent) 70%, transparent); }
 .home-hero__submit:disabled {
   opacity: 0.5;
   cursor: default;

@@ -685,6 +685,7 @@ export const pl: Dict = {
   'homeHero.templatesScrollHint': 'Przewiń w górę, aby zobaczyć więcej szablonów',
   'homeHero.templatesCollapse': 'Zwiń szablony',
   'homeHero.subtitlePrefix': 'Otwartoźródłowa alternatywa dla Claude Design.',
+  'homeHero.eyebrow': 'Technology in service of the why.',
   'homeHero.placeholder': 'Opisz, co chcesz wygenerować…',
   'homeHero.placeholderActive': 'Edytuj przykładowe zapytanie lub napisz własne…',
   'homeHero.carousel.hint': 'Załącz plik, połącz swój design system lub opisz, co chcesz stworzyć',

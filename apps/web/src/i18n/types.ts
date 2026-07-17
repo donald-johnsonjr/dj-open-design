@@ -1034,6 +1034,7 @@ export interface Dict {
   'homeHero.templatesScrollHint': string;
   'homeHero.templatesCollapse': string;
   'homeHero.subtitlePrefix': string;
+  'homeHero.eyebrow': string;
   'homeHero.placeholder': string;
   'homeHero.placeholderActive': string;
   // Rotating typewriter placeholder scenarios + idle hint (home-hero carousel).

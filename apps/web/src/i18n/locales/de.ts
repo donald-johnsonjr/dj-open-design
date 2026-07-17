@@ -685,6 +685,7 @@ export const de: Dict = {
   'homeHero.templatesScrollHint': 'Nach oben scrollen, um weitere Vorlagen zu entdecken',
   'homeHero.templatesCollapse': 'Vorlagen einklappen',
   'homeHero.subtitlePrefix': 'Die quelloffene Alternative zu Claude Design.',
+  'homeHero.eyebrow': 'Technology in service of the why.',
   'homeHero.placeholder': 'Beschreibe, was du generieren möchtest…',
   'homeHero.placeholderActive': 'Bearbeite die Beispielabfrage oder schreibe eine eigene…',
   'homeHero.carousel.hint': 'Datei anhängen, Designsystem verknüpfen oder beschreiben, was du erstellen möchtest',

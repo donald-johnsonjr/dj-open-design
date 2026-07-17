@@ -685,6 +685,7 @@ export const ru: Dict = {
   'homeHero.templatesScrollHint': 'Прокрутите вверх, чтобы увидеть больше шаблонов',
   'homeHero.templatesCollapse': 'Свернуть шаблоны',
   'homeHero.subtitlePrefix': 'Открытая альтернатива Claude Design.',
+  'homeHero.eyebrow': 'Technology in service of the why.',
   'homeHero.placeholder': 'Опишите, что вы хотите сгенерировать…',
   'homeHero.placeholderActive': 'Измените пример запроса или напишите свой…',
   'homeHero.carousel.hint': 'Прикрепите файл, подключите дизайн-систему или опишите, что хотите создать',

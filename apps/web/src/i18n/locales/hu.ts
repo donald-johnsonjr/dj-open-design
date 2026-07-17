@@ -685,6 +685,7 @@ export const hu: Dict = {
   'homeHero.templatesScrollHint': 'Görgess felfelé további sablonokért',
   'homeHero.templatesCollapse': 'Sablonok összecsukása',
   'homeHero.subtitlePrefix': 'A nyílt forráskódú Claude Design alternatíva.',
+  'homeHero.eyebrow': 'Technology in service of the why.',
   'homeHero.placeholder': 'Írd le, mit szeretnél generálni…',
   'homeHero.placeholderActive': 'Szerkeszd a példalekérdezést, vagy írj sajátot…',
   'homeHero.carousel.hint': 'Csatolj egy fájlt, kapcsold össze a dizájnrendszered, vagy írd le, mit szeretnél készíteni',

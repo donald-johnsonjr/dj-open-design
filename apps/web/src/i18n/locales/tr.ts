@@ -685,6 +685,7 @@ export const tr: Dict = {
   'homeHero.templatesScrollHint': 'Daha fazla şablon görmek için yukarı kaydırın',
   'homeHero.templatesCollapse': 'Şablonları daralt',
   'homeHero.subtitlePrefix': 'Açık kaynaklı Claude Design alternatifi.',
+  'homeHero.eyebrow': 'Technology in service of the why.',
   'homeHero.placeholder': 'Ne oluşturmak istediğinizi açıklayın…',
   'homeHero.placeholderActive': 'Örnek sorguyu düzenleyin veya kendinizinkini yazın…',
   'homeHero.carousel.hint': 'Dosya ekle, tasarım sistemini bağla ya da ne yapmak istediğini anlat',

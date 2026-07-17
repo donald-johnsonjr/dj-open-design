@@ -685,6 +685,7 @@ export const it: Dict = {
   'homeHero.templatesScrollHint': 'Scorri verso l\'alto per esplorare altri template',
   'homeHero.templatesCollapse': 'Comprimi modelli',
   'homeHero.subtitlePrefix': 'L\'alternativa open source a Claude Design.',
+  'homeHero.eyebrow': 'Technology in service of the why.',
   'homeHero.placeholder': 'Descrivi cosa vuoi generare…',
   'homeHero.placeholderActive': 'Modifica la query di esempio o scrivine una tua…',
   'homeHero.carousel.hint': 'Allega un file, collega il tuo design system o descrivi cosa vuoi creare',

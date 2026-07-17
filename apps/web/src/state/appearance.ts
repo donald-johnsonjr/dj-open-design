@@ -8,15 +8,15 @@ const ACCENT_VARS = [
   '--accent-hover',
 ] as const;
 
-export const DEFAULT_ACCENT_COLOR = '#c96442';
+export const DEFAULT_ACCENT_COLOR = '#7b7cf5';
 export const ACCENT_SWATCHES = [
   DEFAULT_ACCENT_COLOR,
-  '#2563eb',
+  '#5b5ce0',
   '#7c3aed',
-  '#059669',
-  '#dc2626',
-  '#d97706',
+  '#2563eb',
   '#0891b2',
+  '#059669',
+  '#f0603a',
   '#db2777',
 ] as const;
 

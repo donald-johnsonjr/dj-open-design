@@ -102,6 +102,7 @@ import { AmrLowBalanceDialog, type AmrLowBalanceDecision } from './AmrLowBalance
 import { checkAmrBalanceGate } from '../runtime/amr-balance-gate';
 import { isPaidAmrPlan, resolveAmrPlan } from '../runtime/amr-low-balance-plan';
 import { GithubStarBadge } from './GithubStarBadge';
+import { Wordmark } from './Wordmark';
 import {
   formatDiscordPresenceCount,
   useDiscordPresence,
@@ -2590,8 +2591,10 @@ function OnboardingView({
           <span
             className="onboarding-cloud__logo od-brand-glyph"
             role="img"
-            aria-label="Open Design"
+            aria-label="Kinected Design"
           />
+          <Wordmark size="md" className="onboarding-cloud__wordmark" />
+          <p className="onboarding-cloud__eyebrow">{t('homeHero.eyebrow')}</p>
           <h1 className="onboarding-cloud__title">{t('settings.onboardingCloudTitle')}</h1>
           <p className="onboarding-cloud__body">{t('settings.onboardingCloudBody')}</p>
           <button
@@ -2684,7 +2687,7 @@ function OnboardingView({
           )}
         </div>
         <footer className="onboarding-cloud__footer">
-          © {new Date().getFullYear()} Open Design · {t('settings.onboardingCloudRights')}
+          © {new Date().getFullYear()} {t('app.brand')} · {t('settings.onboardingCloudRights')}
         </footer>
       </section>
     );

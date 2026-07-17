@@ -685,6 +685,7 @@ export const ko: Dict = {
   'homeHero.templatesScrollHint': '위로 스크롤하여 더 많은 템플릿 살펴보기',
   'homeHero.templatesCollapse': '템플릿 접기',
   'homeHero.subtitlePrefix': '오픈소스 Claude Design 대안.',
+  'homeHero.eyebrow': 'Technology in service of the why.',
   'homeHero.placeholder': '생성하고 싶은 내용을 설명하세요…',
   'homeHero.placeholderActive': '예제 쿼리를 편집하거나 직접 작성하세요…',
   'homeHero.carousel.hint': '파일을 첨부하거나 디자인 시스템을 연결하거나, 만들고 싶은 것을 설명하세요',

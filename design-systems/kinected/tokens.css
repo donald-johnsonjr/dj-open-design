@@ -1,79 +1,89 @@
 /* ─────────────────────────────────────────────────────────────────────────
  * design-systems/kinected/tokens.css
  *
- * Structured token bindings for the "Kinected" brand — design infrastructure
- * for purpose-driven builders. Warm, precise, human, trustworthy.
+ * Structured token bindings for the "Kinected" brand — technology in service
+ * of the why. Dark-first, editorial, premium. Derived from the real Kinected
+ * Solutions identity (kinected.io): near-black navy canvas, high-contrast
+ * Didone serif display with swash-italic violet accent words, uppercase
+ * tracked monospace labels, and a periwinkle→violet signature gradient.
  *
  * Brand identity in three sentences:
- *   1. A cool, quiet canvas (#FAFBFC) with true-white panels lets one signal
- *      color carry every high-intent action — surfaces recede, content leads.
- *   2. Kinected Cobalt (#2F6BFF) is the single product accent: trust plus
- *      signal, reserved for the one highest-value action per view; Ember
- *      (#F0603A) is a design-system-only counterpoint for rare human,
- *      kinetic moments (highlights, connection marks) — never a second CTA.
- *   3. A neutral grotesk display (Inter / General Sans) over a refined system
- *      body stack, tight display leading and generous body leading, on a
- *      disciplined 8px spacing rhythm with Linear-ish 8–12px radii.
+ *   1. Dark is the identity: a near-black navy canvas (#0A0A12) with a faint
+ *      violet atmosphere lets an elegant serif and one signal color carry the
+ *      whole surface — panels lift only barely, content and type lead.
+ *   2. Kinected Violet (#7B7CF5) is the single product accent — the swash-
+ *      italic accent word, links, focus, and the gradient CTA pill; a lighter
+ *      periwinkle-violet (#9B7CF0, the warm end of the brand gradient) rides
+ *      the C-extension --accent-warm for kinetic, human moments only.
+ *   3. A high-contrast Didone serif (Playfair Display) for display over a
+ *      clean Inter body and JetBrains Mono labels — tight display leading,
+ *      generous body leading, on an 8px spacing rhythm with 8–14px radii.
  *
  * Schema decisions:
- *   - --bg: #FAFBFC (cool canvas); --surface: #FFFFFF (true-white panel).
- *   - --surface-warm: #F4F6F8 (a distinct subtle tier, not aliased).
- *   - --fg: #14161B (ink); --fg-2: #2B303B (secondary), --muted: #565D6B,
- *     --meta: #838A97 — a four-step cool-neutral text ramp, all AA on canvas.
- *   - --border: #E3E7EC; --border-soft: #EEF1F5 (inner separators recede).
- *   - --accent: #2F6BFF (cobalt); hover #2456DB, active #1D46B8.
- *   - --accent-warm: #F0603A (Ember, C-extension) — sparing highlights only.
- *   - --leading-body 1.6 (generous read) / --leading-tight 1.1 (display).
- *   - --radius-sm 8 / -md 10 / -lg 12 / -pill 9999 (Linear-ish).
+ *   - --bg: #0A0A12 (near-black navy canvas); --surface: #14141F (elevated
+ *     panel / card); --surface-warm: #101019 (a quieter subtle tier — inset
+ *     wells, input tracks, code blocks).
+ *   - --fg: #EDECF2 (near-white text); --fg-2: #B7B6C6 (secondary body),
+ *     --muted: #8A8A9C (captions), --meta: #5A5A6C (metadata / placeholders)
+ *     — a cool violet-tinted text ramp, all AA on the dark canvas.
+ *   - --border: #242433; --border-soft: #1A1A26 (inner separators recede).
+ *   - --accent: #7B7CF5 (Kinected Violet); hover #6A6BEA, active #5B5CE0.
+ *   - --accent-warm: #9B7CF0 (periwinkle-violet, C-extension) — kinetic moments.
+ *   - --font-display: Playfair Display (Didone serif); --font-body: Inter;
+ *     --font-mono: JetBrains Mono (uppercase tracked labels).
+ *   - Semantic hues tuned brighter for legibility on the dark canvas.
+ *   - --leading-tight 1.05 (Didone display) / --leading-body 1.6 (read).
+ *   - --radius-sm 8 / -md 10 / -lg 14 / -pill 9999 (the CTA is fully rounded).
+ *   - --elev-raised: black-based shadow (dark theme) — never a light glow.
  *   - --ease-standard: repo motion contract cubic-bezier(0.23, 1, 0.32, 1).
  * ─────────────────────────────────────────────────────────────────── */
 
 :root {
   /* ─── Surface ──────────────────────────────────────────────────── */
-  --bg:           #FAFBFC;              /* cool canvas — app / page background */
-  --surface:      #FFFFFF;              /* true-white panel — cards, modals */
-  --surface-warm: #F4F6F8;             /* subtle tertiary tier — inset wells, tracks */
+  --bg:           #0A0A12;              /* near-black navy — app / page canvas */
+  --surface:      #14141F;              /* elevated panel — cards, modals */
+  --surface-warm: #101019;             /* quieter subtle tier — inset wells, tracks, code */
 
   /* ─── Foreground ───────────────────────────────────────────────── */
-  --fg:    #14161B;                     /* ink — primary text */
-  --fg-2:  #2B303B;                     /* secondary text — dense body, sub-headings */
-  --muted: #565D6B;                     /* subtext, captions — AA on canvas */
-  --meta:  #838A97;                     /* metadata, timestamps, placeholders */
+  --fg:    #EDECF2;                     /* near-white — primary text */
+  --fg-2:  #B7B6C6;                     /* secondary text — dense body, sub-headings */
+  --muted: #8A8A9C;                     /* subtext, captions — AA on canvas */
+  --meta:  #5A5A6C;                     /* metadata, timestamps, placeholders */
 
   /* ─── Border ───────────────────────────────────────────────────── */
-  --border:      #E3E7EC;              /* default border / card edge */
-  --border-soft: #EEF1F5;              /* inner row separator that should recede */
+  --border:      #242433;              /* default border / card edge */
+  --border-soft: #1A1A26;              /* inner row separator that should recede */
 
   /* ─── Accent ───────────────────────────────────────────────────── */
-  --accent:        #2F6BFF;            /* Kinected Cobalt — one high-signal action per view */
-  --accent-on:     #FFFFFF;            /* label on a cobalt fill */
-  --accent-hover:  #2456DB;            /* hover — deeper cobalt */
-  --accent-active: #1D46B8;            /* active / pressed — deepest cobalt */
+  --accent:        #7B7CF5;            /* Kinected Violet — one high-signal action / accent word */
+  --accent-on:     #FFFFFF;            /* label on a violet / gradient fill */
+  --accent-hover:  #6A6BEA;            /* hover — deeper violet */
+  --accent-active: #5B5CE0;            /* active / pressed — deepest violet */
 
   /* ─── Semantic ─────────────────────────────────────────────────── */
-  --success: #12A150;                   /* confirmations, healthy status */
-  --warn:    #E0A100;                   /* caution, needs-attention */
-  --danger:  #E5484D;                   /* destructive, error */
+  --success: #3DD68C;                   /* confirmations, healthy status — tuned for dark */
+  --warn:    #E7B549;                   /* caution, needs-attention — tuned for dark */
+  --danger:  #F2555A;                   /* destructive, error — tuned for dark */
 
   /* ─── Typography — fonts ───────────────────────────────────────── */
-  --font-display: "Inter", "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-body:    -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, Helvetica, Arial, sans-serif;
+  --font-display: "Playfair Display", Georgia, "Times New Roman", "Iowan Old Style", serif;
+  --font-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   /* ─── Typography — type scale ──────────────────────────────────── */
-  --text-xs:   12px;                    /* micro label / caption */
+  --text-xs:   12px;                    /* micro label / mono eyebrow */
   --text-sm:   14px;                    /* small — links, secondary UI */
   --text-base: 16px;                    /* body — standard reading */
-  --text-lg:   18px;                    /* featured body / H3 */
-  --text-xl:   24px;                    /* H2 */
-  --text-2xl:  32px;                    /* section title / H1 */
-  --text-3xl:  44px;                    /* display — section headline */
-  --text-4xl:  64px;                    /* display XL — hero */
+  --text-lg:   19px;                    /* featured body / lead */
+  --text-xl:   26px;                    /* H2 */
+  --text-2xl:  34px;                    /* section title / H1 small */
+  --text-3xl:  48px;                    /* display — section headline */
+  --text-4xl:  72px;                    /* display XL — editorial hero */
 
   /* ─── Typography — leading & tracking ──────────────────────────── */
   --leading-body:     1.6;              /* generous reading rhythm */
-  --leading-tight:    1.1;              /* tight display leading */
-  --tracking-display: -0.02em;          /* optical tightening at display sizes */
+  --leading-tight:    1.05;             /* tight Didone display leading */
+  --tracking-display: -0.015em;         /* light optical tightening for high-contrast serif */
 
   /* ─── Spacing — base scale ─────────────────────────────────────── */
   --space-1:  4px;
@@ -86,25 +96,25 @@
   --space-12: 48px;
 
   /* ─── Section rhythm ───────────────────────────────────────────── */
-  --section-y-desktop: 96px;
-  --section-y-tablet:  64px;
-  --section-y-phone:   40px;
+  --section-y-desktop: 112px;
+  --section-y-tablet:  72px;
+  --section-y-phone:   48px;
 
   /* ─── Radius ───────────────────────────────────────────────────── */
   --radius-sm:   8px;                   /* buttons, inputs, chips */
   --radius-md:   10px;                  /* cards, modals */
-  --radius-lg:   12px;                  /* featured containers, panels */
-  --radius-pill: 9999px;                /* avatars, badges, toggles */
+  --radius-lg:   14px;                  /* featured containers, panels */
+  --radius-pill: 9999px;                /* the gradient CTA pill, badges, toggles */
 
   /* ─── Elevation ────────────────────────────────────────────────── */
   --elev-flat:   none;
   --elev-ring:   0 0 0 1px var(--border);
   --elev-raised:
-    0 1px 2px color-mix(in oklab, var(--fg), transparent 94%),
-    0 10px 28px color-mix(in oklab, var(--fg), transparent 90%);
+    0 1px 2px color-mix(in oklab, #000000, transparent 55%),
+    0 20px 48px color-mix(in oklab, #000000, transparent 68%);
 
   /* ─── Focus ────────────────────────────────────────────────────── */
-  --focus-ring: 0 0 0 3px color-mix(in oklab, var(--accent), transparent 68%);
+  --focus-ring: 0 0 0 3px color-mix(in oklab, var(--accent), transparent 62%);
 
   /* ─── Motion ───────────────────────────────────────────────────── */
   --motion-fast:   140ms;               /* exit / dismiss — decisive */
@@ -118,5 +128,5 @@
   --container-gutter-phone:   20px;
 
   /* ─── Brand extension (C) ──────────────────────────────────────── */
-  --accent-warm: #F0603A;               /* Ember — sparing human/kinetic counterpoint */
+  --accent-warm: #9B7CF0;               /* periwinkle-violet — the warm end of the brand gradient; kinetic moments */
 }

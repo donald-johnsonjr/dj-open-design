@@ -267,11 +267,11 @@ async function clickCloudSignIn() {
 }
 
 async function findCloudSignInButton() {
-  return screen.findByRole('button', { name: /Sign in to Open Design/i });
+  return screen.findByRole('button', { name: /Sign in to Kinected Design/i });
 }
 
 function openLocalRuntimeSetup() {
-  expect(screen.getByRole('heading', { name: 'Sign in to Open Design' })).toBeTruthy();
+  expect(screen.getByRole('heading', { name: 'Sign in to Kinected Design' })).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: /Local coding agent/i }));
   expect(screen.getByText('Local CLI')).toBeTruthy();
 }
@@ -584,7 +584,7 @@ describe('EntryShell onboarding Open Design AMR runtime', () => {
       onRefreshAgents: vi.fn(() => [cliAgent()]),
     });
 
-    expect(await screen.findByRole('heading', { name: 'Sign in to Open Design' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Sign in to Kinected Design' })).toBeTruthy();
     expect(await findCloudSignInButton()).toBeTruthy();
     openLocalRuntimeSetup();
     expect(screen.queryByRole('button', { name: /Open Design AMR/i })).toBeNull();
@@ -602,7 +602,7 @@ describe('EntryShell onboarding Open Design AMR runtime', () => {
     ) as typeof fetch;
     renderOnboarding();
 
-    expect(screen.getByRole('heading', { name: 'Sign in to Open Design' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Sign in to Kinected Design' })).toBeTruthy();
     expect(await findCloudSignInButton()).toBeTruthy();
     // No runtime card, no AMR version text, no "Sign in to continue" CTA.
     expect(screen.queryByRole('button', { name: /Open Design AMR/i })).toBeNull();
@@ -816,7 +816,7 @@ describe('EntryShell onboarding Open Design AMR runtime', () => {
     // The landing CTA returns to its signed-out copy and is enabled again,
     // and the secondary runtime links are available once more.
     const cloudButton = await screen.findByRole('button', {
-      name: /Sign in to Open Design/i,
+      name: /Sign in to Kinected Design/i,
     });
     expect(cloudButton.hasAttribute('disabled')).toBe(false);
     expect(screen.getByRole('button', { name: /Local coding agent/i })).toBeTruthy();
@@ -875,7 +875,7 @@ describe('EntryShell onboarding Open Design AMR runtime', () => {
     expect(screen.queryByText('Signing in…')).toBeNull();
     expect(
       screen
-        .getByRole('button', { name: /Sign in to Open Design/i })
+        .getByRole('button', { name: /Sign in to Kinected Design/i })
         .hasAttribute('disabled'),
     ).toBe(false);
     expect(props.onCompleteOnboarding).not.toHaveBeenCalled();
@@ -1625,7 +1625,7 @@ describe('EntryShell onboarding Open Design AMR runtime', () => {
       onRefreshAgents: vi.fn(() => [cliAgent()]),
     });
 
-    expect(screen.getByRole('heading', { name: 'Sign in to Open Design' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Sign in to Kinected Design' })).toBeTruthy();
     const primary = screen.getByRole('button', { name: /Loading/i });
     expect(primary).toBeTruthy();
     expect(primary.getAttribute('aria-busy')).toBe('true');
@@ -1658,7 +1658,7 @@ describe('EntryShell onboarding Open Design AMR runtime', () => {
     });
 
     expect(
-      await screen.findByRole('button', { name: /Sign in to Open Design/i }),
+      await screen.findByRole('button', { name: /Sign in to Kinected Design/i }),
     ).toBeTruthy();
     expect(screen.queryByRole('button', { name: /Open Design AMR/i })).toBeNull();
     expect(document.querySelector('.onboarding-view__card--skeleton')).toBeNull();
