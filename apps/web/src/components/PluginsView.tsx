@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Dialog } from '@open-design/components';
+import { Button, Dialog } from '@open-design/components';
 import {
   PLUGIN_SHARE_ACTION_PLUGIN_IDS,
   resolveLocalizedText,
@@ -40,6 +40,8 @@ import {
   uploadPluginZip,
 } from '../state/projects';
 import { Icon } from './Icon';
+import { PageHeader } from './PageHeader';
+import { EmptyState } from './EmptyState';
 import { PluginDetailsModal } from './PluginDetailsModal';
 import { PluginsHomeSection } from './PluginsHomeSection';
 import { TrustBadge } from './TrustBadge';
@@ -308,79 +310,68 @@ export function PluginsView({
   }
 
   return (
-    <section className="plugins-view" aria-labelledby="plugins-title">
-      <header className="plugins-view__hero">
-        <div>
-          <p className="plugins-view__kicker">{t('entry.navPlugins')}</p>
-          <h1 id="plugins-title" className="entry-section__title">
-            {t('entry.navPlugins')}
-          </h1>
-          <p className="plugins-view__lede">
-            {t('pluginsView.lede')}
-          </p>
-        </div>
-        <div className="plugins-view__hero-actions">
-          <button
-            type="button"
-            className="plugins-view__primary"
-            onClick={() => {
-              trackPluginsTopClick(analytics.track, {
-                page_name: 'plugins',
-                area: 'plugins',
-                element: 'create_plugin',
-              });
-              onCreatePlugin?.();
-            }}
-            data-testid="plugins-create-button"
-          >
-            <Icon name="edit" size={13} />
-            <span>{t('homeHero.chip.createPlugin')}</span>
-          </button>
-          <button
-            type="button"
-            className="plugins-view__secondary"
-            onClick={() => {
-              trackPluginsTopClick(analytics.track, {
-                page_name: 'plugins',
-                area: 'plugins',
-                element: 'import_plugin',
-              });
-              setImportOpen(true);
-            }}
-            aria-haspopup="dialog"
-            data-testid="plugins-import-button"
-          >
-            <Icon name="plus" size={13} />
-            <span>{t('pluginsView.importPlugin')}</span>
-          </button>
-          <div className="plugins-view__badge" aria-hidden="true">
-            <Icon name="grid" size={15} />
-            <span>{t('pluginsView.agentContext')}</span>
-          </div>
-        </div>
-      </header>
+    <section className="plugins-view" aria-label={t('entry.navPlugins')}>
+      <PageHeader
+        className="plugins-view__masthead"
+        eyebrow={`${t('entry.navPlugins')} · ${t('pluginsView.catalogCount', { count: availablePlugins.length })}`}
+        title={t('pluginsView.mastheadTitleLead')}
+        accent={t('pluginsView.mastheadTitleAccent')}
+        trailing="."
+        subtitle={t('pluginsView.lede')}
+        actions={
+          <>
+            <Button
+              variant="primary"
+              className="plugins-view__cta"
+              onClick={() => {
+                trackPluginsTopClick(analytics.track, {
+                  page_name: 'plugins',
+                  area: 'plugins',
+                  element: 'create_plugin',
+                });
+                onCreatePlugin?.();
+              }}
+              data-testid="plugins-create-button"
+            >
+              <Icon name="edit" size={15} />
+              {t('homeHero.chip.createPlugin')}
+            </Button>
+            <Button
+              variant="ghost"
+              className="plugins-view__cta-ghost"
+              onClick={() => {
+                trackPluginsTopClick(analytics.track, {
+                  page_name: 'plugins',
+                  area: 'plugins',
+                  element: 'import_plugin',
+                });
+                setImportOpen(true);
+              }}
+              aria-haspopup="dialog"
+              data-testid="plugins-import-button"
+            >
+              <Icon name="plus" size={15} />
+              {t('pluginsView.importPlugin')}
+            </Button>
+          </>
+        }
+      />
 
-      <div className="plugins-view__stats" aria-label={t('pluginsView.summaryAria')}>
-        <StatCard label={t('pluginsView.tab.installed')} value={userPlugins.length} />
-        <StatCard label={t('pluginsView.tab.available')} value={availablePlugins.length} />
-        <StatCard label={t('pluginsView.tab.sources')} value={marketplaces.length} />
-      </div>
-
-      <nav className="plugins-view__tabs" role="tablist" aria-label={t('pluginsView.areasAria')}>
+      <div className="plugins-view__scopes" role="tablist" aria-label={t('pluginsView.areasAria')}>
         {PLUGINS_TABS.map((tab) => {
           const active = tab.id === activeTab;
+          const count = pluginTabCount(tab.id, {
+            installed: userPlugins.length,
+            available: availablePlugins.length,
+            sources: marketplaces.length,
+          });
           return (
             <button
               key={tab.id}
               type="button"
               role="tab"
               aria-selected={active}
-              className={[
-                'plugins-view__tab',
-                active ? ' is-active' : '',
-              ]
-                .filter(Boolean)
-                .join('')}
+              className={`plugins-view__scope${active ? ' is-active' : ''}`}
               onClick={() => {
                 trackPluginsTopClick(analytics.track, {
                   page_name: 'plugins',
@@ -391,19 +382,56 @@ export function PluginsView({
               }}
               data-testid={`plugins-tab-${tab.id}`}
             >
-              <span className="plugins-view__tab-label">{pluginTabLabel(tab.id, t)}</span>
-              <span className="plugins-view__tab-hint">{pluginTabHint(tab.id, t)}</span>
+              <span>{pluginTabLabel(tab.id, t)}</span>
+              {count !== null ? (
+                <span className="plugins-view__scope-count" aria-hidden>{count}</span>
+              ) : null}
             </button>
           );
         })}
-      </nav>
+      </div>
 
       {notice ? <Notice outcome={notice} /> : null}
 
       <div className="plugins-view__gallery">
-        {loading ? <div className="plugins-view__empty">{t('pluginsView.loading')}</div> : null}
+        {loading ? <PluginsGallerySkeleton /> : null}
 
-        {!loading && activeTab === 'installed' ? (
+        {!loading && activeTab === 'installed' && userPlugins.length === 0 ? (
+          <EmptyState
+            className="plugins-view__empty-state"
+            data-testid="plugins-installed-empty"
+            eyebrow={t('pluginsView.tab.installed')}
+            title={t('pluginsView.installedTitle')}
+            body={t('pluginsView.installedEmpty')}
+            action={
+              <>
+                <Button
+                  variant="primary"
+                  className="plugins-view__cta"
+                  onClick={() => {
+                    trackPluginsTopClick(analytics.track, {
+                      page_name: 'plugins',
+                      area: 'plugins',
+                      element: 'create_plugin',
+                    });
+                    onCreatePlugin?.();
+                  }}
+                >
+                  <Icon name="edit" size={15} />
+                  {t('homeHero.chip.createPlugin')}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setActiveTab('available')}
+                >
+                  {t('pluginsView.tab.available')}
+                </Button>
+              </>
+            }
+          />
+        ) : null}
+
+        {!loading && activeTab === 'installed' && userPlugins.length > 0 ? (
           <PluginsHomeSection
             plugins={userPlugins}
             loading={false}
@@ -784,15 +812,6 @@ function pluginShareSlug(name: string): string {
   );
 }
 
-function StatCard({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="plugins-view__stat">
-      <span className="plugins-view__stat-value">{value}</span>
-      <span className="plugins-view__stat-label">{label}</span>
-    </div>
-  );
-}
-
 function pluginTabLabel(id: PluginsTab, t: ReturnType<typeof useI18n>['t']): string {
   switch (id) {
     case 'installed': return t('pluginsView.tab.installed');
@@ -802,13 +821,38 @@ function pluginTabLabel(id: PluginsTab, t: ReturnType<typeof useI18n>['t']): str
   }
 }
 
-function pluginTabHint(id: PluginsTab, t: ReturnType<typeof useI18n>['t']): string {
+// Scope-chip counts mirror the Design-systems / Projects toolbar: a quiet
+// tabular-nums tally beside each label. `team` is a forward-looking scope with
+// no catalog behind it yet, so it carries no count.
+function pluginTabCount(
+  id: PluginsTab,
+  counts: { installed: number; available: number; sources: number },
+): number | null {
   switch (id) {
-    case 'installed': return t('pluginsView.tabHint.installed');
-    case 'available': return t('pluginsView.tabHint.available');
-    case 'sources': return t('pluginsView.tabHint.sources');
-    case 'team': return t('pluginsView.tabHint.team');
+    case 'installed': return counts.installed;
+    case 'available': return counts.available;
+    case 'sources': return counts.sources;
+    case 'team': return null;
   }
+}
+
+// Loading placeholder — an editorial skeleton wall rather than a bare
+// "Loading…" line, matching the Design-systems / Projects sheen treatment.
+function PluginsGallerySkeleton() {
+  return (
+    <div className="plugins-view__skeleton" aria-hidden data-testid="plugins-loading-skeleton">
+      <span className="plugins-view__skeleton-block plugins-view__skeleton-toolbar" />
+      <div className="plugins-view__skeleton-grid">
+        {Array.from({ length: 6 }, (_, index) => (
+          <div key={index} className="plugins-view__skeleton-card">
+            <span className="plugins-view__skeleton-block plugins-view__skeleton-thumb" />
+            <span className="plugins-view__skeleton-block plugins-view__skeleton-line plugins-view__skeleton-line--title" />
+            <span className="plugins-view__skeleton-block plugins-view__skeleton-line plugins-view__skeleton-line--body" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function Notice({

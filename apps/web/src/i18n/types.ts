@@ -1312,6 +1312,9 @@ export interface Dict {
   'pluginsHome.commercialCategory.design-craft': string;
   'pluginsView.lede': string;
   'pluginsView.importPlugin': string;
+  'pluginsView.catalogCount': string;
+  'pluginsView.mastheadTitleLead': string;
+  'pluginsView.mastheadTitleAccent': string;
   'pluginsView.agentContext': string;
   'pluginsView.summaryAria': string;
   'pluginsView.areasAria': string;

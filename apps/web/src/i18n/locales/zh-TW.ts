@@ -998,6 +998,9 @@ export const zhTW: Dict = {
   "pluginsView.lede":
     "瀏覽已安裝的工作流程、探索登錄檔項目、管理來源，並為團隊散布準備外掛程式。",
   "pluginsView.importPlugin": "匯入外掛程式",
+  "pluginsView.catalogCount": "目錄中有 {count} 個",
+  "pluginsView.mastheadTitleLead": "為你的代理打造的",
+  "pluginsView.mastheadTitleAccent": "工作台",
   "pluginsView.agentContext": "Agent 情境",
   "pluginsView.summaryAria": "外掛程式摘要",
   "pluginsView.areasAria": "外掛程式領域",

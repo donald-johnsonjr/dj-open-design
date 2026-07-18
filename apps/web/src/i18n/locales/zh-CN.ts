@@ -995,6 +995,9 @@ export const zhCN: Dict = {
   "pluginsView.lede":
     "浏览已安装工作流，发现插件市场条目，管理来源，并为团队分发准备插件。",
   "pluginsView.importPlugin": "导入插件",
+  "pluginsView.catalogCount": "目录中有 {count} 个",
+  "pluginsView.mastheadTitleLead": "为你的智能体打造的",
+  "pluginsView.mastheadTitleAccent": "工作台",
   "pluginsView.agentContext": "智能体上下文",
   "pluginsView.summaryAria": "插件概览",
   "pluginsView.areasAria": "插件区域",

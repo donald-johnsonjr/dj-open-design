@@ -78,7 +78,10 @@ test('[P2] captures the plugins page surface', async ({ page }) => {
   await page.getByTestId('entry-nav-plugins').click();
   await expect(page).toHaveURL(/\/plugins$/);
   const plugins = page.getByTestId('entry-view-plugins');
-  await expect(plugins.getByRole('heading', { name: 'Plugins', exact: true })).toBeVisible();
+  // The Plugins surface now carries the shared editorial masthead (a Didone
+  // headline with a swash-italic violet accent word) rather than a plain
+  // "Plugins" heading; assert on the headline copy instead.
+  await expect(plugins.getByRole('heading', { name: /workbench for your/i })).toBeVisible();
   await expect(plugins.getByTestId('plugins-tab-installed')).toBeVisible();
   await expect(plugins.getByText('Prototype Starter').first()).toBeVisible();
   await waitForVisualFonts(page);

@@ -327,9 +327,11 @@ describe('PluginsView', () => {
         .map((item) => item.getAttribute('data-plugin-id'))
         .sort(),
     ).toEqual(['create-plugin', 'import-plugin']);
-    const summary = screen.getByLabelText('Plugin summary');
-    expect(within(summary).getByText('2')).toBeTruthy();
-    expect(within(summary).getByText('Installed')).toBeTruthy();
+    // The stat cards were folded into the editorial scope-chip toolbar: the
+    // Installed scope chip now carries both its label and its tally.
+    const installedScope = screen.getByTestId('plugins-tab-installed');
+    expect(installedScope.textContent).toContain('Installed');
+    expect(within(installedScope).getByText('2')).toBeTruthy();
   });
 
   it('hands installed plugin Use actions to the host shell', async () => {
