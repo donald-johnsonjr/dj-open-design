@@ -26,6 +26,19 @@
   text-transform: uppercase;
   color: var(--text-soft);
 }
+/* Light theme: --text-soft (#8a8a9c) is only ~3.3:1 on the near-white canvas,
+   below AA for this small tracked label. Deepen to --text-muted (~7:1) in the
+   light paths (explicit light + system/light-OS); dark keeps the softer
+   editorial eyebrow. One rule lifts every PageHeader masthead — Design
+   systems, Projects, Plugins. */
+:global([data-theme='light']) .eyebrow {
+  color: var(--text-muted);
+}
+@media (prefers-color-scheme: light) {
+  :global(html:not([data-theme])) .eyebrow {
+    color: var(--text-muted);
+  }
+}
 
 .title {
   margin: 0;
