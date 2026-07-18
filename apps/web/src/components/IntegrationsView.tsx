@@ -94,7 +94,7 @@ export function IntegrationsView({
     <section className="integrations-view" aria-label={t('entry.navIntegrations')}>
       <PageHeader
         className="integrations-view__masthead"
-        eyebrow={t('integrations.kicker')}
+        eyebrow={t('entry.navIntegrations')}
         title={t('integrations.mastheadTitleLead')}
         accent={t('integrations.mastheadTitleAccent')}
         trailing="."

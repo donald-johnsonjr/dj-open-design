@@ -159,5 +159,8 @@
   .integrations-view__scope {
     flex: 1 1 40%;
     justify-content: center;
+    /* Lift the primary nav control to the 44px touch-target guideline on phone
+       (the base 34px is a desktop-pointer size). */
+    min-height: 44px;
   }
 }
