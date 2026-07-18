@@ -230,10 +230,11 @@
 
 .previewName {
   margin: 0;
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1.18;
-  letter-spacing: 0;
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.16;
+  letter-spacing: -0.01em;
   color: var(--text-strong);
   overflow-wrap: anywhere;
 }
@@ -315,6 +316,27 @@
 
 .previewHeadSticky .previewActions > * {
   flex: 0 0 auto;
+}
+
+/* Mobile detail header: keep the title left-aligned and pin the actions inline
+   at the top-right instead of letting the ⋯ overflow wrap onto an orphaned row
+   below a centred title (issue #5). */
+@media (max-width: 560px) {
+  .previewHead:not(.previewHeadSticky) {
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .previewHead:not(.previewHeadSticky) .previewHeadIdentity {
+    flex: 1 1 auto;
+    align-items: flex-start;
+  }
+  .previewHead:not(.previewHeadSticky) .previewActions {
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    min-width: 0;
+  }
 }
 
 /* ── Header "More" overflow dropdown ──────────────────────────────────
@@ -639,6 +661,26 @@
   filter:
     drop-shadow(0 1px 1px rgba(0, 0, 0, 0.18))
     drop-shadow(0 0 1px rgba(255, 255, 255, 0.45));
+}
+
+/* Read-only preset logo module: a real favicon/monogram mark stands in for the
+   dashed "No logo yet" upload box, so the flagship never reads unfinished. */
+.logoStageFallback {
+  min-height: 190px;
+}
+.logoStageMonogram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  border-radius: var(--radius-lg);
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-family: var(--display);
+  font-size: 46px;
+  font-weight: 600;
+  line-height: 1;
 }
 
 .logoThumbs {

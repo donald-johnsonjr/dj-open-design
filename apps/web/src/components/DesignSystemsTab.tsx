@@ -28,7 +28,7 @@ import {
 import { downloadDesignSystemArchive, downloadProjectArchive } from '../runtime/exports';
 import { useDesignKit } from '../runtime/design-kit';
 import { DesignKitView, HeaderActionsMenu, type DesignKitActionFeedbackTone, type HeaderMenuAction } from './DesignKitView';
-import { designSystemLogoHost, isUserSystem } from './design-system-metadata';
+import { designSystemLogoHost, isBoilerplateDesignSystemSummary, isUserSystem } from './design-system-metadata';
 import { Icon } from './Icon';
 import { PageHeader } from './PageHeader';
 import { EmptyState } from './EmptyState';
@@ -542,6 +542,14 @@ export function DesignSystemsTab({
   ];
 
   const showPresetFilters = designSystemCollection === 'official';
+  // The surface-pill row is pure noise when the catalog only spans one surface
+  // (e.g. "All 152 / Web 152" says the same thing twice). Drop it entirely and
+  // keep just the category select in that case (issue #6). Driven by catalog
+  // totals so a transient search/style filter never toggles the row.
+  const surfaceKinds = (['web', 'image', 'video', 'audio'] as const).filter(
+    (kind) => surfaceTotals[kind] > 0,
+  );
+  const showSurfaceRow = surfaceKinds.length > 1;
   const newSystemCta = onCreate ? (
     <Button
       variant="primary"
@@ -726,6 +734,7 @@ export function DesignSystemsTab({
 
         {showPresetFilters ? (
           <div className={styles.presetFilters}>
+            {showSurfaceRow ? (
             <div className={styles.surfaceRow} role="tablist" aria-label={t('ds.surfaceLabel')}>
               {SURFACE_PILLS.filter(
                 (p) => p.value === surfaceFilter || p.value === 'all' || surfaceCounts[p.value] > 0,
@@ -752,6 +761,7 @@ export function DesignSystemsTab({
                 </button>
               ))}
             </div>
+            ) : null}
             <select
               data-testid="design-systems-category-select"
               className={styles.categorySelect}
@@ -835,6 +845,19 @@ export function DesignSystemsTab({
     let counter = 0;
     const nextNumber = () => String(++counter).padStart(3, '0');
 
+    // User rows read their authored scenario; preset rows read the localized
+    // summary, but suppress the auto-generated package boilerplate entirely so
+    // the row falls back to just name + category + palette (issue #1).
+    const rowSubtitle = (system: DesignSystemSummary): string => {
+      if (isUserSystem(system)) {
+        return system.summary?.trim()
+          || designSystemLogoHost(system)
+          || t('brandDetail.designSystem');
+      }
+      const summary = localizeDesignSystemSummary(locale, system);
+      return isBoilerplateDesignSystemSummary(summary) ? '' : summary;
+    };
+
     const rowFor = (system: DesignSystemSummary, showMeta: boolean) => (
       <EditorialRow
         key={system.id}
@@ -842,13 +865,7 @@ export function DesignSystemsTab({
         system={system}
         isDefault={system.id === selectedId}
         meta={showMeta ? localizeDesignSystemCategory(locale, system.category || 'Uncategorized') : ''}
-        subtitle={
-          isUserSystem(system)
-            ? (system.summary?.trim()
-              || designSystemLogoHost(system)
-              || t('brandDetail.designSystem'))
-            : localizeDesignSystemSummary(locale, system)
-        }
+        subtitle={rowSubtitle(system)}
         statusLabel={(system.status ?? 'draft') === 'published' ? t('dsManager.statusPublished') : t('dsManager.statusDraft')}
         onSelect={() => handleSelectSystem(system)}
       />
@@ -982,7 +999,7 @@ function EditorialRow({ system, number, isDefault, meta, subtitle, statusLabel, 
           <span className={styles.itemName}>{system.title}</span>
           {isDefault ? <span className={styles.badgeDefault}>{t('dsManager.badgeDefault')}</span> : null}
         </span>
-        <span className={styles.itemSub}>{subtitle}</span>
+        {subtitle ? <span className={styles.itemSub}>{subtitle}</span> : null}
       </span>
       {meta ? <span className={styles.itemCat} aria-hidden>{meta}</span> : null}
       <span className={styles.itemSwatches} aria-hidden>
@@ -1220,6 +1237,7 @@ function DesignSystemDetail({
       {kit ? (
         <DesignKitView
           kit={kit}
+          displayName={system.title}
           badgeSlot={badgeSlot}
           actionsSlot={actionsSlot}
           showCover={false}

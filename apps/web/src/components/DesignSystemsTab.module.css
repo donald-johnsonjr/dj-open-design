@@ -163,7 +163,9 @@
     box-shadow var(--dur-quick, 140ms) var(--ease-out);
 }
 .search::placeholder {
-  color: var(--text-faint);
+  /* Informative placeholder — hold it at AA (--text-soft ≈ 5.8:1), not the
+     sub-AA --text-faint (issue #4). */
+  color: var(--text-soft);
 }
 .search:focus-visible {
   outline: none;
@@ -283,7 +285,11 @@
 }
 .categorySelect {
   appearance: none;
-  min-width: 190px;
+  /* Size to the chosen option rather than a fixed wide box so the native
+     select stops reading utilitarian against the calm bar (issue #7). */
+  width: fit-content;
+  min-width: 150px;
+  max-width: 100%;
   min-height: 34px;
   padding: 0 30px 0 12px;
   border: 1px solid var(--border);
@@ -391,7 +397,9 @@
   font-size: 12px;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.06em;
-  color: var(--text-faint);
+  /* Decorative running index — kept intentionally quiet, but nudged off the
+     sub-AA floor to ~3:1 so the editorial signature stays legible (issue #4). */
+  color: color-mix(in srgb, var(--text-soft) 32%, var(--text-faint));
   transition: color var(--dur-quick, 140ms) var(--ease-out);
 }
 .item:hover .itemNum {
@@ -438,7 +446,8 @@
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text-faint);
+  /* Informative category meta — hold it at AA (issue #4). */
+  color: var(--text-soft);
 }
 .itemSwatches {
   display: flex;
