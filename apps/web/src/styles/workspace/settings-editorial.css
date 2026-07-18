@@ -60,6 +60,18 @@
   text-transform: uppercase;
   color: var(--text-soft);
 }
+/* Light theme: --text-soft (#8a8a9c) is only 3.39:1 on the near-white header —
+   below AA for this small tracked label. Deepen to --text-muted (~7:1) in the
+   light paths (explicit light + system/light-OS); dark keeps the softer tone.
+   The same shape guards every light-theme AA fix below. */
+[data-theme='light'] .modal-settings .modal-head .kicker {
+  color: var(--text-muted);
+}
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) .modal-settings .modal-head .kicker {
+    color: var(--text-muted);
+  }
+}
 .modal-settings .modal-head h2 {
   font-family: var(--display);
   font-weight: 500;
@@ -134,6 +146,24 @@
 }
 .modal-settings .settings-nav-item.active svg {
   color: var(--accent);
+}
+/* Light theme: the global inline --accent (#7b7cf5, applied in both themes by
+   the accent picker) lands at only ~4:1 on the pale tint pill. Deepen the
+   active label + icon toward --text so it clears AA (~5:1) in the light paths;
+   dark is unaffected. The gradient rail + tint pill stay as-is. */
+[data-theme='light'] .modal-settings .settings-nav-item.active,
+[data-theme='light'] .modal-settings .settings-nav-item.active:hover,
+[data-theme='light'] .modal-settings .settings-nav-item.active strong,
+[data-theme='light'] .modal-settings .settings-nav-item.active svg {
+  color: color-mix(in srgb, var(--accent) 66%, var(--text));
+}
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) .modal-settings .settings-nav-item.active,
+  html:not([data-theme]) .modal-settings .settings-nav-item.active:hover,
+  html:not([data-theme]) .modal-settings .settings-nav-item.active strong,
+  html:not([data-theme]) .modal-settings .settings-nav-item.active svg {
+    color: color-mix(in srgb, var(--accent) 66%, var(--text));
+  }
 }
 .modal-settings .settings-nav-item.active::before {
   content: '';
@@ -238,6 +268,11 @@
     width: auto;
     flex: 0 0 auto;
     align-self: center;
+    /* Clear the 44px touch-target guideline (was 36px) without changing the
+       chip's visual weight much — vertical growth is centered. */
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
     padding: 8px 14px;
     border-radius: var(--radius-pill);
     background: var(--bg-subtle);
