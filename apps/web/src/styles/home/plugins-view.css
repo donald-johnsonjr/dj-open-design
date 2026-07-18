@@ -538,31 +538,9 @@
   padding-left: 18px;
 }
 
-/* ── In-style empty / no-match (Available + Sources tabs) ─────────────────── */
-.plugins-view__empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 180px;
-  padding: 40px 24px;
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--accent) 3%, var(--bg-panel));
-  color: var(--text-muted);
-  font-size: 13.5px;
-  line-height: 1.55;
-  text-align: center;
-}
-.plugins-view__empty code {
-  padding: 1px 6px;
-  border-radius: var(--radius-xs);
-  background: var(--bg-subtle);
-  color: var(--text);
-  font-size: 11.5px;
-}
-/* The installed-tab EmptyState primitive gets a generous focal stage. */
+/* Every empty / no-match / zero-source state routes through the shared
+   EmptyState primitive; this gives it a generous focal stage to match the
+   sibling surfaces. */
 .plugins-view__empty-state {
   min-height: 440px;
 }
