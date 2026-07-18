@@ -23,6 +23,25 @@
   min-height: 0;
 }
 
+/* Masthead + toolbar stay clamped to the editorial column in BOTH grid and
+   board views, so toggling the view never shifts the header horizontally.
+   Only the board region below is allowed to span the full content width. */
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+/* Right-edge fade on the horizontally-scrolling board, so trailing columns
+   read as "more to scroll" instead of clipping mid-word at the fold. */
+.rootKanban :global(.design-kanban-board) {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+}
+
 /* Gradient-pill "New project" CTA (Button variant="primary"), mirroring the
    Design-systems masthead action. */
 .newBtn {
@@ -387,8 +406,12 @@
   color: color-mix(in srgb, var(--accent) 82%, var(--text));
 }
 
-/* Quiet overflow-menu trigger on the card. */
+/* Quiet overflow-menu trigger on the card. Sized up from the shared 26px base
+   to a 34px hit area — comfortably past the WCAG 2.5.8 floor and closer to the
+   44px mobile ideal — without enlarging the icon glyph itself. */
 .root :global(.design-card-more) {
+  width: 34px;
+  height: 34px;
   background: color-mix(in srgb, var(--bg-panel) 78%, transparent);
   border-color: var(--border);
   border-radius: var(--radius-pill);

@@ -587,6 +587,7 @@ export function DesignsTab({
 		<div
 			className={`${styles.root}${view === "kanban" ? ` ${styles.rootKanban}` : ""}`}
 		>
+			<div className={styles.head}>
 			{masthead}
 			<div className={styles.toolbar}>
 				<div
@@ -760,6 +761,7 @@ export function DesignsTab({
 						</div>
 					</div>
 				</div>
+			</div>
 			</div>
 			{filtered.length === 0 ? (
 				<EmptyState

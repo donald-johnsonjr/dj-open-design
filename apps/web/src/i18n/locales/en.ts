@@ -1572,7 +1572,7 @@ export const en: Dict = {
   'newproj.deleteTemplateConfirmCta': 'Delete template',
   'newproj.deleteTemplateError': 'Could not delete this template. Please try again.',
   'designs.subRecent': 'Recent',
-  'designs.subYours': 'Your designs',
+  'designs.subYours': 'Yours',
   'designs.filterAria': 'Filter projects',
   'designs.searchPlaceholder': 'Search…',
   'designs.emptyNoProjects': 'No projects yet.',
