@@ -1006,15 +1006,30 @@ function AvailablePluginsPanel({
         </div>
       ) : null}
       {plugins.length === 0 ? (
-        <div className="plugins-view__empty">
-          {t('pluginsView.availableEmptyInstalled')}
-        </div>
+        <EmptyState
+          className="plugins-view__empty-state"
+          data-testid="plugins-available-empty"
+          eyebrow={t('pluginsView.tab.available')}
+          title={t('pluginsView.availableEmptyInstalled')}
+        />
       ) : filteredPlugins.length === 0 ? (
-        <div className="plugins-view__empty">
-          {filterActive
-            ? t('pluginsView.availableEmptyFiltered')
-            : t('pluginsView.availableEmptyNoSources')}
-        </div>
+        <EmptyState
+          className="plugins-view__empty-state"
+          data-testid="plugins-available-empty"
+          eyebrow={t('pluginsView.tab.available')}
+          title={
+            filterActive
+              ? t('pluginsView.availableEmptyFiltered')
+              : t('pluginsView.availableEmptyNoSources')
+          }
+          action={
+            query.trim().length > 0 ? (
+              <Button variant="ghost" onClick={() => setQuery('')}>
+                {t('pluginsHome.clearSearch')}
+              </Button>
+            ) : null
+          }
+        />
       ) : (
         <div className="plugins-view__available-list">
           {filteredPlugins.map((plugin) => {
@@ -1520,9 +1535,12 @@ function SourcesPanel({
       </form>
 
       {marketplaces.length === 0 ? (
-        <div className="plugins-view__empty">
-          {t('pluginsView.sourcesEmpty')}
-        </div>
+        <EmptyState
+          className="plugins-view__empty-state"
+          data-testid="plugins-sources-empty"
+          eyebrow={t('pluginsView.tab.sources')}
+          title={t('pluginsView.sourcesEmpty')}
+        />
       ) : (
         <div className="plugins-view__marketplaces">
           {marketplaces.map((marketplace) => (

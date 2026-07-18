@@ -51,6 +51,18 @@
   text-transform: uppercase;
   color: var(--text-soft);
 }
+/* Light theme: --text-soft (~3.3:1 on the near-white canvas) is below AA for
+   this small tracked label (Team "COMING SOON", Import-modal "USER PLUGINS").
+   Deepen to --text-muted (~7:1) in the light paths, matching the masthead
+   eyebrow; dark keeps the softer tone. */
+[data-theme='light'] .plugins-view__kicker {
+  color: var(--text-muted);
+}
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) .plugins-view__kicker {
+    color: var(--text-muted);
+  }
+}
 
 /* ── Scope chips — the calm toolbar replacing stats + two-line tabs ────────── */
 .plugins-view__scopes {
