@@ -1035,6 +1035,8 @@ export const id: Dict = {
   'skillPluginCandidate.contributeToMain': 'Kontribusikan ke open-design',
   'skillPluginCandidate.repoDescription': 'Repo ini sepertinya bisa berfungsi sebagai plugin.',
   'integrations.kicker': 'Integrasi',
+  'integrations.mastheadTitleLead': 'Integrasi yang menjangkau',
+  'integrations.mastheadTitleAccent': 'ke mana saja',
   'integrations.lede': 'Hubungkan sistem eksternal, bawa alat MCP ke dalam loop agent Anda, dan gunakan Open Design dari IDE, skrip, dan otomatisasi lainnya.',
   'integrations.agentReady': 'Siap untuk agent',
   'integrations.areasAria': 'Area integrasi',

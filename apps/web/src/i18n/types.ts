@@ -1385,6 +1385,8 @@ export interface Dict {
   'skillPluginCandidate.contributeToMain': string;
   'skillPluginCandidate.repoDescription': string;
   'integrations.kicker': string;
+  'integrations.mastheadTitleLead': string;
+  'integrations.mastheadTitleAccent': string;
   'integrations.lede': string;
   'integrations.agentReady': string;
   'integrations.areasAria': string;

@@ -1035,6 +1035,8 @@ export const esES: Dict = {
   'skillPluginCandidate.contributeToMain': 'Contribuir a open-design',
   'skillPluginCandidate.repoDescription': 'Este repositorio parece que podría funcionar como plugin.',
   'integrations.kicker': 'Integración',
+  'integrations.mastheadTitleLead': 'Integraciones que llegan a',
+  'integrations.mastheadTitleAccent': 'todas partes',
   'integrations.lede': 'Conecta sistemas externos, incorpora herramientas MCP a tu bucle de agente y usa Open Design desde otros IDE, scripts y automatizaciones.',
   'integrations.agentReady': 'Listo para agentes',
   'integrations.areasAria': 'Áreas de integración',

@@ -1,201 +1,163 @@
-/* ============================================================
-   Integrations route — entry-shell tabbed workspace
-   ============================================================ */
+/* ============================================================================
+   Integrations — Kinected editorial route.
+
+   A presentation-only pass that lifts the Integrations nav surface to the same
+   dark, calm, editorial rhythm as the shipped Projects (`DesignsTab`), Design
+   systems (`DesignSystemsTab`), Settings, and Plugins (`PluginsView`) surfaces:
+   the shared `PageHeader` masthead (tracked-mono eyebrow + swash-italic violet
+   accent title), a restrained single-line scope-chip toolbar in place of the
+   old two-line tab cards, and hairline premium panel framing with one violet
+   signal (no decorative badge, no pill soup).
+
+   Every selector is scoped under `.integrations-view` so the MCP / Connectors /
+   Skills / Use-everywhere panels — which are shared with the Settings dialog —
+   are only restyled here and never leak back into Settings. Tokens only, no
+   hardcoded colors, no inline styles. Informative small text holds AA on both
+   themes via --text-muted; --text-soft / --text-faint are reserved for dark +
+   decorative labels, mirroring the sibling modules. The masthead eyebrow AA in
+   the light theme is inherited from the shared `PageHeader` (which deepens the
+   eyebrow to --text-muted on the near-white canvas).
+   ============================================================================ */
 
 .integrations-view {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 26px;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
 }
 
-.integrations-view__hero {
+/* ── Scope chips — the calm toolbar replacing the two-line tab cards ────────── */
+.integrations-view__scopes {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 18px;
-  padding-bottom: 2px;
+  flex-wrap: wrap;
+  gap: 6px;
 }
-
-.integrations-view__kicker,
-.integrations-view__coming-kicker {
-  margin: 0 0 4px;
-  font-size: 11px;
-  font-weight: 650;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent-strong, var(--accent));
-}
-
-.integrations-view__lede {
-  margin: 8px 0 0;
-  max-width: 660px;
-  font-size: 13px;
-  line-height: 1.55;
-  color: var(--text-muted);
-}
-
-.integrations-view__badge {
+.integrations-view__scope {
+  appearance: none;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
+  gap: 7px;
+  min-height: 34px;
+  padding: 5px 15px;
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);
-  background: var(--bg-panel);
-  color: var(--text-muted);
-  font-size: 12px;
-  box-shadow: var(--shadow-xs);
-  white-space: nowrap;
-}
-
-.integrations-view__badge svg {
-  color: var(--accent);
-}
-
-.integrations-view__tabs {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  padding: 6px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg-panel);
-  box-shadow: var(--shadow-xs);
-}
-
-.integrations-view__tab {
-  appearance: none;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  min-width: 0;
-  padding: 10px 12px;
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-  text-align: left;
-  transition: background-color 120ms var(--ease-out), border-color 120ms var(--ease-out), color 120ms var(--ease-out);
-}
-
-.integrations-view__tab:hover {
   background: var(--bg-subtle);
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-weight: 550;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color var(--dur-quick, 140ms) var(--ease-out),
+    background-color var(--dur-quick, 140ms) var(--ease-out),
+    color var(--dur-quick, 140ms) var(--ease-out);
+}
+.integrations-view__scope:hover {
+  border-color: var(--accent);
   color: var(--text);
 }
-
-.integrations-view__tab.is-active {
+.integrations-view__scope.is-active,
+.integrations-view__scope.is-active:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
   background: var(--accent-tint);
-  border-color: color-mix(in srgb, var(--accent) 24%, var(--border));
-  color: var(--accent-strong, var(--accent));
+  /* Deepen toward text-strong so the active label clears AA on the pale tint
+     pill in the light theme while staying clearly violet on dark. */
+  color: color-mix(in srgb, var(--accent) 72%, var(--text-strong));
+}
+.integrations-view__scope:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
-.integrations-view__tab-label {
-  font-size: 13px;
-  font-weight: 650;
-  color: var(--text-strong);
-}
-
-.integrations-view__tab.is-active .integrations-view__tab-label {
-  color: var(--accent-strong, var(--accent));
-}
-
-.integrations-view__tab-hint {
-  overflow: hidden;
-  max-width: 100%;
-  font-size: 11.5px;
-  line-height: 1.25;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
+/* ── Panel — the active area's editorial card frame ────────────────────────── */
 .integrations-view__panel {
   min-width: 0;
 }
-
 .integrations-view__panel > .settings-section {
-  padding: 18px;
+  padding: 22px;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: var(--bg-panel);
   box-shadow: var(--shadow-xs);
 }
-
 .integrations-view__panel .settings-section > .section-head:first-child {
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
-
-.integrations-view__use-everywhere {
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg);
-  box-shadow: var(--shadow-xs);
-}
-
-.integrations-view__use-everywhere .use-everywhere-modal__tabs {
-  padding: 12px 18px 0;
-}
-
-.integrations-view__use-everywhere .use-everywhere-modal__body {
-  max-height: none;
-  padding: 18px;
-}
-
-.integrations-view__use-everywhere .use-everywhere-modal__foot {
-  padding: 14px 18px;
-}
-
-.integrations-view__coming-soon {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 16px;
-  padding: 28px;
-  border: 1px dashed var(--border);
-  border-radius: var(--radius);
-  background:
-    linear-gradient(135deg, var(--accent-tint), transparent 34%),
-    var(--bg-panel);
-}
-
-.integrations-view__coming-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
-  border-radius: var(--radius);
-  background: var(--bg-panel);
-  color: var(--accent);
-  box-shadow: var(--shadow-xs);
-}
-
-.integrations-view__coming-soon h2 {
-  margin: 0;
-  font-size: 18px;
+/* Panel heads read as quiet Didone section titles (matches Plugins section
+   heads) rather than default bold sans, without touching the panel markup. */
+.integrations-view__panel .settings-section > .section-head h3 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 19px;
+  letter-spacing: -0.01em;
   color: var(--text-strong);
 }
-
-.integrations-view__coming-soon p:last-child {
-  margin: 8px 0 0;
-  max-width: 560px;
-  font-size: 13px;
-  line-height: 1.6;
+.integrations-view__panel .settings-section > .section-head .hint {
   color: var(--text-muted);
 }
 
-@media (max-width: 760px) {
-  .integrations-view__hero {
-    flex-direction: column;
-  }
+/* Soften the panel-internal empty / gate blocks so they read as calm editorial
+   focal stages instead of hard dashed boxes. Scoped to the Integrations
+   surface — the Settings dialog keeps its own treatment. */
+.integrations-view .empty-card {
+  border-style: solid;
+  border-color: var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-subtle);
+}
+.integrations-view .empty-card strong {
+  color: var(--text-strong);
+}
+.integrations-view .connector-gate-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-panel);
+  box-shadow: var(--shadow-sm);
+}
 
-  .integrations-view__tabs {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+/* ── Use-everywhere guide — editorial frame around the shared guide panel ───── */
+.integrations-view__use-everywhere {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-panel);
+  box-shadow: var(--shadow-xs);
+}
+.integrations-view__use-everywhere .use-everywhere-modal__tabs {
+  padding: 14px 20px 0;
+}
+.integrations-view__use-everywhere .use-everywhere-modal__body {
+  max-height: none;
+  padding: 20px;
+}
+.integrations-view__use-everywhere .use-everywhere-modal__foot {
+  padding: 16px 20px;
+}
 
-  .integrations-view__coming-soon {
-    grid-template-columns: 1fr;
+/* ── Reduced motion ────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .integrations-view__scope {
+    transition: none;
+  }
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .integrations-view__panel > .settings-section {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 560px) {
+  .integrations-view {
+    gap: 20px;
+  }
+  .integrations-view__scopes {
+    gap: 5px;
+  }
+  .integrations-view__scope {
+    flex: 1 1 40%;
+    justify-content: center;
   }
 }

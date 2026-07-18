@@ -1035,6 +1035,8 @@ export const tr: Dict = {
   'skillPluginCandidate.contributeToMain': 'open-design\'e katkıda bulun',
   'skillPluginCandidate.repoDescription': 'Bu depo plugin olarak çalışabilecek gibi görünüyor.',
   'integrations.kicker': 'Entegrasyon',
+  'integrations.mastheadTitleLead': 'Her yere ulaşan',
+  'integrations.mastheadTitleAccent': 'entegrasyonlar',
   'integrations.lede': 'Harici sistemleri bağlayın, MCP araçlarını agent döngünüze dahil edin ve Open Design\'ı diğer IDE\'ler, betikler ve otomasyonlardan kullanın.',
   'integrations.agentReady': 'Agent\'a hazır',
   'integrations.areasAria': 'Entegrasyon alanları',

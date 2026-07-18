@@ -1035,6 +1035,8 @@ export const uk: Dict = {
   'skillPluginCandidate.contributeToMain': 'Зробити внесок в open-design',
   'skillPluginCandidate.repoDescription': 'Схоже, цей репозиторій може працювати як плагін.',
   'integrations.kicker': 'Інтеграція',
+  'integrations.mastheadTitleLead': 'Інтеграції, що сягають',
+  'integrations.mastheadTitleAccent': 'усюди',
   'integrations.lede': 'Підключайте зовнішні системи, додавайте інструменти MCP до циклу роботи агента та використовуйте Open Design з інших IDE, скриптів та автоматизацій.',
   'integrations.agentReady': 'Готово для агента',
   'integrations.areasAria': 'Області інтеграції',

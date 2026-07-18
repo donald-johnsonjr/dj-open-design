@@ -111,7 +111,9 @@ test('[P2] captures the integrations use everywhere surface', async ({ page }) =
   await page.getByTestId('entry-nav-integrations').click();
   await page.getByTestId('integrations-tab-use-everywhere').click();
   await expect(page.getByTestId('integrations-tab-use-everywhere')).toHaveAttribute('aria-selected', 'true');
-  await expect(page.getByText('CLI, HTTP, MCP').first()).toBeVisible();
+  // The scope chips are single-line labels now (no sub-hint); confirm the
+  // Use-everywhere guide panel itself rendered via its stable Overview sub-tab.
+  await expect(page.getByTestId('use-everywhere-tab-overview')).toBeVisible();
   await waitForVisualFonts(page);
 
   await captureVisual(page, 'visual-integrations-use-everywhere');

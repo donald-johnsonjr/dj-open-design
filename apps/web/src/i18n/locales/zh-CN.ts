@@ -1072,6 +1072,8 @@ export const zhCN: Dict = {
   "skillPluginCandidate.contributeToMain": "贡献到 open-design",
   "skillPluginCandidate.repoDescription": "这个仓库看起来可以做成插件。",
   "integrations.kicker": "集成",
+  "integrations.mastheadTitleLead": "触达各处的",
+  "integrations.mastheadTitleAccent": "集成",
   "integrations.lede":
     "连接外部系统，把 MCP 工具带入智能体循环，并在其它 IDE、脚本和自动化中使用 Open Design。",
   "integrations.agentReady": "智能体就绪",

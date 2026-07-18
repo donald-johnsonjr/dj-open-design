@@ -1035,6 +1035,8 @@ export const ar: Dict = {
   'skillPluginCandidate.contributeToMain': 'المساهمة في open-design',
   'skillPluginCandidate.repoDescription': 'يبدو أن هذا المستودع يمكن أن يعمل كإضافة.',
   'integrations.kicker': 'التكامل',
+  'integrations.mastheadTitleLead': 'تكاملات تصل إلى',
+  'integrations.mastheadTitleAccent': 'كل مكان',
   'integrations.lede': 'اربط الأنظمة الخارجية، وأدخِل أدوات MCP إلى حلقة الـ Agent الخاصة بك، واستخدم Open Design من بيئات تطوير وبرامج نصية وعمليات أتمتة أخرى.',
   'integrations.agentReady': 'جاهز للـ Agent',
   'integrations.areasAria': 'مجالات التكامل',

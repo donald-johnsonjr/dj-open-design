@@ -1035,6 +1035,8 @@ export const hu: Dict = {
   'skillPluginCandidate.contributeToMain': 'Hozzájárulás az open-designhoz',
   'skillPluginCandidate.repoDescription': 'Úgy tűnik, ez a tároló pluginként működhetne.',
   'integrations.kicker': 'Integráció',
+  'integrations.mastheadTitleLead': 'Integrációk, amelyek',
+  'integrations.mastheadTitleAccent': 'mindenhová érnek',
   'integrations.lede': 'Csatlakoztass külső rendszereket, hozd be az MCP-eszközöket az agent-folyamatodba, és használd az Open Designt más IDE-kből, szkriptekből és automatizációkból.',
   'integrations.agentReady': 'Agentre kész',
   'integrations.areasAria': 'Integrációs területek',

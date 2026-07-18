@@ -1075,6 +1075,8 @@ export const zhTW: Dict = {
   "skillPluginCandidate.contributeToMain": "貢獻到 open-design",
   "skillPluginCandidate.repoDescription": "這個倉庫看起來可以做成外掛。",
   "integrations.kicker": "整合",
+  "integrations.mastheadTitleLead": "觸及各處的",
+  "integrations.mastheadTitleAccent": "整合",
   "integrations.lede":
     "連接外部系統，把 MCP 工具帶入智能體迴圈，並在其他 IDE、腳本與自動化流程中使用 Open Design。",
   "integrations.agentReady": "智能體就緒",

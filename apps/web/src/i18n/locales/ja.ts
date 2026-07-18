@@ -1035,6 +1035,8 @@ export const ja: Dict = {
   'skillPluginCandidate.contributeToMain': 'open-design にコントリビュート',
   'skillPluginCandidate.repoDescription': 'このリポジトリはプラグインとして利用できそうです。',
   'integrations.kicker': '連携',
+  'integrations.mastheadTitleLead': 'どこへでも届く',
+  'integrations.mastheadTitleAccent': '統合',
   'integrations.lede': '外部システムを接続し、MCP ツールをエージェントループに取り込み、他の IDE やスクリプト、自動化から Open Design を利用できます。',
   'integrations.agentReady': 'Agent 対応',
   'integrations.areasAria': '連携エリア',

@@ -1035,6 +1035,8 @@ export const ptBR: Dict = {
   'skillPluginCandidate.contributeToMain': 'Contribuir para o open-design',
   'skillPluginCandidate.repoDescription': 'Este repositório parece que poderia funcionar como um plugin.',
   'integrations.kicker': 'Integração',
+  'integrations.mastheadTitleLead': 'Integrações em',
+  'integrations.mastheadTitleAccent': 'todo lugar',
   'integrations.lede': 'Conecte sistemas externos, traga ferramentas MCP para o loop do seu agent e use o Open Design a partir de outras IDEs, scripts e automações.',
   'integrations.agentReady': 'Pronto para agent',
   'integrations.areasAria': 'Áreas de integração',

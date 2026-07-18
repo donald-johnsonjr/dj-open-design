@@ -1035,6 +1035,8 @@ export const fa: Dict = {
   'skillPluginCandidate.contributeToMain': 'مشارکت در open-design',
   'skillPluginCandidate.repoDescription': 'به نظر می‌رسد این مخزن می‌تواند به‌عنوان یک افزونه کار کند.',
   'integrations.kicker': 'یکپارچه‌سازی',
+  'integrations.mastheadTitleLead': 'یکپارچه‌سازی در',
+  'integrations.mastheadTitleAccent': 'همه‌جا',
   'integrations.lede': 'سیستم‌های خارجی را متصل کنید، ابزارهای MCP را به حلقه Agent خود بیاورید و از Open Design در سایر IDEها، اسکریپت‌ها و خودکارسازی‌ها استفاده کنید.',
   'integrations.agentReady': 'آماده برای Agent',
   'integrations.areasAria': 'حوزه‌های یکپارچه‌سازی',

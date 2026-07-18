@@ -1035,6 +1035,8 @@ export const th: Dict = {
   'skillPluginCandidate.contributeToMain': 'ร่วมสนับสนุน open-design',
   'skillPluginCandidate.repoDescription': 'repo นี้ดูเหมือนจะใช้งานเป็น plugin ได้',
   'integrations.kicker': 'การผสานรวม',
+  'integrations.mastheadTitleLead': 'การเชื่อมต่อที่เข้าถึง',
+  'integrations.mastheadTitleAccent': 'ทุกที่',
   'integrations.lede': 'เชื่อมต่อระบบภายนอก นำเครื่องมือ MCP เข้าสู่ลูปของ Agent และใช้งาน Open Design จาก IDE สคริปต์ และระบบอัตโนมัติอื่น ๆ',
   'integrations.agentReady': 'พร้อมสำหรับ Agent',
   'integrations.areasAria': 'พื้นที่การผสานรวม',

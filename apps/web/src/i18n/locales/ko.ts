@@ -1035,6 +1035,8 @@ export const ko: Dict = {
   'skillPluginCandidate.contributeToMain': 'open-design에 기여',
   'skillPluginCandidate.repoDescription': '이 저장소는 플러그인으로 사용할 수 있을 것 같습니다.',
   'integrations.kicker': '통합',
+  'integrations.mastheadTitleLead': '어디서나 닿는',
+  'integrations.mastheadTitleAccent': '통합',
   'integrations.lede': '외부 시스템을 연결하고, MCP 도구를 Agent 루프에 가져오고, 다른 IDE, 스크립트, 자동화에서 Open Design을 사용하세요.',
   'integrations.agentReady': 'Agent 준비 완료',
   'integrations.areasAria': '통합 영역',
