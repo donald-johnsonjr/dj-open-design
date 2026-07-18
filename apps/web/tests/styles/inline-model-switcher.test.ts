@@ -40,11 +40,17 @@ describe('InlineModelSwitcher styles', () => {
     }
   });
 
-  it('hides the long status text in compact hero placement', () => {
-    const compactText = cssDeclarations(
-      '.inline-switcher--compact .inline-switcher__chip-text',
-    );
-
-    expect(ruleValue(compactText, 'display')).toBe('none');
+  it('hides the long status fragments in compact hero placement', () => {
+    // The compact composer chip keeps the short agent/provider name
+    // (`chip-primary`) as a labelled sibling of the "Design" pill, but drops
+    // the long mode + separator + model fragments so it never sprawls.
+    for (const selector of [
+      '.inline-switcher--compact .inline-switcher__chip-mode',
+      '.inline-switcher--compact .inline-switcher__chip-sep',
+      '.inline-switcher--compact .inline-switcher__chip-model',
+    ]) {
+      const block = cssDeclarations(selector);
+      expect(ruleValue(block, 'display'), selector).toBe('none');
+    }
   });
 });

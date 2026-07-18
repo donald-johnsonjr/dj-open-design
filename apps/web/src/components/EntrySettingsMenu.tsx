@@ -69,6 +69,10 @@ interface Props {
   config: AppConfig;
   onThemeChange: (theme: AppTheme) => void;
   onOpenSettings: (section?: EntrySettingsSection) => void;
+  // Opens the "Use everywhere" integrations surface. Optional so the in-project
+  // artifact header (which has no entry-view router) can omit it; when absent
+  // the menu simply doesn't render that row.
+  onUseEverywhere?: () => void;
   // Fired when the gear trigger is clicked. Used by the in-project header to
   // emit the `artifact_header` / `settings` ui_click; the home/entry shell
   // leaves it undefined so that context is not mislabelled as `artifact`.
@@ -82,6 +86,7 @@ export function EntrySettingsMenu({
   config,
   onThemeChange,
   onOpenSettings,
+  onUseEverywhere,
   onTrackTriggerClick,
   trackingPageName,
 }: Props) {
@@ -362,6 +367,49 @@ export function EntrySettingsMenu({
               <Icon name="sparkles" size={14} />
             </span>
             <span>{t('entry.workspaceTeamsLabel')}</span>
+            <Icon name="external-link" size={12} className="entry-settings-menu__item-end" />
+          </a>
+          {onUseEverywhere ? (
+            <button
+              type="button"
+              className="entry-settings-menu__item"
+              role="menuitem"
+              data-testid="entry-settings-use-everywhere"
+              onClick={() => {
+                trackSettingsPopoverClick(analytics.track, {
+                  page_name: pageName,
+                  area: 'settings_popover',
+                  element: 'use_everywhere',
+                });
+                setOpen(false);
+                onUseEverywhere();
+              }}
+            >
+              <span className="entry-settings-menu__item-icon" aria-hidden>
+                <Icon name="hammer" size={14} />
+              </span>
+              <span>{t('entry.useEverywhereTitle')}</span>
+            </button>
+          ) : null}
+          <a
+            className="entry-settings-menu__item"
+            href={OPEN_DESIGN_GITHUB_REPO_URL}
+            target="_blank"
+            rel="noreferrer noopener"
+            role="menuitem"
+            onClick={() => {
+              trackSettingsPopoverClick(analytics.track, {
+                page_name: pageName,
+                area: 'settings_popover',
+                element: 'star',
+              });
+              setOpen(false);
+            }}
+          >
+            <span className="entry-settings-menu__item-icon" aria-hidden>
+              <Icon name="github" size={14} />
+            </span>
+            <span>{t('entry.githubStarTitle')}</span>
             <Icon name="external-link" size={12} className="entry-settings-menu__item-end" />
           </a>
           <a

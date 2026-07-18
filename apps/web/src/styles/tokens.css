@@ -44,6 +44,14 @@
   /* Signature periwinkle→violet gradient (CTA pills, accent flourishes). */
   --accent-grad: linear-gradient(96deg, #3b4de8 0%, #7c6bf0 55%, #9b7cf0 100%);
 
+  /* CTA glow — the restrained ambient lift under the gradient pills (home
+     Send, sign-in primary). Faint at rest; a slightly stronger but still
+     quiet halo on hover/focus only. `color-mix` resolves against the in-scope
+     `--accent`, so this single definition tracks both light and dark themes.
+     Deliberately toned down from a neon halo to read premium, not loud. */
+  --cta-glow: 0 4px 16px -10px color-mix(in srgb, var(--accent) 42%, transparent);
+  --cta-glow-hover: 0 8px 24px -10px color-mix(in srgb, var(--accent) 58%, transparent);
+
   /* Semantic accent tints used by tool / status pills. */
   --green: #1f7a3a;
   --green-bg: #e8f7ee;

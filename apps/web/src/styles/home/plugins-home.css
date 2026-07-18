@@ -1280,9 +1280,10 @@ button.plugins-home__use-menu-item:focus-visible {
   padding-bottom: 64px;
 }
 
-/* Bottom hint — pinned to the very bottom of the viewport, intentionally
-   faint so it sits at the edge of attention. An up arrow bobs gently to
-   suggest the scroll-up gesture without pulling focus from the hero. */
+/* Bottom hint — pinned to the very bottom of the viewport as a quiet but
+   legible affordance. Color is --text-muted (≥4.5:1 on the canvas in both
+   themes) because it's an actionable control, not decorative text. A down
+   chevron bobs gently toward the gallery that reveals below. */
 button.home-templates-reveal__hint {
   position: fixed;
   left: 50%;
@@ -1294,39 +1295,51 @@ button.home-templates-reveal__hint {
   gap: 7px;
   border: 0;
   border-radius: var(--radius-pill);
-  color: var(--text-faint);
+  color: var(--text-muted);
   font-size: 12px;
   letter-spacing: 0.01em;
-  opacity: 0.7;
-  transition: opacity 160ms cubic-bezier(0.23, 1, 0.32, 1);
+  transition:
+    color 160ms cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 160ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 button.home-templates-reveal__hint:hover {
   background: transparent;
-  opacity: 1;
-  color: var(--text-muted);
+  color: var(--text-strong);
 }
 button.home-templates-reveal__hint:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
+  color: var(--text-strong);
+}
+/* On short viewports the hero cards reach into the hint's fixed band; the
+   component flags that with .is-obscured so the hint never prints over card
+   content. It fades out for pointer users but stays keyboard-reachable — a
+   focus restores it so a keyboard-only user can still trigger the reveal. */
+button.home-templates-reveal__hint.is-obscured {
+  opacity: 0;
+  pointer-events: none;
+}
+button.home-templates-reveal__hint.is-obscured:focus-visible {
   opacity: 1;
+  pointer-events: auto;
 }
 .home-templates-reveal__hint-arrow {
   animation: home-templates-bob 1.8s ease-in-out infinite;
 }
-/* Fade + lift the arrow on each cycle so the affordance reads clearly:
-   it rises and brightens, then settles and dims — a gentle "pull me up". */
+/* Bob the chevron gently downward on each cycle — it dips toward the gallery
+   that reveals below, then settles, brightening at the low point. */
 @keyframes home-templates-bob {
   0% {
-    transform: translateY(3px);
-    opacity: 0.25;
+    transform: translateY(-3px);
+    opacity: 0.35;
   }
   50% {
-    transform: translateY(-4px);
+    transform: translateY(4px);
     opacity: 1;
   }
   100% {
-    transform: translateY(3px);
-    opacity: 0.25;
+    transform: translateY(-3px);
+    opacity: 0.35;
   }
 }
 @media (prefers-reduced-motion: reduce) {

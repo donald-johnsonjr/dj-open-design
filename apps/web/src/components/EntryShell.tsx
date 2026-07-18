@@ -95,7 +95,7 @@ import { DesignSystemsTab } from './DesignSystemsTab';
 import { BrandsTab } from './BrandsTab';
 import { EntryNavRail, type EntryView as EntryViewKind } from './EntryNavRail';
 import { HeroMesh } from './HeroMesh';
-import { useMediaQuery, MOBILE_QUERY } from '../hooks/useMediaQuery';
+import { useMediaQuery, NAV_DRAWER_QUERY } from '../hooks/useMediaQuery';
 import { LibrarySection } from './LibrarySection';
 import { UpdaterPopup } from './UpdaterPopup';
 import { WhatsNewPopup } from './WhatsNewPopup';
@@ -103,12 +103,7 @@ import { AmrBalanceDialog } from './AmrBalanceDialog';
 import { AmrLowBalanceDialog, type AmrLowBalanceDecision } from './AmrLowBalanceDialog';
 import { checkAmrBalanceGate } from '../runtime/amr-balance-gate';
 import { isPaidAmrPlan, resolveAmrPlan } from '../runtime/amr-low-balance-plan';
-import { GithubStarBadge } from './GithubStarBadge';
 import { Wordmark } from './Wordmark';
-import {
-  formatDiscordPresenceCount,
-  useDiscordPresence,
-} from './useDiscordPresence';
 import { HomeView } from './HomeView';
 import {
   createPluginAuthoringHandoff,
@@ -209,7 +204,6 @@ function writeStoredRailOpen(open: boolean): void {
   }
 }
 
-const DISCORD_URL = 'https://discord.gg/mHAjSMV6gz';
 const X_URL = 'https://x.com/OpenDesignHQ';
 const ONBOARDING_DROPDOWN_OPEN_EVENT = 'open-design:onboarding-dropdown-open';
 
@@ -543,7 +537,6 @@ export function EntryShell({
 }: Props) {
   const t = useT();
   const { locale: uiLocale } = useI18n();
-  const discordPresence = useDiscordPresence();
   // Each entry sub-view (home / projects / design-systems) is its own
   // URL now, so the browser back/forward buttons work and a deep link
   // to /design-systems lands on that section. We derive the active
@@ -590,7 +583,7 @@ export function EntryShell({
   // At phone width the rail is an overlay drawer, not a docked column: picking a
   // destination (or starting a project) should dismiss it so the content is
   // visible again, matching native mobile-nav behavior.
-  const isMobileNav = useMediaQuery(MOBILE_QUERY);
+  const isMobileNav = useMediaQuery(NAV_DRAWER_QUERY);
   const [localProviderModelsCache, setLocalProviderModelsCache] =
     useState<ProviderModelsCache>({});
   const hasSharedProviderModelsCache =
@@ -621,14 +614,6 @@ export function EntryShell({
     scrollContainer.scrollTop = 0;
   }, [view]);
   const analytics = useAnalytics();
-  const discordOnlineLabel = discordPresence
-    ? t('entry.discordOnlineLabel', {
-        count: formatDiscordPresenceCount(discordPresence.onlineCount),
-      })
-    : null;
-  const discordAriaLabel = discordOnlineLabel
-    ? t('entry.discordAriaWithOnline', { online: discordOnlineLabel })
-    : t('entry.discordAria');
   function changeView(next: EntryViewKind) {
     const navElement = navElementForView(next);
     if (navElement) {
@@ -909,6 +894,14 @@ export function EntryShell({
       config={config}
       onThemeChange={onThemeChange}
       onOpenSettings={onOpenSettings}
+      onUseEverywhere={() => {
+        trackHomeToolbarClick(analytics.track, {
+          page_name: 'home',
+          area: 'toolbar',
+          element: 'use_everywhere',
+        });
+        openIntegrationTab('use-everywhere');
+      }}
       onTrackTriggerClick={() => {
         trackHomeToolbarClick(analytics.track, {
           page_name: 'home',
@@ -1023,8 +1016,12 @@ export function EntryShell({
             >
               <Icon name="panel-left" size={20} />
             </button>
+            {/* Top-right stays quiet and product-focused: Teams (+ the model
+                switcher on non-home views) beside the settings cog. The GitHub
+                star, Discord, and Use-everywhere affordances were demoted into
+                the settings menu so the entry header no longer reads like an
+                OSS repo chrome. */}
             <div className="entry-main__topbar-chips entry-main__topbar-chips--icon-only">
-              <GithubStarBadge />
               <a
                 className="entry-workspace-chip od-tooltip"
                 href={enterpriseUrl(uiLocale)}
@@ -1051,51 +1048,7 @@ export function EntryShell({
                   {t('entry.workspaceTeamsLabel')}
                 </span>
               </a>
-              <a
-                className="entry-discord-badge od-tooltip"
-                href={DISCORD_URL}
-                aria-label={discordAriaLabel}
-                data-tooltip={discordAriaLabel}
-                data-tooltip-placement="bottom"
-                data-testid="entry-discord-badge"
-              >
-                <Icon name="discord" size={14} className="entry-discord-badge__icon" />
-                <span className="entry-discord-badge__label">{t('entry.discordLabel')}</span>
-                {discordOnlineLabel ? (
-                  <>
-                    <span className="entry-discord-badge__sep" aria-hidden>
-                      ·
-                    </span>
-                    <span className="entry-discord-badge__online">
-                      {discordOnlineLabel}
-                    </span>
-                  </>
-                ) : null}
-              </a>
               {view === 'home' ? null : executionSwitcher}
-              <button
-                type="button"
-                className="use-everywhere-chip od-tooltip"
-                onClick={() => {
-                  trackHomeToolbarClick(analytics.track, {
-                    page_name: 'home',
-                    area: 'toolbar',
-                    element: 'use_everywhere',
-                  });
-                  openIntegrationTab('use-everywhere');
-                }}
-                data-tooltip={t('entry.useEverywhereTitle')}
-                data-tooltip-placement="bottom"
-                aria-label={t('entry.useEverywhereAria')}
-                data-testid="entry-use-everywhere-button"
-              >
-                <span className="use-everywhere-chip__icon" aria-hidden>
-                  <Icon name="hammer" size={13} />
-                </span>
-                <span className="use-everywhere-chip__label">
-                  {t('entry.useEverywhereTitle')}
-                </span>
-              </button>
             </div>
             <UpdaterPopup
               allowSilentUpdates={config.allowSilentUpdates}
@@ -2614,7 +2567,24 @@ function OnboardingView({
           />
           <Wordmark size="md" className="onboarding-cloud__wordmark" />
           <p className="onboarding-cloud__eyebrow">{t('homeHero.eyebrow')}</p>
-          <h1 className="onboarding-cloud__title">{t('settings.onboardingCloudTitle')}</h1>
+          <h1 className="onboarding-cloud__title">
+            {(() => {
+              // Mirror the home hero's signature move: set the final word of the
+              // headline in swash italic + violet gradient so the sign-in screen
+              // carries the same brand accent (see .home-hero__title-accent).
+              const title = t('settings.onboardingCloudTitle');
+              const trimmed = title.replace(/\s+$/, '');
+              const lastSpace = trimmed.lastIndexOf(' ');
+              const lead = lastSpace === -1 ? '' : trimmed.slice(0, lastSpace);
+              const accent = lastSpace === -1 ? trimmed : trimmed.slice(lastSpace + 1);
+              return (
+                <>
+                  {lead ? <span>{lead} </span> : null}
+                  <em className="onboarding-cloud__title-accent">{accent}</em>
+                </>
+              );
+            })()}
+          </h1>
           <p className="onboarding-cloud__body">{t('settings.onboardingCloudBody')}</p>
           <button
             type="button"
@@ -2685,7 +2655,10 @@ function OnboardingView({
                   setConnectExpanded('local');
                 }}
               >
-                {t('settings.onboardingLocalTitle')}
+                <span className="onboarding-cloud__secondary-icon" aria-hidden>
+                  <Icon name="terminal" size={15} />
+                </span>
+                <span>{t('settings.onboardingLocalTitle')}</span>
               </button>
               <span className="onboarding-cloud__alts-or">
                 {t('settings.onboardingCloudOr')}
@@ -2700,7 +2673,10 @@ function OnboardingView({
                   setConnectExpanded('byok');
                 }}
               >
-                {t('settings.onboardingByokTitle')}
+                <span className="onboarding-cloud__secondary-icon" aria-hidden>
+                  <Icon name="lock" size={15} />
+                </span>
+                <span>{t('settings.onboardingByokTitle')}</span>
               </button>
             </div>
           )}

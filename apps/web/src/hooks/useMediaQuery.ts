@@ -34,6 +34,12 @@ export function useMediaQuery(query: string): boolean {
   return matches;
 }
 
-// Shared phone breakpoint — matches the `max-width: 560px` CSS tier where the
-// entry rail becomes a slide-in drawer.
+// Shared phone breakpoint — matches the `max-width: 560px` CSS tier used for
+// phone-specific hero/composer tightening.
 export const MOBILE_QUERY = '(max-width: 560px)';
+
+// Nav-drawer breakpoint — matches the `max-width: 900px` CSS tier where the
+// entry rail stops docking and becomes an on-demand slide-in drawer (so tablet
+// widths show a single primary nav layer). Drives the drawer's close-on-select
+// behavior; keep aligned with the ≤900 drawer tier in styles/home/entry-layout.css.
+export const NAV_DRAWER_QUERY = '(max-width: 900px)';

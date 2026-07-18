@@ -682,7 +682,7 @@ export const en: Dict = {
   'homeHero.templatePicker.label': 'Template',
   'homeHero.templatePicker.searchPlaceholder': 'Search templates',
   'homeHero.templatePicker.projectTypes': 'Project types',
-  'homeHero.templatesScrollHint': 'Scroll up to explore more templates',
+  'homeHero.templatesScrollHint': 'Explore the template gallery',
   'homeHero.templatesCollapse': 'Collapse templates',
   'homeHero.subtitlePrefix': 'One brand system, connected to everything you build.',
   'homeHero.eyebrow': 'Technology in service of the why.',

@@ -271,7 +271,7 @@ async function findCloudSignInButton() {
 }
 
 function openLocalRuntimeSetup() {
-  expect(screen.getByRole('heading', { name: 'Sign in to Kinected Design' })).toBeTruthy();
+  expect(screen.getByRole('heading', { name: /Sign in to Kinected\s*Design/i })).toBeTruthy();
   fireEvent.click(screen.getByRole('button', { name: /Local coding agent/i }));
   expect(screen.getByText('Local CLI')).toBeTruthy();
 }
@@ -317,10 +317,6 @@ describe('EntryShell settings menu', () => {
     }) as typeof fetch;
     const props = renderHome();
 
-    await waitFor(() => {
-      expect(screen.getByText('1.2k online')).toBeTruthy();
-    });
-
     fireEvent.click(screen.getByTestId('entry-settings-menu-trigger'));
 
     expect(props.onOpenSettings).not.toHaveBeenCalled();
@@ -328,7 +324,11 @@ describe('EntryShell settings menu', () => {
     expect(screen.getByText('Language')).toBeTruthy();
     expect(screen.getByText('Appearance')).toBeTruthy();
     expect(screen.getByRole('menuitem', { name: /Join Discord/i })).toBeTruthy();
-    expect(screen.getByRole('menuitem', { name: /1.2k online/i })).toBeTruthy();
+    // The live Discord presence now rides inside the menu's Join Discord row as
+    // its trailing meta, so it surfaces once the daemon presence fetch resolves.
+    await waitFor(() => {
+      expect(screen.getByRole('menuitem', { name: /1.2k online/i })).toBeTruthy();
+    });
     expect(
       screen.getByRole('menuitem', { name: /Follow @OpenDesignHQ on X/i }).getAttribute('href'),
     ).toBe('https://x.com/OpenDesignHQ');
@@ -584,7 +584,7 @@ describe('EntryShell onboarding Open Design AMR runtime', () => {
       onRefreshAgents: vi.fn(() => [cliAgent()]),
     });
 
-    expect(await screen.findByRole('heading', { name: 'Sign in to Kinected Design' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: /Sign in to Kinected\s*Design/i })).toBeTruthy();
     expect(await findCloudSignInButton()).toBeTruthy();
     openLocalRuntimeSetup();
     expect(screen.queryByRole('button', { name: /Open Design AMR/i })).toBeNull();
@@ -602,7 +602,7 @@ describe('EntryShell onboarding Open Design AMR runtime', () => {
     ) as typeof fetch;
     renderOnboarding();
 
-    expect(screen.getByRole('heading', { name: 'Sign in to Kinected Design' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: /Sign in to Kinected\s*Design/i })).toBeTruthy();
     expect(await findCloudSignInButton()).toBeTruthy();
     // No runtime card, no AMR version text, no "Sign in to continue" CTA.
     expect(screen.queryByRole('button', { name: /Open Design AMR/i })).toBeNull();
@@ -1625,7 +1625,7 @@ describe('EntryShell onboarding Open Design AMR runtime', () => {
       onRefreshAgents: vi.fn(() => [cliAgent()]),
     });
 
-    expect(screen.getByRole('heading', { name: 'Sign in to Kinected Design' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: /Sign in to Kinected\s*Design/i })).toBeTruthy();
     const primary = screen.getByRole('button', { name: /Loading/i });
     expect(primary).toBeTruthy();
     expect(primary.getAttribute('aria-busy')).toBe('true');

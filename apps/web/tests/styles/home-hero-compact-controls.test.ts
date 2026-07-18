@@ -46,9 +46,11 @@ describe('HomeHero compact composer controls', () => {
       '.home-hero__execution-switcher .inline-switcher__chip',
     );
 
-    // The execution switcher keeps a fixed icon+chevron footprint.
+    // The execution switcher keeps a fixed height and a bounded width — wide
+    // enough to hold the tiled glyph + short agent name (e.g. "Claude Code"),
+    // ellipsised past the cap, rather than collapsing to an icon-only sprite.
     expect(ruleValue(switcherChip, 'height')).toBe('32px');
-    expect(ruleValue(switcherChip, 'max-width')).toBe('58px');
+    expect(ruleValue(switcherChip, 'max-width')).toBe('168px');
   });
 
   it('prevents the compact execution switcher from expanding on narrow screens', () => {
@@ -57,9 +59,10 @@ describe('HomeHero compact composer controls', () => {
       '.home-hero__execution-switcher .inline-switcher__chip',
     );
 
+    // On narrow screens the switcher wraps instead of stretching, and the chip
+    // stays bounded by the same label-width cap.
     expect(ruleValue(switcher, 'flex-basis')).toBe('auto');
-    expect(ruleValue(switcherChip, 'width')).toBe('58px');
-    expect(ruleValue(switcherChip, 'max-width')).toBe('58px');
+    expect(ruleValue(switcherChip, 'max-width')).toBe('168px');
   });
 
   it('keeps the template picker search field free of the global input focus halo', () => {

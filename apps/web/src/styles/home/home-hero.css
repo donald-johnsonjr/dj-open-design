@@ -116,11 +116,27 @@
   margin-bottom: 2px;
 }
 /* The brand glyph is the real gradient connection mark (rendered through
-   .od-brand-glyph), sitting inline next to the wordmark lockup. */
-.home-hero__brand-mark {
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
+   .od-brand-glyph), seated in a subtle dark rounded tile (matching the
+   kinected.io header + the approved mockup) rather than floating bare. The
+   `.od-brand-glyph` co-class sets `background: url(...)`, so we re-declare the
+   background here to layer the mark over the tile fill and win on specificity. */
+.home-hero__brand-mark.od-brand-glyph {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 12px;
+  padding: 0;
+  background:
+    url(/brand-mark.png) center / 74% no-repeat,
+    linear-gradient(
+      158deg,
+      color-mix(in srgb, var(--accent) 15%, var(--bg-panel)),
+      color-mix(in srgb, var(--bg-subtle) 88%, var(--bg-panel))
+    );
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 6%, transparent),
+    0 6px 18px -12px color-mix(in srgb, var(--accent) 60%, transparent);
 }
 .home-hero__eyebrow {
   margin: 8px 0 0;
@@ -521,7 +537,7 @@
   box-shadow:
     0 1px 0 color-mix(in srgb, var(--text-strong) 5%, transparent) inset,
     0 18px 44px -30px rgba(0, 0, 0, 0.7);
-  padding: 16px 16px 11px;
+  padding: 14px 16px 11px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -760,11 +776,15 @@
   min-width: 0;
 }
 .home-hero__lexical .composer-input-editor {
-  min-height: 64px;
+  /* Resting empty height: two comfortable lines. Kept tight so the card reads
+     as a ready composer, not a hollow well (the placeholder sits top-aligned).
+     With the card's 14px top pad + 10px footer gap this lands the empty band
+     above the footer row at ~100px. */
+  min-height: 76px;
   max-height: var(--home-hero-prompt-max-height, 180px);
 }
 .home-hero__lexical .composer-editable {
-  min-height: 64px;
+  min-height: 76px;
   padding: 8px 4px;
 }
 .home-hero__lexical .composer-input-placeholder {
@@ -1190,23 +1210,18 @@
   min-width: 0;
   flex: 0 1 auto;
 }
+/* The composer chip reads as a labelled sibling of the "Design" pill — the
+   tiled vendor glyph + a short agent name — not a bare icon-only sprite. The
+   width cap grows enough to hold the name (ellipsised past that) and the
+   `.inline-switcher--compact` rules (entry-layout.css) own the tile + label. */
 .home-hero__execution-switcher .inline-switcher {
   min-width: 0;
-  width: 58px;
-  max-width: 58px;
+  max-width: 168px;
 }
 .home-hero__execution-switcher .inline-switcher__chip {
-  width: 58px;
   height: 32px;
-  max-width: 58px;
-  justify-content: space-between;
-  padding: 0 8px 0 9px;
-  gap: 4px;
+  max-width: 168px;
   border-radius: var(--radius-sm);
-}
-.home-hero__execution-switcher .inline-switcher__chip-icon {
-  width: 20px;
-  height: 20px;
 }
 .home-hero__execution-switcher .inline-switcher__chip-chevron {
   flex: 0 0 auto;
@@ -2248,7 +2263,7 @@
   border: 0;
   background: var(--accent-grad);
   color: #fff;
-  box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--accent) 70%, transparent);
+  box-shadow: var(--cta-glow);
   cursor: pointer;
   font: inherit;
   font-size: 12.5px;
@@ -2263,9 +2278,12 @@
 }
 .home-hero__submit:hover:not(:disabled) {
   filter: brightness(1.07) saturate(1.03);
-  box-shadow: 0 10px 26px -8px color-mix(in srgb, var(--accent) 82%, transparent);
+  box-shadow: var(--cta-glow-hover);
 }
-.home-hero__submit:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 4px 12px -8px color-mix(in srgb, var(--accent) 70%, transparent); }
+.home-hero__submit:focus-visible {
+  box-shadow: var(--cta-glow-hover);
+}
+.home-hero__submit:active:not(:disabled) { transform: translateY(1px); box-shadow: var(--cta-glow); }
 .home-hero__submit:disabled {
   opacity: 0.5;
   cursor: default;
@@ -2907,10 +2925,12 @@
   .home-hero__execution-switcher {
     flex-basis: auto;
   }
+  /* Keep the labelled + tiled chip on tablet/phone too (matches the phone
+     mockup's "[tile] Claude" pill); the footer wraps rather than squeezing it
+     back to an icon-only sprite. */
   .home-hero__execution-switcher .inline-switcher,
   .home-hero__execution-switcher .inline-switcher__chip {
-    width: 58px;
-    max-width: 58px;
+    max-width: 168px;
   }
 }
 
@@ -2939,10 +2959,11 @@
     gap: 11px;
     padding-top: clamp(20px, 5vw, 34px);
   }
-  .home-hero__brand-mark {
-    width: 32px;
-    height: 32px;
-    flex-basis: 32px;
+  .home-hero__brand-mark.od-brand-glyph {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+    border-radius: 11px;
   }
   .home-hero__eyebrow {
     font-size: 10px;
