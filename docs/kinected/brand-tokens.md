@@ -96,3 +96,75 @@ enter ~200ms / exit ~140ms.
 - Design-system `tokens.css` must keep the FULL schema key-set (swap values only; the
   `--accent-warm` C-extension can hold a supporting hue).
 - Fonts must be self-hosted (no runtime Google fetch).
+
+---
+
+## Icon system (v3 — implemented)
+
+The entry surfaces render every icon through **one file**,
+`apps/web/src/components/Icon.tsx`, which now draws **Phosphor icons**
+(`@phosphor-icons/react` 2.1.10) behind the **unchanged** `IconName` union and
+`<Icon name size className … />` API — so all ~110 call sites kept working with
+zero churn.
+
+- **Mapping** — each `IconName` maps to the closest Phosphor glyph via a
+  `Record<IconName, PhosphorIcon>` (exhaustiveness is a compile-time guarantee,
+  stronger than the old `switch` + `default`).
+- **Weight** — `weight="regular"` is the house default. `weight="fill"` is
+  reserved for a deliberate ~12-name set: the six `-filled` names, plus
+  `integrations-filled`, and the brand/transport moments `send` (PaperPlaneRight),
+  `sparkles` (Sparkle), `star`, `play`, `stop`. No `duotone` — on the dark
+  editorial surface a single fill weight reads cleaner.
+- **Preserved contracts** — `currentColor`, default `aria-hidden`,
+  `focusable={false}`, `size` default `14`, arbitrary SVG prop pass-through, and
+  the `spinner` case keeps `className="icon-spin …"` so the existing spin CSS
+  still animates.
+- **DRY** — never import a Phosphor glyph directly in a component; add/adjust the
+  mapping in `Icon.tsx` and reference it by `name`.
+
+## Signature elements (v3 — implemented)
+
+- **Neural-mesh constellation** — a shared `HeroMesh`
+  (`apps/web/src/components/HeroMesh.tsx`) renders one crisp inline SVG of
+  hand-placed nodes + links echoing the logo's mesh head. Styled by
+  `.od-hero-mesh*` (in `styles/home/home-hero.css`): absolute, very low opacity,
+  radial-fade mask, a slow ~34s transform drift, disabled under
+  `prefers-reduced-motion`. Used behind **both** the Home hero and the sign-in
+  view (`.od-hero-mesh--cloud`) so the two entry surfaces share one atmosphere.
+- **Crafted composer** — `.home-hero__input-card` is a considered panel: a
+  top-lit gradient surface, a masked **periwinkle→violet gradient edge**
+  (`::before`) that brightens on focus, layered elevation, a **mono placeholder +
+  carousel** (reads as a design prompt-terminal), and the token-driven
+  `--accent-grad` **Send pill** with a Phosphor PaperPlane.
+- **Editorial numbered templates** — the scenario cards carry a mono
+  `01 / 02 / 03` index via a CSS counter (`counter(home-hero-template,
+  decimal-leading-zero)`), a mono uppercase "START WITH A TEMPLATE…" eyebrow,
+  and a hover lift that warms the index + border to accent.
+- **Fluid Didone headline** — `clamp(2rem, 1.15rem + 4.1vw, 3.5rem)` keeps the
+  swash-italic accent word elegant from phone to desktop.
+
+## Responsive / mobile (v3 — implemented)
+
+- **Breakpoints** — compact `≤900px` (topbar chips collapse into the settings
+  menu; existing), **phone `≤560px`**, and **small-phone `≤430px`**. A JS hook,
+  `apps/web/src/hooks/useMediaQuery.ts` (+ `MOBILE_QUERY = '(max-width:560px)'`),
+  is SSR-safe and reactive; `EntryShell` uses it to gate mobile-nav behavior.
+- **Fluid type** — the hero headline scales via `clamp()`; the eyebrow, subtitle,
+  brand mark, and composer padding tighten at `≤560`.
+- **Mobile nav drawer** — below `560px` the docked icon rail becomes a **fixed
+  slide-in drawer**: the `.entry` grid drops to `display:block` (so `main` owns
+  the full width instead of the fixed rail's empty track), the rail slides in
+  from the left over a **scrim** (`.entry-nav-scrim`, added in `EntryShell`), and
+  each `NavButton` shows an **icon + label** row (`.entry-nav-rail__btn-label`,
+  hidden on desktop) for a native touch feel. Choosing a destination, tapping the
+  scrim, or the close control dismisses it (`useMediaQuery` drives close-on-select
+  in `changeView`/new-project). The topbar rail toggle stays visible while the
+  drawer is open.
+- **Composer & templates on phone** — the composer goes full-width; the scenario
+  templates become a clean **scroll-snap horizontal carousel** (`scroll-snap-type:
+  x mandatory`, ~76% card width); the Send pill collapses to an **icon-only**
+  gradient button at `≤430`; the mesh drift is disabled to save battery.
+- **Overflow discipline** — `.entry`/`.entry-main` get `min-width:0` +
+  `overflow-x:clip` on phone so a wide descendant (composer min-content, mesh)
+  can never create horizontal page scroll.
+- **Verified at 390×844 and 1440×900.**

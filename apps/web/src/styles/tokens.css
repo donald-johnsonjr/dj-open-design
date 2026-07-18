@@ -34,6 +34,13 @@
   --accent-tint: #f0f0fe;
   --accent-hover: #4a4bd0;
 
+  /* Warm counter-accent — Kinected "Ember". A rare, deliberate human/kinetic
+     spark (never decoration): reserved for a single interactive warm moment
+     such as the template index ticking warm on hover. Deepened here for AA
+     legibility on the near-white light canvas; the brand Ember (#F0603A) lives
+     on the dark theme below. */
+  --accent-warm: #d94f27;
+
   /* Signature periwinkle→violet gradient (CTA pills, accent flourishes). */
   --accent-grad: linear-gradient(96deg, #3b4de8 0%, #7c6bf0 55%, #9b7cf0 100%);
 
@@ -137,6 +144,9 @@
   --accent-tint: #15152b;
   --accent-hover: #8a8bf7;
 
+  /* Warm counter-accent — Kinected "Ember" at full brand strength on dark. */
+  --accent-warm: #f0603a;
+
   --accent-grad: linear-gradient(96deg, #3b4de8 0%, #7c6bf0 55%, #9b7cf0 100%);
 
   --selected: #7c8cf5;
@@ -197,6 +207,9 @@
     --accent-soft: #1e1e3a;
     --accent-tint: #15152b;
     --accent-hover: #8a8bf7;
+
+    /* Warm counter-accent — Kinected "Ember" at full brand strength on dark. */
+    --accent-warm: #f0603a;
 
     --accent-grad: linear-gradient(96deg, #3b4de8 0%, #7c6bf0 55%, #9b7cf0 100%);
 

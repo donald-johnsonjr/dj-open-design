@@ -94,6 +94,8 @@ import { DesignsTab } from './DesignsTab';
 import { DesignSystemsTab } from './DesignSystemsTab';
 import { BrandsTab } from './BrandsTab';
 import { EntryNavRail, type EntryView as EntryViewKind } from './EntryNavRail';
+import { HeroMesh } from './HeroMesh';
+import { useMediaQuery, MOBILE_QUERY } from '../hooks/useMediaQuery';
 import { LibrarySection } from './LibrarySection';
 import { UpdaterPopup } from './UpdaterPopup';
 import { WhatsNewPopup } from './WhatsNewPopup';
@@ -585,6 +587,10 @@ export function EntryShell({
   useEffect(() => {
     writeStoredRailOpen(railOpen);
   }, [railOpen]);
+  // At phone width the rail is an overlay drawer, not a docked column: picking a
+  // destination (or starting a project) should dismiss it so the content is
+  // visible again, matching native mobile-nav behavior.
+  const isMobileNav = useMediaQuery(MOBILE_QUERY);
   const [localProviderModelsCache, setLocalProviderModelsCache] =
     useState<ProviderModelsCache>({});
   const hasSharedProviderModelsCache =
@@ -633,6 +639,7 @@ export function EntryShell({
       });
     }
     navigate({ kind: 'home', view: next });
+    if (isMobileNav) setRailOpen(false);
   }
 
   function startPluginAuthoring(goal?: string) {
@@ -988,10 +995,21 @@ export function EntryShell({
               area: 'nav',
               element: 'new_project_plus',
             });
+            if (isMobileNav) setRailOpen(false);
             openNewProject();
           }}
           open={railOpen}
           onClose={() => setRailOpen(false)}
+        />
+        {/* Scrim behind the mobile slide-in drawer. Rendered always but only
+            painted + interactive at phone width while the drawer is open (CSS);
+            tapping it dismisses the drawer. */}
+        <button
+          type="button"
+          className="entry-nav-scrim"
+          aria-hidden="true"
+          tabIndex={-1}
+          onClick={() => setRailOpen(false)}
         />
         <main className="entry-main entry-main--scroll" ref={entryMainScrollRef}>
           <div className="entry-main__topbar">
@@ -2575,6 +2593,7 @@ function OnboardingView({
         className="onboarding-view onboarding-view--cloud"
         aria-label={t('settings.welcomeTitle')}
       >
+        <HeroMesh className="od-hero-mesh--cloud" />
         <div className="onboarding-cloud__topbar">
           <LanguageMenu compact placement="down" align="end" />
           <button

@@ -85,6 +85,20 @@
   overflow: visible;
 }
 
+/* Nav-button labels ride alongside the icon only in the mobile drawer; on the
+   desktop icon rail they stay hidden (tooltips cover discoverability). */
+.entry-nav-rail__btn-label {
+  display: none;
+}
+/* Scrim behind the mobile drawer. Inert + invisible on desktop; the phone tier
+   below turns it on while the drawer is open. */
+.entry-nav-scrim {
+  display: none;
+  appearance: none;
+  border: 0;
+  padding: 0;
+}
+
 /* Brand slot — the logo, with a collapse button that fades in on hover so the
    docked rail can be dismissed Manus-style without a separate chrome control. */
 .entry-nav-rail__brand {
@@ -914,7 +928,7 @@
   gap: 8px;
   padding: 0 10px;
   border: 1px solid var(--border-soft);
-  border-radius: 9px;
+  border-radius: var(--radius);
   background: var(--bg-subtle);
   color: var(--text);
   font-size: 12.5px;
@@ -974,7 +988,7 @@
   background: transparent;
   color: var(--text);
   min-height: 30px;
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1590,7 +1604,7 @@
   height: 22px;
   padding: 0 10px;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--accent);
   color: #fff;
   font-size: 11px;
@@ -1814,7 +1828,7 @@
   min-height: 17px;
   padding: 2px 6px 2px 5px;
   border: 1px solid var(--model-tag-border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--model-tag-bg);
   color: var(--model-tag-color);
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--bg-panel) 72%, white 28%);
@@ -1865,7 +1879,7 @@
   height: 22px;
   padding: 0;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;
@@ -2010,12 +2024,38 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  isolation: isolate;
+  overflow: hidden;
   width: 100%;
   max-width: none;
   min-height: 100%;
   margin: 0;
   padding: 72px 24px 64px;
   gap: 0;
+}
+/* Sign-in placement of the shared neural-mesh — fills the full cloud section
+   and centers its fade on the brand lockup, tying the sign-in to the Home hero.
+   The topbar, center content, and footer all sit above it (own z-index). */
+.od-hero-mesh--cloud {
+  top: 0;
+  left: 50%;
+  width: min(1240px, 150%);
+  height: 100%;
+  z-index: 0;
+}
+.od-hero-mesh--cloud .od-hero-mesh__svg {
+  opacity: 0.42;
+}
+/* Lift all three regions above the mesh. The topbar and footer keep their own
+   absolute placement (z-index alone is enough); only the in-flow center column
+   needs a stacking context of its own. */
+.onboarding-view--cloud .onboarding-cloud__topbar,
+.onboarding-view--cloud .onboarding-cloud__footer {
+  z-index: 1;
+}
+.onboarding-view--cloud .onboarding-cloud__center {
+  position: relative;
+  z-index: 1;
 }
 
 .onboarding-cloud__topbar {
@@ -2127,7 +2167,7 @@
   margin-top: 32px;
   padding: 0 20px;
   border: 0;
-  border-radius: 14px;
+  border-radius: var(--radius-pill);
   /* Signature gradient pill CTA (brand v2). */
   background: var(--accent-grad);
   color: #fff;
@@ -2249,7 +2289,7 @@
   width: 56px;
   height: 56px;
   margin-bottom: 4px;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   background: var(--bg-panel);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-xs);
@@ -3550,7 +3590,7 @@
   max-width: 280px;
   padding: 7px 12px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--bg-panel);
   color: var(--text-strong);
   font-size: 13px;
@@ -3579,7 +3619,7 @@
   margin-top: 18px;
   padding: 14px 16px;
   border: 1px solid color-mix(in oklab, var(--accent) 22%, var(--border));
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   background: color-mix(in oklab, var(--accent) 6%, var(--bg-panel));
 }
 .onboarding-view__memory-callout-icon {
@@ -3588,7 +3628,7 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: color-mix(in oklab, var(--accent) 14%, var(--bg-panel));
   color: var(--accent);
   box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent) 22%, transparent);
@@ -3791,7 +3831,7 @@
   min-height: 17px;
   padding: 2px 6px 2px 5px;
   border: 1px solid var(--model-tag-border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--model-tag-bg);
   color: var(--model-tag-color);
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--bg-panel) 72%, white 28%);
@@ -4144,7 +4184,7 @@
 
 .onboarding-view__build-preview-swatches i {
   height: 44px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--accent);
 }
 
@@ -4432,7 +4472,10 @@
     width: 56px;
   }
   .entry-main__inner {
-    padding: 24px 16px 56px;
+    /* Extra bottom room so the fixed "scroll up to explore" hint (pinned to the
+       viewport bottom for new users) never collides with the last in-flow row
+       (…or start a blank project). */
+    padding: 24px 16px 72px;
   }
   .entry-main__inner--wide {
     max-width: 100%;
@@ -4507,7 +4550,7 @@
   .onboarding-view__steps li {
     padding: 8px 10px;
     border: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
-    border-radius: 8px;
+    border-radius: var(--radius);
     background: color-mix(in srgb, var(--bg-panel) 92%, transparent);
   }
 
@@ -4572,7 +4615,7 @@
   .onboarding-view__steps li {
     padding: 8px 10px;
     border: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
-    border-radius: 8px;
+    border-radius: var(--radius);
     background: color-mix(in srgb, var(--bg-panel) 92%, transparent);
   }
 
@@ -4825,5 +4868,154 @@
   .onboarding-view__build-actions .onboarding-view__secondary,
   .onboarding-view__build-actions .onboarding-view__primary {
     flex: 1 1 180px;
+  }
+}
+
+/* ============================================================
+   Phone tier — the entry nav rail becomes a slide-in drawer.
+   Below 560px the docked icon column is replaced by a fixed,
+   off-canvas drawer with a scrim: it overlays the content
+   instead of squeezing it, shows icon + label rows for a native
+   touch feel, and is dismissed by tapping the scrim, choosing a
+   destination, or the close control.
+   ============================================================ */
+@media (max-width: 560px) {
+  /* Drop the two-column grid entirely: the rail floats above content as a
+     fixed drawer, so the main scroll column should own the full width. (Keeping
+     the grid would auto-place `main` into the now-empty 0-width rail track once
+     the fixed rail leaves the flow.) */
+  .entry-shell--no-header .entry {
+    display: block;
+    position: relative;
+    height: 100%;
+    /* Grid items default to min-width:auto, which lets a wide descendant (the
+       composer's min-content) blow the column past the viewport. Pin it to the
+       track and clip any residual horizontal bleed (e.g. the hero mesh). */
+    min-width: 0;
+    overflow-x: clip;
+  }
+  .entry-shell--no-header .entry .entry-main {
+    height: 100%;
+    min-width: 0;
+    overflow-x: clip;
+  }
+
+  .entry-nav-rail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    width: min(84vw, 300px);
+    padding: 14px 12px calc(16px + env(safe-area-inset-bottom, 0px));
+    align-items: stretch;
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border);
+    box-shadow: 24px 0 60px -24px rgba(0, 0, 0, 0.7);
+    transform: translateX(-102%);
+    transition: transform 240ms var(--ease-out);
+    z-index: 1200;
+    overflow-y: auto;
+  }
+  .entry--rail-open .entry-nav-rail {
+    transform: translateX(0);
+  }
+  /* The desktop hairline seam is meaningless on the floating drawer. */
+  .entry-nav-rail::after {
+    display: none;
+  }
+
+  .entry-nav-rail__group,
+  .entry-nav-rail__footer {
+    width: 100%;
+    align-items: stretch;
+  }
+  .entry-nav-rail__group {
+    gap: 3px;
+  }
+
+  /* Brand header row: glyph on the left, close control on the right. */
+  .entry-nav-rail__brand {
+    width: 100%;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .entry-nav-rail__logo {
+    position: static;
+  }
+  .entry-nav-rail .entry-nav-rail__collapse {
+    position: static;
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .entry-nav-rail__logo-divider {
+    width: 100%;
+    margin: 2px 0 4px;
+  }
+
+  /* Full-width icon + label rows. */
+  .entry-nav-rail__btn {
+    width: 100%;
+    height: 46px;
+    justify-content: flex-start;
+    gap: 13px;
+    padding: 0 12px;
+    border-radius: var(--radius);
+  }
+  .entry-nav-rail__btn-label {
+    display: inline;
+    font-size: 14px;
+    font-weight: 560;
+    letter-spacing: 0;
+    color: inherit;
+  }
+  /* Hover tooltips are meaningless on touch and would collide with labels. */
+  .entry-nav-rail [data-tooltip]::after {
+    display: none;
+  }
+
+  /* Keep the topbar toggle reachable even while the drawer overlays content. */
+  .entry--rail-open .entry-rail-toggle {
+    display: inline-flex;
+  }
+
+  /* Scrim behind the drawer. */
+  .entry-nav-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1150;
+    background: rgba(6, 6, 12, 0.52);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms var(--ease-out);
+  }
+  .entry--rail-open .entry-nav-scrim {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Tighten the main gutter on a phone. The templates hint now flows in-line
+     below the hero (see plugins-home.css), so a small, even bottom gutter is
+     all that's needed — no reserved band for a fixed overlay. */
+  .entry-main__inner {
+    padding: 16px 14px 40px;
+  }
+  .entry-main__topbar {
+    padding: 10px 12px 0;
+  }
+}
+
+@media (max-width: 560px) and (prefers-reduced-motion: reduce) {
+  .entry-nav-rail {
+    transition: none;
+  }
+  .entry-nav-scrim {
+    transition: none;
   }
 }

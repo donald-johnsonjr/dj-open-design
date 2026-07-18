@@ -65,8 +65,7 @@ apps/desktop/vendor/dom-to-pptx/dom-to-pptx.bundle.js
 # (sessions, settings, other agents) stays ignored.
 !.claude/agents/
 .claude/agents/*
-!.claude/agents/kinected-principal-engineer.md
-!.claude/agents/kinected-design-engineer.md
+!.claude/agents/kinected-*.md
 .codex/
 .deepseek/
 .antigravitycli/

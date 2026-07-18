@@ -73,9 +73,14 @@ describe('Toast', () => {
 
   it('distinguishes the error status glyph from the dismiss icon', () => {
     const { container } = render(<Toast message="Could not read the page" tone="error" onDismiss={() => {}} />);
-    expect(
-      container.querySelector('.od-toast.tone-error .od-toast-icon path[d^="m21.73 18"]'),
-    ).not.toBeNull();
+    // The error status glyph and the dismiss (close) control must render as
+    // visually distinct icons. Assert their SVG content differs rather than
+    // pinning a specific icon-library path, so this survives icon-set swaps.
+    const statusGlyph = container.querySelector('.od-toast.tone-error .od-toast-icon svg')?.innerHTML;
+    const dismissGlyph = container.querySelector('button[aria-label="Dismiss"] svg')?.innerHTML;
+    expect(statusGlyph).toBeTruthy();
+    expect(dismissGlyph).toBeTruthy();
+    expect(statusGlyph).not.toBe(dismissGlyph);
   });
 
   it('renders a Dismiss button when both code and onDismiss are present', () => {

@@ -34,6 +34,7 @@ import type {
   WorkspaceContextItem,
 } from '@open-design/contracts';
 import { DesignSystemPicker } from './DesignSystemPicker';
+import { HeroMesh } from './HeroMesh';
 import { Wordmark } from './Wordmark';
 import type { SkillSummary } from '../types';
 import { Icon, type IconName } from './Icon';
@@ -1234,6 +1235,7 @@ export const HomeHero = forwardRef<HomeHeroHandle, Props>(function HomeHero(
 
   return (
     <section ref={homeHeroRef} className="home-hero" data-testid="home-hero">
+      <HeroMesh />
       <div className="home-hero__brand">
         <span className="home-hero__brand-mark od-brand-glyph" aria-hidden />
         <Wordmark size="sm" aria-label={t('app.brand')} />

@@ -59,6 +59,10 @@ function NavButton({ active, ariaLabel, tooltip, onClick, disabled, testId, chil
       {...(testId ? { 'data-testid': testId } : {})}
     >
       {children}
+      {/* Label rides alongside the icon only in the mobile slide-in drawer
+         (hidden on the desktop icon rail via CSS). Gives the touch nav a native,
+         legible row layout instead of icon-only guesswork. */}
+      <span className="entry-nav-rail__btn-label">{tooltip}</span>
     </button>
   );
 }
