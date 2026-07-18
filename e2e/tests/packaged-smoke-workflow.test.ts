@@ -1930,7 +1930,7 @@ process.stdin.on("end", () => {
           {
         artifacts: {
           dmg: {
-            url: "https://releases.open-design.ai/betas/versions/1.2.3-beta.3.unsigned/Open Design Beta.dmg",
+            url: "https://releases.open-design.ai/betas/versions/1.2.3-beta.3.unsigned/Kinected Design Beta.dmg",
           },
         },
         channel: "beta",
@@ -2014,7 +2014,7 @@ process.stdin.on("end", () => {
           {
         artifacts: {
           dmg: {
-            url: "https://releases.open-design.ai/betas/versions/1.2.3-beta.4.unsigned/Open Design Beta.dmg",
+            url: "https://releases.open-design.ai/betas/versions/1.2.3-beta.4.unsigned/Kinected Design Beta.dmg",
           },
         },
         channel: "beta",
@@ -2098,7 +2098,7 @@ process.stdin.on("end", () => {
           {
         artifacts: {
           dmg: {
-            url: "https://releases.open-design.ai/betas/versions/1.2.3-beta.4.unsigned/Open Design Beta.dmg",
+            url: "https://releases.open-design.ai/betas/versions/1.2.3-beta.4.unsigned/Kinected Design Beta.dmg",
           },
         },
         channel: "beta",
@@ -2576,8 +2576,8 @@ function stablePrereleaseMetadataFixture(baseVersion: string, prereleaseVersion:
       mac: {
         arch: "arm64",
         artifacts: {
-          dmg: artifact("Open Design.dmg"),
-          zip: artifact("Open Design-mac-arm64.zip"),
+          dmg: artifact("Kinected Design.dmg"),
+          zip: artifact("Kinected Design-mac-arm64.zip"),
         },
         enabled: true,
         signed: true,
@@ -2585,8 +2585,8 @@ function stablePrereleaseMetadataFixture(baseVersion: string, prereleaseVersion:
       macIntel: {
         arch: "x64",
         artifacts: {
-          dmg: artifact("Open Design Intel.dmg"),
-          zip: artifact("Open Design-mac-x64.zip"),
+          dmg: artifact("Kinected Design Intel.dmg"),
+          zip: artifact("Kinected Design-mac-x64.zip"),
         },
         enabled: true,
         signed: true,
@@ -2594,7 +2594,7 @@ function stablePrereleaseMetadataFixture(baseVersion: string, prereleaseVersion:
       win: {
         arch: "x64",
         artifacts: {
-          installer: artifact("Open Design Setup.exe"),
+          installer: artifact("Kinected Design Setup.exe"),
         },
         enabled: true,
       },

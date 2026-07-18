@@ -1,6 +1,8 @@
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
+import { OPEN_DESIGN_PRODUCT_NAME } from "@open-design/sidecar-proto";
+
 import type { ToolPackConfig } from "../config.js";
 import {
   WIN_PREBUNDLE_ENTRYPOINTS_DIR_NAME,
@@ -75,12 +77,17 @@ export function resolveWinPaths(config: ToolPackConfig): WinPaths {
   };
 }
 
+// The packaged app's on-disk data root keeps the machine-identity name
+// (OPEN_DESIGN_PRODUCT_NAME, "Open Design") rather than the display product
+// name so a display rename never orphans an existing install's %APPDATA% data.
+// It is the data-dir sibling of the uninstall registry key, which is likewise
+// keyed on OPEN_DESIGN_PRODUCT_NAME (see resolveWindowsUninstallRegistryKey).
 export function resolveWinProductUserDataRoot(): string {
-  return join(process.env.APPDATA ?? join(homedir(), "AppData", "Roaming"), PRODUCT_NAME);
+  return join(process.env.APPDATA ?? join(homedir(), "AppData", "Roaming"), OPEN_DESIGN_PRODUCT_NAME);
 }
 
 export function resolveWinUninstallLocalDataRoot(config: ToolPackConfig): string {
-  return config.portable ? `$APPDATA\\${PRODUCT_NAME}` : config.roots.runtime.namespaceRoot;
+  return config.portable ? `$APPDATA\\${OPEN_DESIGN_PRODUCT_NAME}` : config.roots.runtime.namespaceRoot;
 }
 
 export function resolveWinProductNamespaceRoot(config: ToolPackConfig): string {
