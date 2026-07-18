@@ -509,7 +509,10 @@
   font-family: var(--mono);
   font-size: 10.5px;
   letter-spacing: 0.08em;
-  color: var(--text-faint);
+  /* Functional helper copy low-vision users rely on: hold it at --text-soft
+     (~5.8:1, clears AA) rather than the sub-AA --text-faint, while the small
+     tracked-mono treatment keeps it visually de-emphasized. */
+  color: var(--text-soft);
 }
 
 /* Compact density — tighten rows + serif name for the tenth-session operator. */
