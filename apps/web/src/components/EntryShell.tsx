@@ -89,7 +89,6 @@ import type {
   ProviderModelsResponse,
   SkillSummary,
 } from '../types';
-import { CenteredLoader } from './Loading';
 import { DesignsTab } from './DesignsTab';
 import { DesignSystemsTab } from './DesignSystemsTab';
 import { BrandsTab } from './BrandsTab';
@@ -1121,30 +1120,24 @@ export function EntryShell({
               />
             </div>
             <div data-testid="entry-view-projects" data-active={view === 'projects' ? 'true' : 'false'} {...inactiveViewProps(view === 'projects')}>
-              {projectsLoading || skillsLoading || designSystemsLoading ? (
-                <CenteredLoader label={t('common.loading')} />
-              ) : (
-                <div className="entry-section">
-                  <header className="entry-section__head">
-                    <h1 className="entry-section__title">{t('entry.navProjects')}</h1>
-                  </header>
-                  <DesignsTab
-                    projects={projects}
-                    skills={skills}
-                    designSystems={designSystems}
-                    onOpen={onOpenProject}
-                    onOpenLiveArtifact={onOpenLiveArtifact}
-                    onDelete={onDeleteProject}
-                    onDuplicate={onDuplicateProject}
-                    onRename={onRenameProject}
-                    onRefresh={onProjectsRefresh}
-                    isActive={view === 'projects'}
-                    onNewProject={() => {
-                      openNewProject();
-                    }}
-                  />
-                </div>
-              )}
+              <div className="entry-section">
+                <DesignsTab
+                  projects={projects}
+                  skills={skills}
+                  designSystems={designSystems}
+                  onOpen={onOpenProject}
+                  onOpenLiveArtifact={onOpenLiveArtifact}
+                  onDelete={onDeleteProject}
+                  onDuplicate={onDuplicateProject}
+                  onRename={onRenameProject}
+                  onRefresh={onProjectsRefresh}
+                  isActive={view === 'projects'}
+                  loading={projectsLoading || skillsLoading || designSystemsLoading}
+                  onNewProject={() => {
+                    openNewProject();
+                  }}
+                />
+              </div>
             </div>
             <div data-testid="entry-view-tasks" data-active={view === 'tasks' ? 'true' : 'false'} {...inactiveViewProps(view === 'tasks')}>
               <TasksView

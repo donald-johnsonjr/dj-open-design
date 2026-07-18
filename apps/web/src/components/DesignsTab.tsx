@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import { Dialog, DialogDescription, DialogFooter, DialogTitle } from "@open-design/components";
+import { Button, Dialog, DialogDescription, DialogFooter, DialogTitle, VisuallyHidden } from "@open-design/components";
 import { projectKindFromMetadataToTracking } from "@open-design/contracts/analytics";
 import { useAnalytics } from "../analytics/provider";
 import {
@@ -21,6 +21,8 @@ import type {
 } from "../types";
 import { AnimatePresence } from "motion/react";
 import { Icon } from "./Icon";
+import { PageHeader } from "./PageHeader";
+import { EmptyState } from "./EmptyState";
 import {
 	isDesignSystemProject,
 	isPublishedDesignSystemProject,
@@ -28,6 +30,7 @@ import {
 } from "./design-system-project";
 import { LiveArtifactBadges } from "./LiveArtifactBadges";
 import { Toast } from "./Toast";
+import styles from "./DesignsTab.module.css";
 import {
 	HtmlProjectCoverFrame,
 	coverFromProjectFile,
@@ -88,6 +91,9 @@ interface Props {
 	onNewProject?: () => void;
 	onRefresh?: () => Promise<void> | void;
 	isActive?: boolean;
+	/** When true, render the editorial skeleton (masthead + grid) instead of
+	 *  content, matching the Design-systems loading treatment. */
+	loading?: boolean;
 }
 
 export function DesignsTab({
@@ -102,6 +108,7 @@ export function DesignsTab({
 	onNewProject,
 	onRefresh,
 	isActive = true,
+	loading = false,
 }: Props) {
 	const renameTitleId = useId();
 	const confirmTitleId = useId();
@@ -138,6 +145,7 @@ export function DesignsTab({
 	const [projectsRefreshing, setProjectsRefreshing] = useState(false);
 	const menuContainerRef = useRef<HTMLDivElement | null>(null);
 	const projectsRefreshInFlightRef = useRef(false);
+	const searchRef = useRef<HTMLInputElement | null>(null);
 	const [renameTarget, setRenameTarget] = useState<{ id: string; original: string } | null>(null);
 	const [renameInput, setRenameInput] = useState("");
 	const [confirmTarget, setConfirmTarget] = useState<{
@@ -260,6 +268,23 @@ export function DesignsTab({
 	useEffect(() => {
 		if (view === "kanban" && selectMode) exitSelectMode();
 	}, [selectMode, view]);
+
+	// Global `/`-to-search — focus the toolbar search from anywhere on the
+	// active surface (unless already typing). Mirrors the Design-systems
+	// power affordance; gated on `isActive` so a hidden view never grabs `/`.
+	useEffect(() => {
+		if (!isActive) return;
+		function onKey(e: KeyboardEvent) {
+			if (e.key !== "/") return;
+			const target = e.target as HTMLElement | null;
+			const tag = target?.tagName;
+			if (tag === "INPUT" || tag === "TEXTAREA" || target?.isContentEditable) return;
+			e.preventDefault();
+			searchRef.current?.focus();
+		}
+		window.addEventListener("keydown", onKey);
+		return () => window.removeEventListener("keydown", onKey);
+	}, [isActive]);
 
 	const refreshProjectsList = useCallback(
 		async (source: "manual" | "auto") => {
@@ -479,71 +504,136 @@ export function DesignsTab({
 		});
 	};
 
+	const projectCount = projects.length;
+
+	const createProjectCta = (testId: string, className?: string) =>
+		onNewProject ? (
+			<Button
+				variant="primary"
+				className={className}
+				data-testid={testId}
+				onClick={() => {
+					trackProjectsListControlsClick(analytics.track, {
+						page_name: "projects",
+						area: "list_controls",
+						element: "create_project",
+					});
+					onNewProject();
+				}}
+			>
+				{t("entry.navNewProject")}
+				<Icon name="chevron-right" size={15} />
+			</Button>
+		) : null;
+
+	const masthead = (
+		<PageHeader
+			eyebrow={`${t("designs.mastheadEyebrow")} · ${t("designs.projectCount", { count: projectCount })}`}
+			title={t("designs.mastheadTitleLead")}
+			accent={t("designs.mastheadTitleAccent")}
+			trailing="."
+			subtitle={t("designs.mastheadSubtitle")}
+			actions={createProjectCta("designs-new-project", styles.newBtn)}
+		/>
+	);
+
+	if (loading) {
+		return (
+			<div className={styles.root} data-testid="designs-loading" aria-busy="true">
+				<VisuallyHidden role="status">{t("common.loading")}</VisuallyHidden>
+				<div className={styles.skeletonHead} aria-hidden>
+					<span className={`${styles.skeletonBlock} ${styles.skeletonEyebrow}`} />
+					<span className={`${styles.skeletonBlock} ${styles.skeletonTitle}`} />
+					<span className={`${styles.skeletonBlock} ${styles.skeletonSub}`} />
+				</div>
+				<span className={`${styles.skeletonBlock} ${styles.skeletonToolbar}`} aria-hidden />
+				<div className={styles.grid} aria-hidden>
+					{Array.from({ length: 8 }, (_, index) => (
+						<div key={index} className={styles.skeletonCard}>
+							<span className={`${styles.skeletonBlock} ${styles.skeletonThumb}`} />
+							<div className={styles.skeletonMeta}>
+								<span className={`${styles.skeletonBlock} ${styles.skeletonLineSm}`} />
+								<span className={`${styles.skeletonBlock} ${styles.skeletonLineMd}`} />
+								<span className={`${styles.skeletonBlock} ${styles.skeletonLineLg}`} />
+							</div>
+						</div>
+					))}
+				</div>
+			</div>
+		);
+	}
+
+	// First-session, truly empty — one calm editorial focal moment: the brand
+	// mark on a faint neural mesh, a Didone line, one gradient pill. No masthead
+	// or filter toolbar competing for attention.
+	if (projects.length === 0) {
+		return (
+			<div className={styles.root}>
+				<EmptyState
+					className={styles.empty}
+					data-testid="designs-empty"
+					eyebrow={t("entry.navProjects")}
+					title={t("designs.emptyTitleLead")}
+					accent={t("designs.emptyTitleAccent")}
+					trailing="."
+					body={t("designs.emptyBody")}
+					action={createProjectCta("designs-empty-new-project", styles.emptyBtn)}
+				/>
+			</div>
+		);
+	}
+
 	return (
 		<div
-			className={`tab-panel${view === "kanban" ? " design-kanban-view" : ""}`}
+			className={`${styles.root}${view === "kanban" ? ` ${styles.rootKanban}` : ""}`}
 		>
-			<div className="tab-panel-toolbar designs-toolbar">
-				<div className="toolbar-left">
-					<div
-						className="subtab-pill"
-						role="group"
-						aria-label={t("designs.filterAria")}
+			{masthead}
+			<div className={styles.toolbar}>
+				<div
+					className={styles.scopes}
+					role="group"
+					aria-label={t("designs.filterAria")}
+				>
+					<button
+						type="button"
+						aria-pressed={sub === "recent"}
+						className={`${styles.scopeChip}${sub === "recent" ? ` ${styles.scopeChipActive}` : ""}`}
+						onClick={() => {
+							trackProjectsListControlsClick(analytics.track, {
+								page_name: "projects",
+								area: "list_controls",
+								element: "recent",
+							});
+							setSub("recent");
+						}}
 					>
-						<button
-							aria-pressed={sub === "recent"}
-							className={sub === "recent" ? "active" : ""}
-							onClick={() => {
-								trackProjectsListControlsClick(analytics.track, {
-									page_name: "projects",
-									area: "list_controls",
-									element: "recent",
-								});
-								setSub("recent");
-							}}
-						>
-							{t("designs.subRecent")}
-						</button>
-						<button
-							aria-pressed={sub === "yours"}
-							className={sub === "yours" ? "active" : ""}
-							onClick={() => {
-								trackProjectsListControlsClick(analytics.track, {
-									page_name: "projects",
-									area: "list_controls",
-									element: "your_designs",
-								});
-								setSub("yours");
-							}}
-						>
-							{t("designs.subYours")}
-						</button>
-					</div>
+						{t("designs.subRecent")}
+					</button>
+					<button
+						type="button"
+						aria-pressed={sub === "yours"}
+						className={`${styles.scopeChip}${sub === "yours" ? ` ${styles.scopeChipActive}` : ""}`}
+						onClick={() => {
+							trackProjectsListControlsClick(analytics.track, {
+								page_name: "projects",
+								area: "list_controls",
+								element: "your_designs",
+							});
+							setSub("yours");
+						}}
+					>
+						{t("designs.subYours")}
+					</button>
 				</div>
-				<div className="toolbar-right">
-					{onNewProject && projects.length > 0 ? (
-						<button
-							type="button"
-							className="designs-new-project-button"
-							data-testid="designs-new-project"
-							onClick={() => {
-								trackProjectsListControlsClick(analytics.track, {
-									page_name: "projects",
-									area: "list_controls",
-									element: "create_project",
-								});
-								onNewProject();
-							}}
-						>
-							<Icon name="plus" size={13} />
-							<span>{t("entry.navNewProject")}</span>
-						</button>
-					) : null}
-					<div className="toolbar-search">
-						<span className="search-icon" aria-hidden>
-							<Icon name="search" size={13} />
+				<div className={styles.tools}>
+					<div className={styles.searchWrap}>
+						<span className={styles.searchIcon} aria-hidden>
+							<Icon name="search" size={15} />
 						</span>
 						<input
+							ref={searchRef}
+							type="search"
+							className={styles.search}
 							placeholder={t("designs.searchPlaceholder")}
 							value={filter}
 							onChange={(e) => setFilter(e.target.value)}
@@ -558,147 +648,128 @@ export function DesignsTab({
 								});
 							}}
 						/>
+						<kbd className={styles.searchKbd} aria-hidden>
+							/
+						</kbd>
 					</div>
-					{onRefresh ? (
-						<button
-							type="button"
-							className="designs-refresh-button"
-							onClick={() => void refreshProjectsList("manual")}
-							disabled={projectsRefreshing}
-							title={
-								projectsRefreshing
-									? t("designs.statusRefreshing")
-									: t("designFiles.refresh")
-							}
-							aria-label={
-								projectsRefreshing
-									? t("designs.statusRefreshing")
-									: t("designFiles.refresh")
-							}
-						>
-							<Icon
-								name={projectsRefreshing ? "spinner" : "refresh"}
-								size={13}
-								className={projectsRefreshing ? "icon-spin" : undefined}
-							/>
-							<span>
-								{projectsRefreshing
-									? t("designs.statusRefreshing")
-									: t("designFiles.refresh")}
-							</span>
-						</button>
-					) : null}
-					{view === "grid" && selectMode ? (
-						<div className="designs-select-bar" role="group">
-							<span className="designs-select-count">
-								{t("designs.selectedCount", { n: selected.size })}
-							</span>
+					<div className={styles.utility}>
+						{onRefresh ? (
 							<button
 								type="button"
-								className="designs-select-delete"
-								disabled={selected.size === 0}
-								onClick={handleBatchDelete}
+								className={styles.iconBtn}
+								onClick={() => void refreshProjectsList("manual")}
+								disabled={projectsRefreshing}
+								title={
+									projectsRefreshing
+										? t("designs.statusRefreshing")
+										: t("designFiles.refresh")
+								}
+								aria-label={
+									projectsRefreshing
+										? t("designs.statusRefreshing")
+										: t("designFiles.refresh")
+								}
 							>
-								{t("designs.deleteSelected")}
+								<Icon
+									name={projectsRefreshing ? "spinner" : "refresh"}
+									size={15}
+									className={projectsRefreshing ? "icon-spin" : undefined}
+								/>
+							</button>
+						) : null}
+						{view === "grid" && selectMode ? (
+							<div className={styles.selectBar} role="group">
+								<span className={styles.selectCount}>
+									{t("designs.selectedCount", { n: selected.size })}
+								</span>
+								<button
+									type="button"
+									className={styles.selectDelete}
+									disabled={selected.size === 0}
+									onClick={handleBatchDelete}
+								>
+									{t("designs.deleteSelected")}
+								</button>
+								<button
+									type="button"
+									className={styles.selectCancel}
+									onClick={exitSelectMode}
+								>
+									{t("designs.cancelSelect")}
+								</button>
+							</div>
+						) : view === "grid" ? (
+							<button
+								type="button"
+								className={styles.iconBtn}
+								title={t("designs.selectMode")}
+								aria-label={t("designs.selectMode")}
+								onClick={() => {
+									trackProjectsListControlsClick(analytics.track, {
+										page_name: "projects",
+										area: "list_controls",
+										element: "select",
+									});
+									setSelectMode(true);
+								}}
+							>
+								<Icon name="check" size={15} />
+							</button>
+						) : null}
+						<div
+							className={styles.viewToggle}
+							role="group"
+							aria-label={t("designs.viewToggleAria")}
+						>
+							<button
+								type="button"
+								aria-pressed={view === "grid"}
+								className={`${styles.viewBtn}${view === "grid" ? ` ${styles.viewBtnActive}` : ""}`}
+								onClick={() => {
+									trackProjectsListControlsClick(analytics.track, {
+										page_name: "projects",
+										area: "list_controls",
+										element: "grid_view",
+									});
+									setView("grid");
+								}}
+								title={t("designs.viewGrid")}
+								data-testid="designs-view-grid"
+							>
+								<Icon name="grid" size={15} />
 							</button>
 							<button
 								type="button"
-								className="designs-select-cancel"
-								onClick={exitSelectMode}
+								aria-pressed={view === "kanban"}
+								className={`${styles.viewBtn}${view === "kanban" ? ` ${styles.viewBtnActive}` : ""}`}
+								onClick={() => {
+									// Kanban view substitutes for the contract's
+									// list_view element.
+									trackProjectsListControlsClick(analytics.track, {
+										page_name: "projects",
+										area: "list_controls",
+										element: "list_view",
+									});
+									setView("kanban");
+								}}
+								title={t("designs.viewKanban")}
+								data-testid="designs-view-kanban"
 							>
-								{t("designs.cancelSelect")}
+								<Icon name="kanban" size={15} />
 							</button>
 						</div>
-					) : view === "grid" ? (
-						<button
-							type="button"
-							className="designs-select-toggle"
-							onClick={() => {
-								trackProjectsListControlsClick(analytics.track, {
-									page_name: "projects",
-									area: "list_controls",
-									element: "select",
-								});
-								setSelectMode(true);
-							}}
-						>
-							<Icon name="check" size={13} />
-							<span>{t("designs.selectMode")}</span>
-						</button>
-					) : null}
-					<div
-						className="subtab-pill"
-						role="group"
-						aria-label={t("designs.viewToggleAria")}
-					>
-						<button
-							aria-pressed={view === "grid"}
-							className={view === "grid" ? "active" : ""}
-							onClick={() => {
-								trackProjectsListControlsClick(analytics.track, {
-									page_name: "projects",
-									area: "list_controls",
-									element: "grid_view",
-								});
-								setView("grid");
-							}}
-							title={t("designs.viewGrid")}
-							data-testid="designs-view-grid"
-						>
-							<Icon name="grid" size={14} />
-						</button>
-						<button
-							aria-pressed={view === "kanban"}
-							className={view === "kanban" ? "active" : ""}
-							onClick={() => {
-								// Kanban view substitutes for the contract's
-								// list_view element.
-								trackProjectsListControlsClick(analytics.track, {
-									page_name: "projects",
-									area: "list_controls",
-									element: "list_view",
-								});
-								setView("kanban");
-							}}
-							title={t("designs.viewKanban")}
-							data-testid="designs-view-kanban"
-						>
-							<Icon name="kanban" size={14} />
-						</button>
 					</div>
 				</div>
 			</div>
 			{filtered.length === 0 ? (
-				<div className="tab-empty">
-					{projects.length === 0 ? (
-						<div className="designs-empty-state">
-							<h2 className="designs-empty-title">
-								{t("designs.emptyNoProjects")}
-							</h2>
-							{onNewProject ? (
-								<button
-									type="button"
-									className="primary designs-empty-cta"
-									data-testid="designs-empty-new-project"
-									onClick={() => {
-										trackProjectsListControlsClick(analytics.track, {
-											page_name: "projects",
-											area: "list_controls",
-											element: "create_project",
-										});
-										onNewProject();
-									}}
-								>
-									<span>{t("entry.navNewProject")}</span>
-								</button>
-							) : null}
-						</div>
-					) : (
-						t("designs.emptyNoMatch")
-					)}
-				</div>
+				<EmptyState
+					className={styles.empty}
+					data-testid="designs-empty"
+					eyebrow={t("entry.navProjects")}
+					title={t("designs.emptyNoMatch")}
+				/>
 			) : view === "grid" ? (
-				<div className="design-grid">
+				<div className={styles.grid}>
 					{filtered.map((item) => {
 						const p = item.project;
 						const skill = skillName(p.skillId);
@@ -1225,15 +1296,10 @@ function projectCover(
 	brandId?: string;
 	brandHost?: string;
 } {
-	let h = 0;
-	for (let i = 0; i < project.id.length; i++) {
-		h = (h * 31 + project.id.charCodeAt(i)) >>> 0;
-	}
-	const hue = h % 360;
-	const hue2 = (hue + 38) % 360;
-	const style: CSSProperties = {
-		background: `radial-gradient(circle at 30% 28%, hsl(${hue} 70% 78% / 0.55), transparent 42%), linear-gradient(135deg, hsl(${hue} 65% 88%), hsl(${hue2} 70% 90%))`,
-	};
+	// Calm, brand-consistent cover — DesignsTab.module.css owns the violet-tinted
+	// dark stage + Didone monogram. No random per-project pastel hue (that loud
+	// rainbow read cheap against the dark editorial canvas).
+	const style: CSSProperties = {};
 	const trimmed = project.name.trim();
 	const initial = (trimmed ? Array.from(trimmed)[0]! : "?").toUpperCase();
 	const meta = project.metadata;

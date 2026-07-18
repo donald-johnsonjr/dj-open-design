@@ -2098,6 +2098,14 @@ export interface Dict {
   'designs.searchPlaceholder': string;
   'designs.emptyNoProjects': string;
   'designs.emptyNoMatch': string;
+  'designs.mastheadEyebrow': string;
+  'designs.projectCount': string;
+  'designs.mastheadTitleLead': string;
+  'designs.mastheadTitleAccent': string;
+  'designs.mastheadSubtitle': string;
+  'designs.emptyTitleLead': string;
+  'designs.emptyTitleAccent': string;
+  'designs.emptyBody': string;
   'designs.deleteTitle': string;
   'designs.deleteConfirm': string;
   'designs.cardFreeform': string;

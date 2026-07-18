@@ -53,9 +53,10 @@ describe('DesignsTab empty state', () => {
       />,
     );
 
-    // Verify Title (from 'designs.emptyNoProjects' translation: 'No projects yet.')
-    expect(screen.getByText('No projects yet.')).toBeTruthy();
-
+    // Verify the editorial empty headline renders — the swash-italic violet
+    // accent word ('designs.emptyTitleAccent') is a dedicated <em>, so assert it
+    // directly rather than the split lead/accent/trailing string.
+    expect(screen.getByText('keeping')).toBeTruthy();
 
     // Verify CTA Button is present
     const ctaButton = screen.getByRole('button', { name: 'New project' });
@@ -79,8 +80,8 @@ describe('DesignsTab empty state', () => {
       />,
     );
 
-    // Verify Title is present
-    expect(screen.getByText('No projects yet.')).toBeTruthy();
+    // Verify the editorial empty headline is present
+    expect(screen.getByText('keeping')).toBeTruthy();
 
     // Verify CTA Button is NOT present
     expect(screen.queryByRole('button', { name: 'New project' })).toBeNull();
@@ -113,9 +114,10 @@ describe('DesignsTab empty state', () => {
     const searchInput = screen.getByPlaceholderText('Search…');
     fireEvent.change(searchInput, { target: { value: 'Non-existent project query' } });
 
-    // Verify 'No projects match your search.' is present
+    // Verify 'No projects match your search.' is present, and the first-run
+    // editorial empty copy (accent word 'keeping') is NOT.
     expect(screen.getByText('No projects match your search.')).toBeTruthy();
-    expect(screen.queryByText('No projects yet.')).toBeNull();
+    expect(screen.queryByText('keeping')).toBeNull();
     expect(screen.queryByRole('button', { name: 'New project' })).toBeNull();
   });
 });
