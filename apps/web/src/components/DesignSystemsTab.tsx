@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from 'react';
 import { Button, VisuallyHidden } from '@open-design/components';
 import { useAnalytics } from '../analytics/provider';
 import {
@@ -23,8 +23,6 @@ import { takeDesignSystemFocus } from '../runtime/brands';
 import {
   deleteDesignSystemDraft,
   fetchDesignSystem,
-  fetchProjectFileText,
-  projectRawUrl,
   updateDesignSystemDraft,
 } from '../providers/registry';
 import { downloadDesignSystemArchive, downloadProjectArchive } from '../runtime/exports';
@@ -32,6 +30,9 @@ import { useDesignKit } from '../runtime/design-kit';
 import { DesignKitView, HeaderActionsMenu, type DesignKitActionFeedbackTone, type HeaderMenuAction } from './DesignKitView';
 import { designSystemLogoHost, isUserSystem } from './design-system-metadata';
 import { Icon } from './Icon';
+import { PageHeader } from './PageHeader';
+import { EmptyState } from './EmptyState';
+import { SpecimenCard } from './SpecimenCard';
 import { Toast } from './Toast';
 import type { DesignSystemDetail, DesignSystemSummary, ProjectTemplate, Surface } from '../types';
 import styles from './DesignSystemsTab.module.css';
@@ -157,12 +158,19 @@ export function DesignSystemsTab({
       : t('common.loading');
     notifyAction('loading', message);
   };
-  const [designSystemCollection, setDesignSystemCollection] = useState<DesignSystemCollection>('mine');
+  // Default to the preset library so new users meet the 152 curated systems
+  // immediately, rather than an empty "Yours (0)" scope.
+  const [designSystemCollection, setDesignSystemCollection] = useState<DesignSystemCollection>('official');
   const [surfaceFilter, setSurfaceFilter] = useState<SurfaceFilter>('all');
   const [category, setCategory] = useState<string>('All');
-  // The master-detail selection — which row renders in the right preview pane.
+  // Which system's detail spread is open. `null` shows the editorial index.
   // Distinct from `selectedId`, which is the global *default* design system.
-  const [previewId, setPreviewId] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
+  // Comfortable (default) vs compact index rows — the tenth-session density
+  // affordance absorbed from Direction 2.
+  const [density, setDensity] = useState<'comfortable' | 'compact'>('comfortable');
+  const searchRef = useRef<HTMLInputElement | null>(null);
+  const listRef = useRef<HTMLDivElement | null>(null);
   // A one-shot design-system id another surface asked us to preselect (e.g. the
   // brand-extraction "ready" prompt navigating here). Read+cleared from
   // sessionStorage exactly once; applied by the effect below once the system
@@ -259,34 +267,72 @@ export function DesignSystemsTab({
     return activeSystems.map((s) => s.id);
   }, [activeSystems]);
 
-  // Keep the previewed row valid as scopes / filters change: hold the current
-  // pick when it still exists, otherwise fall back to the first row (mirrors
-  // the Brand Kit master-detail). Empty scopes clear the selection.
+  // If the open detail leaves the active scope/filter set, fall back to the
+  // index rather than showing a stale spread.
   useEffect(() => {
-    if (activeIds.length === 0) {
-      setPreviewId(null);
-      return;
-    }
-    setPreviewId((cur) => (cur && activeIds.includes(cur) ? cur : activeIds[0] ?? null));
+    setOpenId((cur) => (cur && activeIds.includes(cur) ? cur : null));
   }, [activeIds]);
 
   // Apply a pending focus once the requested system is present in the catalog.
   // Runs again whenever `systems` changes, so a focus that arrived before the
   // freshly-finalized brand design system loaded still lands after the refresh.
-  // Brand systems are user systems, so make sure the "mine" scope is active.
+  // Brand systems are user systems, so make sure the "mine" scope is active and
+  // open its detail spread.
   useEffect(() => {
     if (!pendingFocus) return;
     const sys = systems.find((s) => s.id === pendingFocus);
     if (!sys) return; // not in the loaded list yet — wait for the next refresh
     if (isUserSystem(sys)) setDesignSystemCollection('mine');
-    setPreviewId(pendingFocus);
+    setOpenId(pendingFocus);
     setPendingFocus(null);
   }, [pendingFocus, systems]);
 
-  const selectedSystem = useMemo(() => {
-    if (!previewId) return null;
-    return activeSystems.find((s) => s.id === previewId) ?? null;
-  }, [previewId, activeSystems]);
+  const openSystem = useMemo(() => {
+    if (!openId) return null;
+    return activeSystems.find((s) => s.id === openId)
+      ?? systems.find((s) => s.id === openId)
+      ?? null;
+  }, [openId, activeSystems, systems]);
+
+  // The featured house system — the real "Kinected" preset when present in the
+  // active set. Shown as a masthead atop the unfiltered preset index only.
+  const featuredSystem = useMemo(() => {
+    if (designSystemCollection !== 'official') return null;
+    if (q || category !== 'All' || surfaceFilter !== 'all') return null;
+    return activeSystems.find((s) => s.id === 'kinected') ?? null;
+  }, [designSystemCollection, q, category, surfaceFilter, activeSystems]);
+
+  // Global `/`-to-search: focus the index search from anywhere on the surface
+  // (unless the user is already typing). Index-only; disabled in the detail
+  // spread. Absorbed from Direction 2's power affordances.
+  useEffect(() => {
+    function onKey(e: globalThis.KeyboardEvent) {
+      if (e.key !== '/' || openId) return;
+      const target = e.target as HTMLElement | null;
+      const tag = target?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || target?.isContentEditable) return;
+      e.preventDefault();
+      searchRef.current?.focus();
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [openId]);
+
+  // Roving ↑/↓ focus across the index rows; ↵ / Space open the focused system
+  // (native button behavior). Keeps keyboard browsing fast for the operator.
+  function handleListKeyDown(e: ReactKeyboardEvent<HTMLDivElement>) {
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    const rows = Array.from(
+      listRef.current?.querySelectorAll<HTMLElement>('[data-ds-row]') ?? [],
+    );
+    if (rows.length === 0) return;
+    e.preventDefault();
+    const current = rows.indexOf(document.activeElement as HTMLElement);
+    const nextIndex = e.key === 'ArrowDown'
+      ? Math.min(rows.length - 1, current + 1)
+      : Math.max(0, current - 1);
+    rows[current < 0 ? 0 : nextIndex]?.focus();
+  }
 
   // Category metadata is authored in English; keep raw values in state for
   // filtering while localizing the visible labels for the current UI locale.
@@ -485,7 +531,7 @@ export function DesignSystemsTab({
   }
 
   function handleSelectSystem(system: DesignSystemSummary): void {
-    setPreviewId(system.id);
+    setOpenId(system.id);
     trackCardClick(system);
   }
 
@@ -496,6 +542,28 @@ export function DesignSystemsTab({
   ];
 
   const showPresetFilters = designSystemCollection === 'official';
+  const newSystemCta = onCreate ? (
+    <Button
+      variant="primary"
+      className={styles.newBtn}
+      onClick={onCreate}
+      data-testid="design-systems-create"
+    >
+      {t('ds.newSystem')}
+      <Icon name="chevron-right" size={15} />
+    </Button>
+  ) : null;
+
+  const masthead = (
+    <PageHeader
+      eyebrow={`${t('dsManager.eyebrowDesignSystems')} · ${t('ds.presetsCountLabel', { count: librarySystems.length })}`}
+      title={t('ds.mastheadTitleLead')}
+      accent={t('ds.mastheadTitleAccent')}
+      trailing="."
+      subtitle={t('ds.mastheadSubtitle')}
+      actions={newSystemCta}
+    />
+  );
 
   if (loading) {
     return (
@@ -506,59 +574,69 @@ export function DesignSystemsTab({
         aria-busy="true"
       >
         <VisuallyHidden role="status">{t('designSystemPicker.loading')}</VisuallyHidden>
-        <aside className={styles.sidebar} data-testid="design-systems-sidebar-skeleton">
-          {onCreate ? (
-            <Button
-              variant="primary"
-              className={styles.newBtn}
-              onClick={onCreate}
-              data-testid="design-systems-create"
-            >
-              <Icon name="plus" />
-              {t('dsManager.createAction')}
-            </Button>
-          ) : (
-            <SkeletonBlock className={styles.skeletonCreateButton} />
-          )}
-
-          <div className={styles.searchWrap} aria-hidden>
-            <SearchGlyph className={styles.searchIcon} />
-            <SkeletonBlock className={`${styles.search} ${styles.skeletonSearchField}`} />
-          </div>
-
-          <div className={styles.scopes} aria-hidden>
-            <SkeletonBlock className={`${styles.scopeChip} ${styles.skeletonScopeChipWide}`} />
-            <SkeletonBlock className={`${styles.scopeChip} ${styles.skeletonScopeChip}`} />
-            <SkeletonBlock className={`${styles.scopeChip} ${styles.skeletonScopeChipWide}`} />
-          </div>
-
-          <div className={styles.list} data-testid="design-systems-list" aria-hidden>
-            {Array.from({ length: 7 }, (_, index) => (
+        {masthead}
+        <div className={styles.indexSkeleton} data-testid="design-systems-index-skeleton" aria-hidden>
+          <SkeletonBlock className={styles.skeletonFeatured} />
+          <SkeletonBlock className={styles.skeletonDivider} />
+          <div className={styles.list}>
+            {Array.from({ length: 8 }, (_, index) => (
               <div
                 key={index}
-                className={`${styles.item} ${index === 0 ? styles.skeletonRowActive : styles.skeletonRow}`}
+                className={styles.skeletonRow}
                 data-testid={`design-systems-loading-row-${index}`}
               >
-                <span className={styles.itemThumb}>
-                  <SkeletonBlock className={styles.skeletonThumb} />
-                </span>
+                <SkeletonBlock className={styles.skeletonNum} />
                 <span className={styles.itemMeta}>
                   <SkeletonBlock className={`${styles.skeletonLine} ${styles.skeletonLineTitle}`} />
                   <SkeletonBlock className={`${styles.skeletonLine} ${index % 3 === 0 ? styles.skeletonLineShort : styles.skeletonLineMedium}`} />
                 </span>
-                <SkeletonBlock className={styles.skeletonStatusDot} />
+                <SkeletonBlock className={styles.skeletonSwatches} />
               </div>
             ))}
           </div>
-        </aside>
-
-        <section className={styles.preview} data-testid="design-systems-preview">
-          <DesignSystemDetailSkeleton
-            label={t('designSystemPicker.loadingPreview')}
-            dataTestId="design-systems-preview-skeleton"
-          />
-        </section>
+        </div>
       </div>
+    );
+  }
+
+  if (openId && openSystem) {
+    return (
+      <>
+        {actionToast ? (
+          <Toast
+            message={actionToast.message}
+            tone={actionToast.tone}
+            ttlMs={actionToast.tone === 'loading' ? 60000 : 2600}
+            role={actionToast.tone === 'error' ? 'alert' : 'status'}
+            onDismiss={() => setActionToast(null)}
+          />
+        ) : null}
+        <div className={styles.root} data-testid="design-systems-tab">
+          <button
+            type="button"
+            className={styles.backLink}
+            onClick={() => setOpenId(null)}
+            data-testid="design-systems-back"
+          >
+            <Icon name="arrow-left" size={15} />
+            <span>{t('ds.backToIndex')}</span>
+          </button>
+          <DesignSystemDetail
+            key={openSystem.id}
+            system={openSystem}
+            isDefault={openSystem.id === selectedId}
+            busy={busyId === openSystem.id}
+            actionBusy={busyAction?.systemId === openSystem.id ? busyAction.action : null}
+            t={t}
+            onEdit={handleEditSystem}
+            onMakeDefault={handleMakeDefaultClick}
+            onTogglePublished={togglePublished}
+            onDelete={deleteSystem}
+            onSystemsRefresh={onSystemsRefresh}
+            onActionFeedback={notifyAction}
+          />
+        </div>
+      </>
     );
   }
 
@@ -573,73 +651,82 @@ export function DesignSystemsTab({
           onDismiss={() => setActionToast(null)}
         />
       ) : null}
-      <div className={styles.root} data-testid="design-systems-tab">
-      <aside className={styles.sidebar}>
-        {onCreate ? (
-          <Button
-            variant="primary"
-            className={styles.newBtn}
-            onClick={onCreate}
-            data-testid="design-systems-create"
-          >
-            <Icon name="plus" />
-            {t('dsManager.createAction')}
-          </Button>
-        ) : null}
+      <div className={styles.root} data-testid="design-systems-tab" data-density={density}>
+        {masthead}
 
-        <div className={styles.searchWrap}>
-          <SearchGlyph className={styles.searchIcon} />
-          <input
-            type="search"
-            data-testid="design-systems-search"
-            className={styles.search}
-            placeholder={t('ds.searchPlaceholder')}
-            value={filter}
-            onFocus={() => {
-              if (searchTrackedRef.current) return;
-              searchTrackedRef.current = true;
-              trackDesignSystemsTopClick(analytics.track, {
-                page_name: 'design_systems',
-                area: 'design_systems',
-                element: 'search_input',
-              });
-            }}
-            onChange={(e) => setFilter(e.target.value)}
-          />
-        </div>
+        <div className={styles.toolbar}>
+          <div className={styles.scopes} role="tablist" aria-label={t('dsManager.sourceAria')}>
+            {scopeTabs.map((tab) => (
+              <button
+                key={tab.value}
+                type="button"
+                role="tab"
+                aria-selected={designSystemCollection === tab.value}
+                className={`${styles.scopeChip} ${designSystemCollection === tab.value ? styles.scopeChipActive : ''}`}
+                onClick={() => setDesignSystemCollection(tab.value)}
+              >
+                <span>{tab.label}</span>
+                {'count' in tab ? (
+                  <span className={styles.scopeCount} aria-hidden>{tab.count}</span>
+                ) : null}
+                {tab.comingSoon ? (
+                  <span className={styles.scopeComingSoon} aria-hidden>{t('dsManager.comingSoonBadge')}</span>
+                ) : null}
+              </button>
+            ))}
+          </div>
 
-        <div
-          className={styles.scopes}
-          role="tablist"
-          aria-label={t('dsManager.sourceAria')}
-        >
-          {scopeTabs.map((tab) => (
-            <button
-              key={tab.value}
-              type="button"
-              role="tab"
-              aria-selected={designSystemCollection === tab.value}
-              className={`${styles.scopeChip} ${designSystemCollection === tab.value ? styles.scopeChipActive : ''}`}
-              onClick={() => setDesignSystemCollection(tab.value)}
-            >
-              <span>{tab.label}</span>
-              {'count' in tab ? (
-                <span className={styles.scopeCount} aria-hidden>{tab.count}</span>
-              ) : null}
-              {tab.comingSoon ? (
-                <span className={styles.scopeComingSoon} aria-hidden>{t('dsManager.comingSoonBadge')}</span>
-              ) : null}
-            </button>
-          ))}
+          <div className={styles.tools}>
+            <div className={styles.searchWrap}>
+              <SearchGlyph className={styles.searchIcon} />
+              <input
+                ref={searchRef}
+                type="search"
+                data-testid="design-systems-search"
+                className={styles.search}
+                placeholder={t('ds.searchPlaceholder')}
+                value={filter}
+                onFocus={() => {
+                  if (searchTrackedRef.current) return;
+                  searchTrackedRef.current = true;
+                  trackDesignSystemsTopClick(analytics.track, {
+                    page_name: 'design_systems',
+                    area: 'design_systems',
+                    element: 'search_input',
+                  });
+                }}
+                onChange={(e) => setFilter(e.target.value)}
+              />
+              <kbd className={styles.searchKbd} aria-hidden>/</kbd>
+            </div>
+            <div className={styles.density} role="group" aria-label={t('ds.density')}>
+              <button
+                type="button"
+                className={`${styles.densityBtn} ${density === 'comfortable' ? styles.densityBtnActive : ''}`}
+                aria-pressed={density === 'comfortable'}
+                title={t('ds.densityComfortable')}
+                onClick={() => setDensity('comfortable')}
+              >
+                <Icon name="layout" size={15} />
+                <VisuallyHidden>{t('ds.densityComfortable')}</VisuallyHidden>
+              </button>
+              <button
+                type="button"
+                className={`${styles.densityBtn} ${density === 'compact' ? styles.densityBtnActive : ''}`}
+                aria-pressed={density === 'compact'}
+                title={t('ds.densityCompact')}
+                onClick={() => setDensity('compact')}
+              >
+                <Icon name="sliders" size={15} />
+                <VisuallyHidden>{t('ds.densityCompact')}</VisuallyHidden>
+              </button>
+            </div>
+          </div>
         </div>
 
         {showPresetFilters ? (
           <div className={styles.presetFilters}>
             <div className={styles.surfaceRow} role="tablist" aria-label={t('ds.surfaceLabel')}>
-              {/* Hide chips with no items in the active style/search filter, but
-                  always keep "all" and the currently selected surface — otherwise a
-                  transient search could remove the active chip and leave the list
-                  filtered with no chip showing aria-selected. */}
               {SURFACE_PILLS.filter(
                 (p) => p.value === surfaceFilter || p.value === 'all' || surfaceCounts[p.value] > 0,
               ).map((p) => (
@@ -689,63 +776,12 @@ export function DesignSystemsTab({
           </div>
         ) : null}
 
-        <div className={styles.list} data-testid="design-systems-list">
-          {renderSidebarList()}
-        </div>
-      </aside>
-
-      <section className={styles.preview} data-testid="design-systems-preview">
-        {renderPreview()}
-      </section>
+        {renderIndex()}
       </div>
     </>
   );
 
-  function renderSidebarList() {
-    if (designSystemCollection === 'enterprise') {
-      return (
-        <div className={styles.sidebarEmpty}>
-          <p className={styles.sidebarEmptyText}>{t('dsManager.enterpriseDsBody')}</p>
-        </div>
-      );
-    }
-    if (activeSystems.length === 0) {
-      if (designSystemCollection === 'official') {
-        return (
-          <div className={styles.sidebarEmpty} data-testid="design-systems-empty">
-            <p className={styles.sidebarEmptyText}>{t('ds.emptyNoMatch')}</p>
-          </div>
-        );
-      }
-      return (
-        <div className={styles.sidebarEmpty}>
-          <p className={styles.sidebarEmptyText}>{t('dsManager.emptyMine')}</p>
-        </div>
-      );
-    }
-    return activeSystems.map((system) => (
-      <SystemRow
-        key={system.id}
-        system={system}
-        active={system.id === previewId}
-        isDefault={system.id === selectedId}
-        subtitle={
-          // User systems: prefer the scenario (summary), then the source link
-          // (host, truncated by CSS), then the generic placeholder. Presets keep
-          // their localized category, which already reads as their scenario.
-          isUserSystem(system)
-            ? (system.summary?.trim()
-              || designSystemLogoHost(system)
-              || t('brandDetail.designSystem'))
-            : localizeDesignSystemCategory(locale, system.category || 'Uncategorized')
-        }
-        statusLabel={(system.status ?? 'draft') === 'published' ? t('dsManager.statusPublished') : t('dsManager.statusDraft')}
-        onSelect={() => handleSelectSystem(system)}
-      />
-    ));
-  }
-
-  function renderPreview() {
+  function renderIndex() {
     if (designSystemCollection === 'enterprise') {
       return (
         <ComingSoon
@@ -756,39 +792,137 @@ export function DesignSystemsTab({
       );
     }
 
-    if (selectedSystem) {
+    if (activeSystems.length === 0) {
+      if (designSystemCollection === 'official') {
+        return (
+          <EmptyState
+            data-testid="design-systems-empty"
+            eyebrow={t('dsManager.eyebrowDesignSystems')}
+            title={t('ds.emptyNoMatch')}
+          />
+        );
+      }
       return (
-        <DesignSystemDetail
-          key={selectedSystem.id}
-          system={selectedSystem}
-          isDefault={selectedSystem.id === selectedId}
-          busy={busyId === selectedSystem.id}
-          actionBusy={busyAction?.systemId === selectedSystem.id ? busyAction.action : null}
-          t={t}
-          onEdit={handleEditSystem}
-          onMakeDefault={handleMakeDefaultClick}
-          onTogglePublished={togglePublished}
-          onDelete={deleteSystem}
-          onSystemsRefresh={onSystemsRefresh}
-          onActionFeedback={notifyAction}
+        <EmptyState
+          data-testid="design-systems-empty"
+          eyebrow={t('dsManager.eyebrowDesignSystems')}
+          title={t('ds.emptyMineTitle')}
+          accent={t('ds.emptyMineAccent')}
+          trailing="."
+          body={t('dsManager.emptyMine')}
+          action={
+            <>
+              {onCreate ? (
+                <Button variant="primary" className={styles.newBtn} onClick={onCreate}>
+                  {t('ds.newSystem')}
+                  <Icon name="chevron-right" size={15} />
+                </Button>
+              ) : null}
+              <Button variant="ghost" onClick={() => setDesignSystemCollection('official')}>
+                {t('ds.browsePresets')}
+              </Button>
+            </>
+          }
         />
       );
     }
 
-    // Empty scope — invite the relevant next action.
-    const emptyText = designSystemCollection === 'official'
-        ? t('ds.emptyNoMatch')
-        : t('dsManager.emptyMine');
-    const emptyTitle = designSystemCollection === 'mine'
-      ? t('dsManager.createTitle')
-      : null;
+    const rowSystems = featuredSystem
+      ? activeSystems.filter((s) => s.id !== featuredSystem.id)
+      : activeSystems;
+    const grouped = designSystemCollection === 'official' && !q && category === 'All';
+
+    let counter = 0;
+    const nextNumber = () => String(++counter).padStart(3, '0');
+
+    const rowFor = (system: DesignSystemSummary, showMeta: boolean) => (
+      <EditorialRow
+        key={system.id}
+        number={nextNumber()}
+        system={system}
+        isDefault={system.id === selectedId}
+        meta={showMeta ? localizeDesignSystemCategory(locale, system.category || 'Uncategorized') : ''}
+        subtitle={
+          isUserSystem(system)
+            ? (system.summary?.trim()
+              || designSystemLogoHost(system)
+              || t('brandDetail.designSystem'))
+            : localizeDesignSystemSummary(locale, system)
+        }
+        statusLabel={(system.status ?? 'draft') === 'published' ? t('dsManager.statusPublished') : t('dsManager.statusDraft')}
+        onSelect={() => handleSelectSystem(system)}
+      />
+    );
+
+    let sections: ReactNode;
+    if (grouped) {
+      const byCategory = new Map<string, DesignSystemSummary[]>();
+      for (const s of rowSystems) {
+        const c = s.category || 'Uncategorized';
+        (byCategory.get(c) ?? byCategory.set(c, []).get(c)!).push(s);
+      }
+      const ordered: string[] = [];
+      for (const c of CATEGORY_ORDER) if (byCategory.has(c)) ordered.push(c);
+      for (const c of [...byCategory.keys()].sort()) if (!ordered.includes(c)) ordered.push(c);
+      sections = ordered.map((c) => {
+        const group = byCategory.get(c)!;
+        return (
+          <section key={c} className={styles.group}>
+            <div className={styles.divider}>
+              <span className={styles.dividerLabel}>{renderCategory(c)}</span>
+              <span className={styles.dividerRule} aria-hidden />
+              <span className={styles.dividerCount} aria-hidden>{group.length}</span>
+            </div>
+            {group.map((s) => rowFor(s, false))}
+          </section>
+        );
+      });
+    } else {
+      sections = (
+        <section className={styles.group}>
+          <div className={styles.divider}>
+            <span className={styles.dividerLabel}>
+              {category !== 'All' ? renderCategory(category) : t('ds.sectionResults')}
+            </span>
+            <span className={styles.dividerRule} aria-hidden />
+            <span className={styles.dividerCount} aria-hidden>{rowSystems.length}</span>
+          </div>
+          {rowSystems.map((s) => rowFor(s, true))}
+        </section>
+      );
+    }
+
     return (
-      <div className={styles.previewEmpty}>
-        <span className={styles.previewEmptyMark} aria-hidden>
-          <SparkGlyph />
-        </span>
-        {emptyTitle ? <p className={styles.previewEmptyTitle}>{emptyTitle}</p> : null}
-        <p className={styles.previewEmptyText}>{emptyText}</p>
+      <div className={styles.index}>
+        {featuredSystem ? (
+          <SpecimenCard
+            layout="feature"
+            className={styles.featured}
+            data-testid={`design-system-card-${featuredSystem.id}`}
+            ariaLabel={featuredSystem.title}
+            title={featuredSystem.title}
+            meta={featuredSystem.id === selectedId ? t('ds.featuredActiveEyebrow') : t('ds.featuredEyebrow')}
+            summary={t('ds.featuredBody')}
+            swatches={featuredSystem.swatches && featuredSystem.swatches.length > 0
+              ? featuredSystem.swatches
+              : fallbackSwatches(featuredSystem.title)}
+            badge={featuredSystem.id === selectedId ? (
+              <span className={styles.badgeDefault}>{t('ds.badgeDefault')}</span>
+            ) : null}
+            tags={t('ds.featuredTags')}
+            selected={featuredSystem.id === selectedId}
+            onClick={() => handleSelectSystem(featuredSystem)}
+          />
+        ) : null}
+        <div
+          className={styles.list}
+          data-testid="design-systems-list"
+          ref={listRef}
+          onKeyDown={handleListKeyDown}
+        >
+          {sections}
+        </div>
+        <p className={styles.keyboardHint} aria-hidden>{t('ds.keyboardHint')}</p>
       </div>
     );
   }
@@ -802,10 +936,11 @@ function SkeletonBlock({
   return <span className={`${styles.skeletonBlock}${className ? ` ${className}` : ''}`} aria-hidden />;
 }
 
-interface SystemRowProps {
+interface EditorialRowProps {
   system: DesignSystemSummary;
-  active: boolean;
+  number: string;
   isDefault: boolean;
+  meta: string;
   subtitle: string;
   statusLabel: string;
   onSelect: () => void;
@@ -823,113 +958,37 @@ function fallbackSwatches(seed: string): string[] {
   ];
 }
 
-function SystemRowPaletteLogo({ system }: { system: DesignSystemSummary }) {
-  const swatches = system.swatches && system.swatches.length > 0
-    ? system.swatches.slice(0, 4)
-    : fallbackSwatches(system.title || system.id);
-  return (
-    <span className={styles.itemSwatches} aria-hidden>
-      {swatches.map((color, index) => (
-        <span key={`${color}-${index}`} style={{ background: color }} />
-      ))}
-    </span>
-  );
-}
-
-// Resolve a system's own logo from its backing project's brand.json
-// (`logo.primary`), exactly mirroring how the detail kit loads it via
-// `useDesignKit`. The list row can't use `/api/brands/:id/logo` because the row
-// only knows the *design-system* id, which differs from the brand id the brands
-// route expects. Returns `undefined` while the fetch is in flight, `null` when
-// the project has no logo, or the raw URL string.
-function useProjectLogoSrc(projectId: string | undefined): string | null | undefined {
-  const [src, setSrc] = useState<string | null | undefined>(projectId ? undefined : null);
-  useEffect(() => {
-    if (!projectId) {
-      setSrc(null);
-      return;
-    }
-    let cancelled = false;
-    setSrc(undefined);
-    void fetchProjectFileText(projectId, 'brand.json', { cache: 'no-store' }).then((raw) => {
-      if (cancelled) return;
-      let primary: string | null = null;
-      if (raw) {
-        try {
-          const data = JSON.parse(raw) as { logo?: { primary?: unknown } };
-          const candidate = data?.logo?.primary;
-          if (typeof candidate === 'string' && candidate.trim()) primary = candidate.trim();
-        } catch {
-          // Not a valid brand.json (e.g. a non-brand "Create"d system) — no logo.
-        }
-      }
-      setSrc(primary ? projectRawUrl(projectId, primary) : null);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [projectId]);
-  return src;
-}
-
-// Row thumbnail. Prefer the system's real logo (resolved from the backing
-// project's brand.json), then a site favicon (captured source URL, reference
-// brand, or curated official-preset domain), falling back to the palette stripe
-// when neither resolves. The palette also holds the slot while a user system's
-// logo is still loading, so the thumbnail never flashes a broken image first.
-function SystemRowLogo({ system }: { system: DesignSystemSummary }) {
-  const host = designSystemLogoHost(system);
-  const projectLogo = useProjectLogoSrc(isUserSystem(system) ? system.projectId : undefined);
-
-  // Candidate srcs in priority order, skipping empties; `onError` advances to
-  // the next, and exhausting them collapses to the palette stripe.
-  const candidates = useMemo(() => {
-    const list: string[] = [];
-    if (typeof projectLogo === 'string') list.push(projectLogo);
-    if (host) list.push(`https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=64`);
-    return list;
-  }, [projectLogo, host]);
-
-  const [failedCount, setFailedCount] = useState(0);
-  useEffect(() => setFailedCount(0), [candidates]);
-
-  const resolving = projectLogo === undefined;
-  const src = !resolving && failedCount < candidates.length ? candidates[failedCount] : null;
-
-  if (!src) return <SystemRowPaletteLogo system={system} />;
-  return (
-    <img
-      className={styles.itemLogo}
-      src={src}
-      alt=""
-      loading="lazy"
-      referrerPolicy="no-referrer"
-      onError={() => setFailedCount((n) => n + 1)}
-    />
-  );
-}
-
-function SystemRow({ system, active, isDefault, subtitle, statusLabel, onSelect }: SystemRowProps) {
+// One editorial index row: mono running number, name + one-line summary, a real
+// palette strip, the localized category as a right-aligned mono meta, and a
+// draft/published dot for user systems. Opens the specimen spread on activate.
+function EditorialRow({ system, number, isDefault, meta, subtitle, statusLabel, onSelect }: EditorialRowProps) {
   const { t } = useI18n();
   const status = system.status ?? 'draft';
   const isUser = isUserSystem(system);
+  const swatches = system.swatches && system.swatches.length > 0
+    ? system.swatches.slice(0, 5)
+    : fallbackSwatches(system.title || system.id);
   return (
     <button
       type="button"
       data-testid={`design-system-card-${system.id}`}
-      className={`${styles.item} ${active ? styles.itemActive : ''}`}
-      aria-pressed={active}
+      data-ds-row
+      className={styles.item}
       onClick={onSelect}
     >
-      <span className={styles.itemThumb}>
-        <SystemRowLogo system={system} />
-      </span>
+      <span className={styles.itemNum} aria-hidden>{number}</span>
       <span className={styles.itemMeta}>
         <span className={styles.itemNameRow}>
           <span className={styles.itemName}>{system.title}</span>
           {isDefault ? <span className={styles.badgeDefault}>{t('dsManager.badgeDefault')}</span> : null}
         </span>
         <span className={styles.itemSub}>{subtitle}</span>
+      </span>
+      {meta ? <span className={styles.itemCat} aria-hidden>{meta}</span> : null}
+      <span className={styles.itemSwatches} aria-hidden>
+        {swatches.map((color, index) => (
+          <span key={`${color}-${index}`} style={{ background: color }} />
+        ))}
       </span>
       {isUser ? (
         <span
@@ -938,6 +997,7 @@ function SystemRow({ system, active, isDefault, subtitle, statusLabel, onSelect 
           aria-label={statusLabel}
         />
       ) : null}
+      <Icon name="chevron-right" size={15} className={styles.itemChevron} />
     </button>
   );
 }
@@ -1268,15 +1328,3 @@ function SearchGlyph({ className }: { className?: string }) {
   );
 }
 
-function SparkGlyph() {
-  return (
-    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" aria-hidden>
-      <path
-        d="M12 3l1.8 4.9L18.7 9.7 13.8 11.5 12 16.4 10.2 11.5 5.3 9.7l4.9-1.8z"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}

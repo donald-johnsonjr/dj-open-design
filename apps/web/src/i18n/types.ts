@@ -2361,6 +2361,24 @@ export interface Dict {
   'ds.tokens': string;
   'ds.specToggle': string;
   'ds.specLoading': string;
+  'ds.mastheadTitleLead': string;
+  'ds.mastheadTitleAccent': string;
+  'ds.mastheadSubtitle': string;
+  'ds.presetsCountLabel': string;
+  'ds.newSystem': string;
+  'ds.featuredEyebrow': string;
+  'ds.featuredActiveEyebrow': string;
+  'ds.featuredBody': string;
+  'ds.featuredTags': string;
+  'ds.density': string;
+  'ds.densityComfortable': string;
+  'ds.densityCompact': string;
+  'ds.backToIndex': string;
+  'ds.keyboardHint': string;
+  'ds.sectionResults': string;
+  'ds.emptyMineTitle': string;
+  'ds.emptyMineAccent': string;
+  'ds.browsePresets': string;
 
   // Avatar menu (project topbar)
   'avatar.title': string;

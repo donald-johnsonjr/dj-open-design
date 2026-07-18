@@ -432,7 +432,7 @@ test('[P1] design systems page is reachable from entry nav and supports search, 
 
   await expect(page).toHaveURL(/\/design-systems$/);
   await expect(page.getByTestId('entry-nav-design-systems')).toHaveAttribute('aria-current', 'page');
-  await expect(page.getByRole('heading', { name: 'Design systems' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /One brand, every/ })).toBeVisible();
   await expect(page.getByTestId('design-systems-tab')).toBeVisible();
   await page.getByRole('tab', { name: 'Official presets' }).click();
   await expect(page.getByTestId('design-system-card-agentic')).toBeVisible();

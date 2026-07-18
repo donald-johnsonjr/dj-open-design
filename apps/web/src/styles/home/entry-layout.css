@@ -98,8 +98,12 @@
   display: none;
 }
 /* The "Kinected / DESIGN" wordmark lockup is likewise drawer-only; the docked
-   icon rail shows the mark alone. */
-.entry-nav-rail__wordmark {
+   icon rail shows the mark alone. The `.entry-nav-rail` prefix raises this to a
+   two-class selector so it decisively beats the Wordmark CSS Module's own
+   `.wordmark { display: inline-flex }` (equal single-class specificity, which
+   otherwise won on cascade order and leaked a clipped "Kinected / DESIGN"
+   sliver over the 36px mark on the docked desktop rail — defect C1). */
+.entry-nav-rail .entry-nav-rail__wordmark {
   display: none;
 }
 /* Scrim behind the mobile drawer. Inert + invisible on desktop; the phone tier
@@ -645,10 +649,26 @@
 .entry-nav-rail__logo-img {
   position: absolute;
   inset: auto;
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   display: block;
   pointer-events: none;
+}
+/* Seat the neural connection mark in the periwinkle→violet gradient tile on the
+   docked desktop rail (matches the mockup + the mobile drawer's 40px tile),
+   rather than a bare transparent glyph. The `.od-brand-glyph` co-class layers
+   the mark over the tile and wins on specificity over the primitive base. */
+.entry-nav-rail__logo-img.od-brand-glyph {
+  border-radius: 10px;
+  background:
+    url(/brand-mark.png) center / 74% no-repeat,
+    linear-gradient(
+      158deg,
+      color-mix(in srgb, var(--accent) 16%, var(--bg-panel)),
+      color-mix(in srgb, var(--bg-subtle) 88%, var(--bg-panel))
+    );
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 6%, transparent);
 }
 .entry-nav-rail__btn {
   appearance: none;
@@ -1310,11 +1330,32 @@
   color: var(--text-strong);
 }
 .inline-switcher--compact .inline-switcher__chip-icon {
+  position: relative;
   width: 24px;
   height: 24px;
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--accent) 11%, var(--bg-subtle));
-  border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--border));
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  /* Editorial mesh-orb: a periwinkle→violet radial well seated on the brand's
+     cool surface, so any vendor mark (including a warm coral one) sits in the
+     Kinected family instead of floating as a bare warm sprite (defect C5). */
+  background:
+    radial-gradient(
+      120% 120% at 30% 22%,
+      color-mix(in srgb, var(--accent) 34%, var(--bg-panel)),
+      color-mix(in srgb, var(--accent-strong, var(--accent)) 16%, var(--bg-subtle)) 62%,
+      var(--bg-subtle)
+    );
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 12%, transparent),
+    inset 0 0 8px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.inline-switcher--compact .inline-switcher__chip-icon .agent-icon,
+.inline-switcher--compact .inline-switcher__chip-icon img.agent-icon {
+  position: relative;
+  z-index: 1;
+  /* Ease the vendor mark toward the cool orb without stripping its identity. */
+  filter: saturate(0.82);
 }
 .inline-switcher--compact .inline-switcher__chip-icon .agent-icon,
 .inline-switcher--compact .inline-switcher__chip-icon img.agent-icon {
