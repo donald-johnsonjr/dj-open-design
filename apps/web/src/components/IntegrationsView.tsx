@@ -9,10 +9,10 @@ import {
   trackSettingsConnectorAuthResult,
 } from '../analytics/events';
 import { ConnectorSection } from './SettingsDialog';
-import { Icon } from './Icon';
 import { McpClientSection } from './McpClientSection';
 import { SkillsSection } from './SkillsSection';
 import { UseEverywhereGuidePanel } from './UseEverywhereModal';
+import { PageHeader } from './PageHeader';
 import { useT } from '../i18n';
 
 export type IntegrationTab = 'mcp' | 'connectors' | 'skills' | 'use-everywhere';
@@ -91,25 +91,18 @@ export function IntegrationsView({
     typeof window !== 'undefined' ? window.location.origin : undefined;
 
   return (
-    <section className="integrations-view" aria-labelledby="integrations-title">
-      <header className="integrations-view__hero">
-        <div>
-          <p className="integrations-view__kicker">{t('integrations.kicker')}</p>
-          <h1 id="integrations-title" className="entry-section__title">
-            {t('entry.navIntegrations')}
-          </h1>
-          <p className="integrations-view__lede">
-            {t('integrations.lede')}
-          </p>
-        </div>
-        <div className="integrations-view__badge" aria-hidden="true">
-          <Icon name="link" size={15} />
-          <span>{t('integrations.agentReady')}</span>
-        </div>
-      </header>
+    <section className="integrations-view" aria-label={t('entry.navIntegrations')}>
+      <PageHeader
+        className="integrations-view__masthead"
+        eyebrow={t('entry.navIntegrations')}
+        title={t('integrations.mastheadTitleLead')}
+        accent={t('integrations.mastheadTitleAccent')}
+        trailing="."
+        subtitle={t('integrations.lede')}
+      />
 
       <nav
-        className="integrations-view__tabs"
+        className="integrations-view__scopes"
         role="tablist"
         aria-label={t('integrations.areasAria')}
       >
@@ -121,7 +114,7 @@ export function IntegrationsView({
               type="button"
               role="tab"
               aria-selected={active}
-              className={`integrations-view__tab${active ? ' is-active' : ''}`}
+              className={`integrations-view__scope${active ? ' is-active' : ''}`}
               onClick={() => {
                 trackIntegrationsTabClick(analytics.track, {
                   page_name: 'integrations',
@@ -132,8 +125,7 @@ export function IntegrationsView({
               }}
               data-testid={`integrations-tab-${tab.id}`}
             >
-              <span className="integrations-view__tab-label">{integrationTabLabel(tab.id, t)}</span>
-              <span className="integrations-view__tab-hint">{integrationTabHint(tab.id, t)}</span>
+              {integrationTabLabel(tab.id, t)}
             </button>
           );
         })}
@@ -196,14 +188,5 @@ function integrationTabLabel(id: IntegrationTab, t: ReturnType<typeof useT>): st
     case 'connectors': return t('entry.tabConnectors');
     case 'skills': return t('integrations.tabLabel.skills');
     case 'use-everywhere': return t('entry.useEverywhereTitle');
-  }
-}
-
-function integrationTabHint(id: IntegrationTab, t: ReturnType<typeof useT>): string {
-  switch (id) {
-    case 'mcp': return t('integrations.tabHint.mcp');
-    case 'connectors': return t('integrations.tabHint.connectors');
-    case 'skills': return t('settings.skillsHint');
-    case 'use-everywhere': return t('integrations.tabHint.useEverywhere');
   }
 }

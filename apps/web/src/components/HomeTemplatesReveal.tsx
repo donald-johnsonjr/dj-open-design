@@ -45,6 +45,65 @@ export function HomeTemplatesReveal({ enabled, children }: Props) {
     if (!enabled) setRevealed(false);
   }, [enabled]);
 
+  // The bottom hint is fixed to the viewport, so on short laptop heights the
+  // hero's own scenario/template cards can extend into its band and it would
+  // print over their descriptions. Detect that overlap and fade the hint out
+  // of the way (it stays keyboard-focusable — see the `.is-obscured` rule — so
+  // a keyboard user can still Tab to it to reveal the gallery). On taller
+  // viewports, where there's clear space below the cards, the hint shows
+  // normally.
+  const hintRef = useRef<HTMLButtonElement | null>(null);
+  // Start obscured (faded out, see the `.is-obscured` rule) and only reveal the
+  // hint once `measure()` has confirmed it clears the hero cards. The measure
+  // runs in a rAF after mount, so a `false` initial would let the hint paint
+  // over the scenario-card descriptions on the first frame — during the entry
+  // animation, before the overlap check has run. Defaulting to obscured keeps
+  // that first paint clean on every viewport; the effect below (which always
+  // runs while the hint is mounted) then settles it to the real state.
+  const [hintObscured, setHintObscured] = useState(true);
+  useEffect(() => {
+    if (!enabled || revealed) return;
+    let raf = 0;
+    const measure = () => {
+      raf = 0;
+      const hint = hintRef.current;
+      if (!hint) return;
+      const hr = hint.getBoundingClientRect();
+      const cards = document.querySelectorAll(
+        '.home-hero__scenario-card, .home-hero__template-section, .home-hero__scenario-cards-wrap',
+      );
+      let obscured = false;
+      for (const card of cards) {
+        const cr = card.getBoundingClientRect();
+        if (cr.height > 0 && cr.bottom > hr.top - 6 && cr.top < hr.bottom + 6) {
+          obscured = true;
+          break;
+        }
+      }
+      setHintObscured(obscured);
+    };
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(measure);
+    };
+    schedule();
+    window.addEventListener('resize', schedule);
+    window.addEventListener('scroll', schedule, true);
+    // The hero's scenario art loads async and changes card heights; observe the
+    // hero so a late layout shift re-runs the overlap check.
+    const hero = document.querySelector('.home-hero');
+    const ro =
+      hero && typeof ResizeObserver !== 'undefined'
+        ? new ResizeObserver(schedule)
+        : null;
+    if (hero && ro) ro.observe(hero);
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener('resize', schedule);
+      window.removeEventListener('scroll', schedule, true);
+      ro?.disconnect();
+    };
+  }, [enabled, revealed]);
+
   // While collapsed the gallery is only height-clipped + aria-hidden, but its
   // buttons, tabs, and search input stay mounted and focusable. Mark the body
   // `inert` until revealed so a keyboard user can't Tab into the invisible
@@ -88,17 +147,18 @@ export function HomeTemplatesReveal({ enabled, children }: Props) {
         </Button>
       ) : (
         <Button
+          ref={hintRef}
           variant="ghost"
-          className="home-templates-reveal__hint"
+          className={`home-templates-reveal__hint${hintObscured ? ' is-obscured' : ''}`}
           onClick={() => setRevealed(true)}
           data-testid="home-templates-hint"
         >
+          <span>{t('homeHero.templatesScrollHint')}</span>
           <Icon
-            name="arrow-up"
+            name="chevron-down"
             size={15}
             className="home-templates-reveal__hint-arrow"
           />
-          <span>{t('homeHero.templatesScrollHint')}</span>
         </Button>
       )}
     </div>

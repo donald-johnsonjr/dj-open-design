@@ -4,6 +4,8 @@ import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promi
 import { dirname, join, relative } from "node:path";
 import { promisify } from "node:util";
 
+import { OPEN_DESIGN_PRODUCT_NAME } from "@open-design/sidecar-proto";
+
 import type { ToolPackConfig } from "../config.js";
 import { resolveToolPackLauncherLayout } from "../launcher-layout.js";
 import { winResources } from "../resources.js";
@@ -417,7 +419,10 @@ async function writeInstallerScript(config: ToolPackConfig, paths: WinPaths, pac
   const registryKey = escapeNsisString(identity.registryKey);
   const appPathsKey = escapeNsisString(identity.appPathsKey);
   const namespace = escapeNsisString(config.namespace);
-  const localDataRoot = `$APPDATA\\${escapeNsisString(PRODUCT_NAME)}\\namespaces\\${escapeNsisString(sanitizeNamespace(config.namespace))}`;
+  // Data root keeps the machine-identity name ("Open Design") so a display
+  // rename never orphans an existing install's %APPDATA% data. See
+  // resolveWinProductUserDataRoot / resolveWindowsUninstallRegistryKey.
+  const localDataRoot = `$APPDATA\\${escapeNsisString(OPEN_DESIGN_PRODUCT_NAME)}\\namespaces\\${escapeNsisString(sanitizeNamespace(config.namespace))}`;
   const localCacheRoot = `${localDataRoot}\\cache`;
   const localUpdateDownloadsRoot = `${localDataRoot}\\updates\\downloads`;
   const localUpdateReleasesRoot = `${localDataRoot}\\updates\\releases`;

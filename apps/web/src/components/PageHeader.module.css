@@ -1,0 +1,116 @@
+/* Kinected editorial masthead. Dark-first, high-contrast Didone title with a
+   swash-italic violet accent word, a tracked-mono eyebrow, and a right-aligned
+   actions slot that folds beneath the title on narrow viewports. */
+
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px 40px;
+  width: 100%;
+}
+
+.lead {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.eyebrow {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+/* Light theme: --text-soft (#8a8a9c) is only ~3.3:1 on the near-white canvas,
+   below AA for this small tracked label. Deepen to --text-muted (~7:1) in the
+   light paths (explicit light + system/light-OS); dark keeps the softer
+   editorial eyebrow. One rule lifts every PageHeader masthead — Design
+   systems, Projects, Plugins. */
+:global([data-theme='light']) .eyebrow {
+  color: var(--text-muted);
+}
+@media (prefers-color-scheme: light) {
+  :global(html:not([data-theme])) .eyebrow {
+    color: var(--text-muted);
+  }
+}
+
+.title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.02;
+  color: var(--text-strong);
+  /* Fluid from phone to desktop so the Didone stays elegant everywhere. */
+  font-size: clamp(2rem, 1.2rem + 3.4vw, 3.25rem);
+  text-wrap: balance;
+}
+
+.accent {
+  font-style: italic;
+  font-weight: 500;
+  /* The signature swash-italic violet accent word. */
+  background: var(--accent-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--accent);
+}
+
+.subtitle {
+  margin: 0;
+  max-width: 52ch;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+  /* Keep the CTA cluster aligned to the title baseline row on desktop. */
+  padding-bottom: 4px;
+}
+
+@media (max-width: 720px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+  .actions {
+    padding-bottom: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .title {
+    animation: pageHeaderRise 320ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  }
+  .eyebrow {
+    animation: pageHeaderRise 280ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  }
+  .subtitle {
+    animation: pageHeaderRise 360ms cubic-bezier(0.23, 1, 0.32, 1) both;
+    animation-delay: 40ms;
+  }
+}
+
+@keyframes pageHeaderRise {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

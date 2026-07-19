@@ -1,0 +1,586 @@
+/* Projects — editorial workspace.
+   The Projects surface, rebuilt to share the Kinected editorial rhythm of the
+   Design-systems index: a Didone masthead with a swash-italic violet accent, a
+   calm scope/search toolbar, and a restrained grid of premium project cards on
+   a dark violet-tinted canvas (no rainbow pastel covers). Card class names
+   (`design-card`, `project-thumb-*`, `design-card-*`) stay global so the shared
+   contract + component tests hold; every card style below is scoped under
+   `.root` via `:global()` so it never leaks to the Home recent-projects strip. */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+/* Board (kanban) view needs the full width + height so columns can scroll. */
+.rootKanban {
+  max-width: none;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Masthead + toolbar stay clamped to the editorial column in BOTH grid and
+   board views, so toggling the view never shifts the header horizontally.
+   Only the board region below is allowed to span the full content width. */
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+/* Right-edge fade on the horizontally-scrolling board, so trailing columns
+   read as "more to scroll" instead of clipping mid-word at the fold. */
+.rootKanban :global(.design-kanban-board) {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+}
+
+/* Gradient-pill "New project" CTA (Button variant="primary"), mirroring the
+   Design-systems masthead action. */
+.newBtn {
+  border-radius: var(--radius-pill);
+  padding: 9px 18px;
+  min-height: 40px;
+  font-size: 13.5px;
+}
+
+/* ── Toolbar: scope chips (left) · search + utilities (right) ─────────── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+}
+
+.scopes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.scopeChip {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 5px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-weight: 550;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color var(--dur-quick, 140ms) var(--ease-out),
+    background-color var(--dur-quick, 140ms) var(--ease-out),
+    color var(--dur-quick, 140ms) var(--ease-out);
+}
+.scopeChip:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.scopeChipActive,
+.scopeChipActive:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  background: var(--accent-tint);
+  color: var(--accent);
+}
+.scopeChip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Search */
+.searchWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 220px;
+}
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  display: inline-flex;
+  color: var(--text-faint);
+  pointer-events: none;
+}
+.search {
+  width: 100%;
+  min-height: 36px;
+  padding: 0 34px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--bg-subtle);
+  color: var(--text);
+  font-size: 13px;
+  transition: border-color var(--dur-quick, 140ms) var(--ease-out),
+    box-shadow var(--dur-quick, 140ms) var(--ease-out);
+}
+.search::placeholder {
+  color: var(--text-soft);
+}
+.search:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.searchKbd {
+  position: absolute;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  background: var(--bg-panel);
+  color: var(--text-soft);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1;
+  pointer-events: none;
+}
+.searchWrap:focus-within .searchKbd {
+  opacity: 0;
+}
+
+/* Quiet icon utilities (refresh / select) + segmented view toggle. */
+.utility {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.iconBtn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color var(--dur-quick, 140ms) var(--ease-out),
+    color var(--dur-quick, 140ms) var(--ease-out);
+}
+.iconBtn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.iconBtn:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+.iconBtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.viewToggle {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--bg-subtle);
+}
+.viewBtn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 30px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-faint);
+  cursor: pointer;
+  transition: background-color var(--dur-quick, 140ms) var(--ease-out),
+    color var(--dur-quick, 140ms) var(--ease-out);
+}
+.viewBtn:hover {
+  color: var(--text);
+}
+.viewBtnActive,
+.viewBtnActive:hover {
+  background: var(--bg-panel);
+  color: var(--accent);
+  box-shadow: var(--shadow-xs);
+}
+.viewBtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* Select-mode bar (replaces the Select icon while active). */
+.selectBar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px 4px 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 34%, var(--border));
+  border-radius: var(--radius-pill);
+  background: var(--accent-tint);
+}
+.selectCount {
+  font-size: 12.5px;
+  font-weight: 550;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.selectDelete {
+  appearance: none;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  border: 0;
+  background: var(--red);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 560;
+  cursor: pointer;
+}
+.selectDelete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.selectCancel {
+  appearance: none;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+.selectCancel:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+/* ── Grid ─────────────────────────────────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(236px, 1fr));
+  gap: 20px 18px;
+}
+
+/* Card — premium, calm. Overrides the shared drawer.css card styles only
+   within the Projects root. */
+.root :global(.design-card) {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  min-height: 0;
+  box-shadow: none;
+  transition: border-color var(--dur-quick, 140ms) var(--ease-out),
+    box-shadow var(--dur-quick, 140ms) var(--ease-out),
+    transform var(--dur-quick, 140ms) var(--ease-out);
+}
+.root :global(.design-card):hover {
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
+  box-shadow: 0 14px 34px -22px color-mix(in srgb, var(--accent) 70%, #000),
+    var(--shadow-sm);
+  transform: translateY(-2px);
+}
+.root :global(.design-card):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
+}
+
+/* Cover — a calm violet-tinted dark stage. No random pastel hue. */
+.root :global(.design-card-thumb) {
+  flex: 0 0 auto;
+  aspect-ratio: 16 / 10;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(120% 85% at 50% 0%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 66%),
+    linear-gradient(180deg, var(--bg-subtle), var(--bg-muted));
+  border-bottom: 1px solid var(--border-soft);
+}
+/* Kill the legacy folder-shape pseudo icon. */
+.root :global(.design-card-thumb)::before,
+.root :global(.design-card-thumb)::after {
+  content: none;
+  display: none;
+}
+
+/* Fallback monogram → a quiet Didone book-plate letter. */
+.root :global(.project-thumb-glyph) {
+  width: auto;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  font-family: var(--display);
+  font-size: 46px;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--accent) 26%, var(--text-faint));
+  text-transform: uppercase;
+}
+
+/* Brand-kit logo tile stays a neat framed miniature, on a calm surface. */
+.root :global(.project-thumb-brand-logo) {
+  width: 68px;
+  height: 68px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-xs);
+}
+
+/* Live-count chip sits quietly on the cover. */
+.root :global(.design-live-count) {
+  right: 12px;
+  bottom: 12px;
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+  background: color-mix(in srgb, var(--bg-panel) 82%, transparent);
+  box-shadow: var(--shadow-xs);
+  backdrop-filter: blur(6px);
+}
+
+/* Meta block */
+.root :global(.design-card-meta-block) {
+  padding: 13px 15px 15px;
+  gap: 7px;
+  border-top: 0;
+  background: var(--bg-panel);
+}
+.root :global(.design-card-tag-row) {
+  min-height: 0;
+}
+/* Category → a single calm tracked-mono micro-label (no colored pill soup). */
+.root :global(.design-card-tag) {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+.root :global(.design-card-name) {
+  font-family: var(--display);
+  font-size: 16.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text-strong);
+}
+.root :global(.design-card-meta) {
+  align-items: baseline;
+  font-size: 12px;
+  color: var(--text-soft);
+}
+.root :global(.design-card-meta .ds) {
+  color: color-mix(in srgb, var(--accent) 82%, var(--text));
+}
+
+/* Quiet overflow-menu trigger on the card. Sized up from the shared 26px base
+   to a 34px hit area — comfortably past the WCAG 2.5.8 floor and closer to the
+   44px mobile ideal — without enlarging the icon glyph itself. */
+.root :global(.design-card-more) {
+  width: 34px;
+  height: 34px;
+  background: color-mix(in srgb, var(--bg-panel) 78%, transparent);
+  border-color: var(--border);
+  border-radius: var(--radius-pill);
+  color: var(--text-muted);
+  backdrop-filter: blur(6px);
+}
+.root :global(.design-card-more:hover) {
+  color: var(--text-strong);
+  border-color: var(--accent);
+}
+
+/* Selection checkbox echoes the accent. */
+.root :global(.design-card.is-selected) {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+/* ── Empty + no-match ─────────────────────────────────────────────────── */
+.empty {
+  min-height: 480px;
+}
+.emptyBtn {
+  border-radius: var(--radius-pill);
+  padding: 10px 20px;
+  min-height: 44px;
+  font-size: 14px;
+}
+
+/* ── Skeleton (loading) ───────────────────────────────────────────────── */
+.skeletonBlock {
+  display: block;
+  border-radius: var(--radius-sm);
+  background:
+    linear-gradient(
+      110deg,
+      transparent 28%,
+      color-mix(in srgb, #fff 13%, transparent) 50%,
+      transparent 72%
+    ) 0 0 / 200% 100%,
+    color-mix(in srgb, var(--bg-elevated) 68%, var(--bg-muted));
+  animation: projectsSkeletonSheen 1.55s cubic-bezier(0.23, 1, 0.32, 1) infinite;
+}
+.skeletonHead {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.skeletonEyebrow {
+  width: 180px;
+  height: 12px;
+}
+.skeletonTitle {
+  width: min(460px, 70%);
+  height: 42px;
+  border-radius: var(--radius);
+}
+.skeletonSub {
+  width: min(560px, 84%);
+  height: 16px;
+}
+.skeletonToolbar {
+  width: 100%;
+  height: 36px;
+  border-radius: var(--radius-pill);
+}
+.skeletonCard {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--bg-panel);
+}
+.skeletonThumb {
+  aspect-ratio: 16 / 10;
+  border-radius: 0;
+}
+.skeletonMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 14px 15px 16px;
+}
+.skeletonLineSm {
+  width: 44%;
+  height: 10px;
+}
+.skeletonLineMd {
+  width: 72%;
+  height: 16px;
+}
+.skeletonLineLg {
+  width: 88%;
+  height: 12px;
+}
+
+@keyframes projectsSkeletonSheen {
+  to {
+    background-position: -200% 0, 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonBlock {
+    animation: none;
+  }
+  .root :global(.design-card),
+  .root :global(.design-card):hover {
+    transition: border-color 1ms;
+    transform: none;
+  }
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .searchWrap {
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 720px) {
+  .toolbar {
+    align-items: stretch;
+  }
+  .tools {
+    justify-content: space-between;
+  }
+  .searchWrap {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .scopes {
+    flex: 1 1 100%;
+  }
+  .scopeChip {
+    flex: 1 1 0;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 560px) {
+  .root {
+    gap: 20px;
+  }
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 12px;
+  }
+  .root :global(.design-card-name) {
+    font-size: 15px;
+  }
+  .root :global(.project-thumb-glyph) {
+    font-size: 38px;
+  }
+  .root :global(.design-card-meta-block) {
+    padding: 11px 12px 13px;
+  }
+  /* On the 2-column phone grid the card is too narrow to keep the whole
+     "freeform · Not started · time" on one line — let the time drop below so
+     the status stops truncating to "Not s…". */
+  .root :global(.design-card-meta) {
+    flex-wrap: wrap;
+    row-gap: 1px;
+  }
+  .root :global(.design-card-meta-main) {
+    flex: 1 1 100%;
+  }
+  .newBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}

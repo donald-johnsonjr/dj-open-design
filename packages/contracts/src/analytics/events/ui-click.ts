@@ -84,6 +84,8 @@ export interface SettingsPopoverClickProps {
     | 'appearance'
     | 'share_channel'
     | 'workspace_teams'
+    | 'star'
+    | 'use_everywhere'
     | 'join_discord'
     | 'follow_x'
     | 'follow_threads'

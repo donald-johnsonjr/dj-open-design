@@ -1,154 +1,137 @@
+/* ============================================================================
+   Plugins — Kinected editorial marketplace.
+
+   A presentation-only pass that lifts the Plugins nav surface to the same dark,
+   calm, editorial rhythm as the shipped Projects (`DesignsTab`) and Design
+   systems (`DesignSystemsTab`) surfaces: the shared `PageHeader` masthead (mono
+   eyebrow + swash-italic violet accent title + gradient-pill CTA), a restrained
+   scope-chip toolbar in place of the old stat cards + two-line tab cards, and
+   hairline premium cards with a single violet signal (no multi-color pill soup).
+
+   Every selector is scoped under `.plugins-view` (or the `.plugins-import-modal`
+   dialog), so it can never leak to the Home discovery gallery which shares the
+   `.plugins-home` component. Tokens only — no hardcoded colors, no inline
+   styles. Informative small text holds AA on both themes via --text-muted;
+   --text-soft / --text-faint are reserved for dark + decorative (aria-hidden)
+   labels, mirroring the Design-systems module.
+   ============================================================================ */
+
 .plugins-view {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 26px;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
 }
 
-.plugins-view__hero {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 18px;
+/* ── Masthead (shared PageHeader) — gradient-pill CTA + ghost import ───────── */
+.plugins-view__cta {
+  border-radius: var(--radius-pill);
+  padding: 9px 18px;
+  min-height: 40px;
+  gap: 7px;
+  font-size: 13.5px;
+}
+.plugins-view__cta-ghost {
+  border-radius: var(--radius-pill);
+  padding: 9px 16px;
+  min-height: 40px;
+  gap: 7px;
+  font-size: 13.5px;
 }
 
+/* Kept for the import dialog head (mono eyebrow). */
 .plugins-view__kicker {
   margin: 0 0 6px;
+  font-family: var(--mono);
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.11em;
+  font-weight: 600;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
+  color: var(--text-soft);
+}
+/* Light theme: --text-soft (~3.3:1 on the near-white canvas) is below AA for
+   this small tracked label (Team "COMING SOON", Import-modal "USER PLUGINS").
+   Deepen to --text-muted (~7:1) in the light paths, matching the masthead
+   eyebrow; dark keeps the softer tone. */
+[data-theme='light'] .plugins-view__kicker {
   color: var(--text-muted);
 }
-
-.plugins-view__lede {
-  max-width: 620px;
-  margin: 8px 0 0;
-  color: var(--text-muted);
-  font-size: 14px;
-  line-height: 1.55;
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) .plugins-view__kicker {
+    color: var(--text-muted);
+  }
 }
 
-.plugins-view__badge {
+/* ── Scope chips — the calm toolbar replacing stats + two-line tabs ────────── */
+.plugins-view__scopes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.plugins-view__scope {
+  appearance: none;
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  flex: 0 0 auto;
-  padding: 7px 10px;
+  min-height: 34px;
+  padding: 5px 14px;
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);
-  color: var(--text-muted);
-  background: var(--bg-panel);
-  font-size: 12px;
-}
-
-.plugins-view__hero-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 0 0 auto;
-}
-
-.plugins-view__stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.plugins-view__stat {
-  padding: 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg-panel);
-}
-
-.plugins-view__stat-value {
-  display: block;
-  color: var(--text-strong);
-  font-family: var(--serif);
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 1;
-}
-
-.plugins-view__stat-label {
-  display: block;
-  margin-top: 6px;
-  color: var(--text-muted);
-  font-size: 12px;
-}
-
-.plugins-view__tabs {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  padding: 5px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
   background: var(--bg-subtle);
-}
-
-.plugins-view__tab {
-  appearance: none;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  min-width: 0;
-  padding: 9px 10px;
-  border: 1px solid transparent;
-  border-radius: var(--radius);
-  background: transparent;
   color: var(--text-muted);
-  text-align: left;
+  font-size: 12.5px;
+  font-weight: 550;
+  font-family: inherit;
   cursor: pointer;
-  transition: background-color 120ms var(--ease-out), border-color 120ms var(--ease-out), color 120ms var(--ease-out);
+  transition: border-color var(--dur-quick, 140ms) var(--ease-out),
+    background-color var(--dur-quick, 140ms) var(--ease-out),
+    color var(--dur-quick, 140ms) var(--ease-out);
 }
-
-.plugins-view__tab:hover {
-  background: var(--bg-panel);
+.plugins-view__scope:hover {
+  border-color: var(--accent);
   color: var(--text);
 }
-
-.plugins-view__tab.is-disabled,
-.plugins-view__tab:disabled {
-  cursor: not-allowed;
-  opacity: 0.58;
+.plugins-view__scope.is-active,
+.plugins-view__scope.is-active:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  background: var(--accent-tint);
+  /* Deepen toward text-strong so the active label clears AA on the pale tint
+     pill in the light theme while staying clearly violet on dark. */
+  color: color-mix(in srgb, var(--accent) 72%, var(--text-strong));
 }
-
-.plugins-view__tab.is-disabled:hover,
-.plugins-view__tab:disabled:hover {
-  background: transparent;
-  color: var(--text-muted);
+.plugins-view__scope:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
-
-.plugins-view__tab.is-active {
+.plugins-view__scope-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  min-height: 18px;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
   background: var(--bg-panel);
-  border-color: var(--border);
-  color: var(--text-strong);
-  box-shadow: var(--shadow-sm);
-}
-
-.plugins-view__tab-label {
-  font-size: 13px;
-  font-weight: 650;
-}
-
-.plugins-view__tab-hint {
-  overflow: hidden;
-  max-width: 100%;
   color: var(--text-faint);
-  font-size: 11px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 10.5px;
+  font-weight: 650;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.plugins-view__scope.is-active .plugins-view__scope-count {
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-panel));
+  color: color-mix(in srgb, var(--accent) 72%, var(--text-strong));
 }
 
+/* ── Gallery + section shells ─────────────────────────────────────────────── */
 .plugins-view__gallery,
 .plugins-view__section {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
-
 .plugins-view__gallery > .plugins-home {
   width: 100%;
 }
@@ -159,120 +142,118 @@
   justify-content: space-between;
   gap: 16px;
 }
-
 .plugins-view__section-head h2,
-.plugins-view__team h2,
-.plugins-view__marketplace h3,
-.plugins-view__future-card h3 {
+.plugins-view__marketplace h3 {
   margin: 0;
+  font-family: var(--display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
   color: var(--text-strong);
 }
-
 .plugins-view__section-head h2 {
-  font-size: 18px;
+  font-size: 20px;
 }
-
-.plugins-view__section-head p,
-.plugins-view__team p,
-.plugins-view__future-card p {
+.plugins-view__section-head p {
   margin: 5px 0 0;
   color: var(--text-muted);
   font-size: 13px;
-  line-height: 1.45;
+  line-height: 1.5;
 }
-
 .plugins-view__section-count {
   flex: 0 0 auto;
+  font-family: var(--mono);
+  font-size: 11px;
   color: var(--text-faint);
-  font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
 
-.plugins-view__list,
 .plugins-view__marketplaces,
 .plugins-view__available-list {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 10px;
 }
 
+/* ── Available toolbar — search + source select (Design-systems rhythm) ───── */
 .plugins-view__available-controls {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 10px 16px;
   min-width: 0;
 }
-
 .plugins-view__search {
   position: relative;
   display: inline-flex;
   align-items: center;
   flex: 1 1 320px;
-  min-width: 180px;
-  max-width: 420px;
+  min-width: 200px;
+  max-width: 440px;
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);
-  background: var(--bg-panel);
-  transition: border-color 120ms var(--ease-out), box-shadow 120ms var(--ease-out);
+  background: var(--bg-subtle);
+  transition: border-color var(--dur-quick, 140ms) var(--ease-out),
+    box-shadow var(--dur-quick, 140ms) var(--ease-out);
 }
-
 .plugins-view__search:focus-within {
-  border-color: var(--border-strong);
-  box-shadow: 0 0 0 3px var(--accent-tint);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
-
 .plugins-view__search-icon {
   position: absolute;
-  left: 10px;
+  left: 12px;
   color: var(--text-faint);
   pointer-events: none;
 }
-
 .plugins-view__search input,
 .plugins-view__search input:focus {
   appearance: none;
   width: 100%;
+  min-height: 36px;
   border: 0;
   border-radius: var(--radius-pill);
-  padding: 7px 30px;
+  padding: 0 34px;
   background: transparent;
   color: var(--text);
   font: inherit;
-  font-size: 12px;
+  font-size: 13px;
   outline: none;
   box-shadow: none;
 }
-
 .plugins-view__search input::placeholder {
-  color: var(--text-faint);
+  /* Informative placeholder — hold at AA (--text-muted), not sub-AA faint. */
+  color: var(--text-muted);
 }
-
 .plugins-view__search input::-webkit-search-cancel-button,
 .plugins-view__search input::-webkit-search-decoration {
   appearance: none;
   display: none;
 }
-
 .plugins-view__search-clear {
   position: absolute;
-  right: 5px;
+  right: 6px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   padding: 0;
   border: 0;
-  border-radius: 50%;
-  background: var(--bg-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--bg-panel);
   color: var(--text-muted);
   cursor: pointer;
+  transition: background-color var(--dur-quick, 140ms) var(--ease-out),
+    color var(--dur-quick, 140ms) var(--ease-out);
 }
-
 .plugins-view__search-clear:hover {
   background: var(--border-soft, var(--border));
   color: var(--text);
+}
+.plugins-view__search-clear:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 .plugins-view__filter {
@@ -283,96 +264,123 @@
   color: var(--text-muted);
   font-size: 12px;
 }
-
-.plugins-view__filter span {
-  min-width: 32px;
-  text-align: center;
-}
-
-.plugins-view__filter select {
-  min-height: 32px;
-  min-width: 180px;
+.plugins-view__filter select,
+.plugins-view__source-actions select,
+.plugins-view__source-row select {
+  appearance: none;
+  min-height: 36px;
+  min-width: 160px;
   max-width: 260px;
-  padding: 7px 34px 7px 12px;
+  padding: 0 32px 0 14px;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--bg-panel);
+  border-radius: var(--radius-pill);
+  background: var(--bg-subtle)
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A8A9C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>")
+    no-repeat right 12px center;
   color: var(--text);
-  font-size: 12px;
+  font-size: 12.5px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color var(--dur-quick, 140ms) var(--ease-out),
+    box-shadow var(--dur-quick, 140ms) var(--ease-out);
+}
+.plugins-view__filter select:focus-visible,
+.plugins-view__source-actions select:focus-visible,
+.plugins-view__source-row select:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.plugins-view__source-actions select {
+  min-width: 128px;
 }
 
-.plugins-view__row,
+/* ── Premium cards — Available entries + registry sources ─────────────────── */
 .plugins-view__marketplace,
 .plugins-view__available-card,
-.plugins-view__install-card,
-.plugins-view__source-manager,
-.plugins-view__team {
+.plugins-view__source-manager {
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: var(--bg-panel);
 }
-
-.plugins-view__row {
+.plugins-view__marketplace,
+.plugins-view__available-card {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  padding: 13px;
+  gap: 18px;
+  padding: 16px 18px;
+  transition: border-color var(--dur-quick, 140ms) var(--ease-out),
+    box-shadow var(--dur-quick, 140ms) var(--ease-out),
+    transform var(--dur-quick, 140ms) var(--ease-out);
+}
+.plugins-view__marketplace:hover,
+.plugins-view__available-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
+  box-shadow: 0 14px 34px -22px color-mix(in srgb, var(--accent) 70%, #000),
+    var(--shadow-sm);
+  transform: translateY(-2px);
 }
 
-.plugins-view__row-main {
+.plugins-view__available-main {
   min-width: 0;
 }
-
 .plugins-view__row-title {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  font-family: var(--display);
+  font-size: 16.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
   color: var(--text-strong);
-  font-size: 14px;
-  font-weight: 650;
 }
-
 .plugins-view__row-title > span {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 .plugins-view__row-title > .trust-badge {
   flex: 0 0 auto;
 }
-
-.plugins-view__row-main p {
-  margin: 5px 0 0;
+.plugins-view__available-main p {
+  margin: 6px 0 0;
   color: var(--text-muted);
   font-size: 12.5px;
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
+/* Meta → one quiet tracked-mono line with middot separators. No pill soup. */
 .plugins-view__meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
-  color: var(--text-faint);
-  font-size: 11.5px;
+  align-items: baseline;
+  gap: 4px 8px;
+  margin-top: 10px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
 }
-
 .plugins-view__meta > span {
-  padding: 2px 6px;
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: baseline;
+}
+.plugins-view__meta > span + span::before {
+  content: '·';
+  margin-right: 8px;
+  color: var(--text-faint);
 }
 
 .plugins-view__row-actions {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   flex: 0 0 auto;
 }
 
+/* ── Buttons — accent pill (install) · ghost (details) · calm danger ───────── */
 .plugins-view__primary,
 .plugins-view__secondary,
 .plugins-view__danger {
@@ -381,43 +389,50 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 32px;
-  min-width: 48px;
-  padding: 0 11px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
+  min-height: 36px;
+  min-width: 52px;
+  padding: 0 14px;
+  border-radius: var(--radius-pill);
+  font-size: 12.5px;
+  font-weight: 560;
+  font-family: inherit;
   cursor: pointer;
-  transition: background-color 120ms var(--ease-out), border-color 120ms var(--ease-out), color 120ms var(--ease-out);
+  transition: background-color var(--dur-quick, 140ms) var(--ease-out),
+    border-color var(--dur-quick, 140ms) var(--ease-out),
+    color var(--dur-quick, 140ms) var(--ease-out);
 }
-
 .plugins-view__primary {
   border: 1px solid var(--accent);
   background: var(--accent);
-  color: white;
+  color: #fff;
 }
-
 .plugins-view__primary:hover:not(:disabled) {
   background: var(--accent-strong);
   border-color: var(--accent-strong);
 }
-
 .plugins-view__secondary {
   border: 1px solid var(--border);
-  background: var(--bg-panel);
+  background: var(--bg-subtle);
   color: var(--text-muted);
 }
-
 .plugins-view__secondary:hover:not(:disabled) {
-  border-color: var(--border-strong);
+  border-color: var(--accent);
   color: var(--text);
 }
-
 .plugins-view__danger {
-  border: 1px solid var(--red-border);
-  background: var(--red-bg);
+  border: 1px solid color-mix(in srgb, var(--red) 32%, var(--border));
+  background: color-mix(in srgb, var(--red) 8%, transparent);
   color: var(--red);
 }
-
+.plugins-view__danger:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--red) 48%, var(--border));
+}
+.plugins-view__primary:focus-visible,
+.plugins-view__secondary:focus-visible,
+.plugins-view__danger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
 .plugins-view__primary:disabled,
 .plugins-view__secondary:disabled,
 .plugins-view__danger:disabled {
@@ -425,205 +440,282 @@
   opacity: 0.55;
 }
 
-.plugins-view__marketplace,
-.plugins-view__available-card {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 13px;
-}
-
-.plugins-view__available-main {
-  min-width: 0;
-}
-
-.plugins-view__available-main p {
-  margin: 5px 0 0;
-  color: var(--text-muted);
-  font-size: 12.5px;
-  line-height: 1.45;
-}
-
-.plugins-view__marketplace a {
-  display: inline-block;
-  margin-top: 5px;
-  color: var(--text-muted);
-  font-size: 12px;
-  word-break: break-all;
-}
-
+/* ── Sources — add-source form + registry cards ───────────────────────────── */
 .plugins-view__source-manager {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 14px;
+  gap: 10px;
+  padding: 16px 18px;
 }
-
 .plugins-view__source-manager label {
   color: var(--text-strong);
-  font-size: 13px;
-  font-weight: 650;
+  font-size: 12.5px;
+  font-weight: 600;
 }
-
-.plugins-view__source-actions {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  flex: 0 0 auto;
-}
-
-.plugins-view__source-actions select,
-.plugins-view__source-row select {
-  min-height: 32px;
-  padding: 7px 34px 7px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--bg-panel);
-  color: var(--text);
-  font-size: 12px;
-}
-
-.plugins-view__source-actions select {
-  min-width: 112px;
-}
-
-.plugins-view__install-card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 14px;
-}
-
-.plugins-view__import {
-  padding: 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--bg-panel);
-  box-shadow: var(--shadow-sm);
-}
-
-.plugins-view__install-card label {
-  color: var(--text-strong);
-  font-size: 13px;
-  font-weight: 650;
-}
-
 .plugins-view__source-row {
   display: flex;
   align-items: stretch;
   gap: 8px;
   min-width: 0;
 }
-
 .plugins-view__source-row input {
   flex: 1 1 0;
   min-width: 0;
   width: auto;
-}
-
-.plugins-view__source-row select {
-  flex: 0 0 auto;
-  min-width: 140px;
-  width: 180px;
-}
-
-.plugins-view__source-row .plugins-view__primary {
-  flex: 0 0 auto;
-  min-width: 104px;
-  white-space: nowrap;
-}
-
-.plugins-view__source-help {
-  color: var(--text-muted);
-  font-size: 12px;
-  line-height: 1.45;
-}
-
-.plugins-view__source-help code,
-.plugins-view__empty code {
-  padding: 1px 5px;
-  border-radius: 3px;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
   background: var(--bg-subtle);
   color: var(--text);
-  font-size: 11px;
+  font: inherit;
+  font-size: 13px;
+}
+.plugins-view__source-row input::placeholder {
+  color: var(--text-muted);
+}
+.plugins-view__source-row input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.plugins-view__source-row select {
+  flex: 0 0 auto;
+  min-width: 150px;
+  width: 176px;
+}
+.plugins-view__source-row .plugins-view__primary {
+  flex: 0 0 auto;
+  min-width: 108px;
+  white-space: nowrap;
+}
+.plugins-view__source-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.plugins-view__marketplace a {
+  display: inline-block;
+  margin-top: 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+  word-break: break-all;
+}
+.plugins-view__marketplace a:hover {
+  color: var(--accent);
 }
 
-.plugins-view__future-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.plugins-view__future-card {
-  padding: 13px;
-  border: 1px dashed var(--border);
-  border-radius: var(--radius);
+/* ── Notice ───────────────────────────────────────────────────────────────── */
+.plugins-view__notice {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   background: var(--bg-panel);
+  color: var(--text);
+  font-size: 13px;
+}
+.plugins-view__notice.is-success {
+  border-color: color-mix(in srgb, var(--green, #3d7a4f) 30%, var(--border));
+  background: color-mix(in srgb, var(--green, #3d7a4f) 7%, var(--bg-panel));
+}
+.plugins-view__notice.is-error {
+  border-color: color-mix(in srgb, var(--red) 32%, var(--border));
+  background: color-mix(in srgb, var(--red) 7%, var(--bg-panel));
+}
+.plugins-view__notice-sub {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.plugins-view__notice-log {
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.plugins-view__notice-log ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
 }
 
+/* Every empty / no-match / zero-source state routes through the shared
+   EmptyState primitive; this gives it a generous focal stage to match the
+   sibling surfaces. */
+.plugins-view__empty-state {
+  min-height: 440px;
+}
+
+/* ── Team — editorial coming-soon block ───────────────────────────────────── */
+.plugins-view__team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  min-height: 340px;
+  padding: 48px 40px;
+  text-align: center;
+}
+.plugins-view__team .plugins-view__kicker {
+  margin: 0;
+}
+.plugins-view__team h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text-strong);
+}
+.plugins-view__team p:not(.plugins-view__kicker) {
+  margin: 0;
+  max-width: 44ch;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
 .plugins-view__future-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  margin-bottom: 8px;
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  color: var(--text-muted);
-  background: var(--bg-subtle);
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-lg);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-panel));
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border));
 }
 
-.plugins-view__team {
+/* ── Loading skeleton — sheen wall (Design-systems / Projects treatment) ───── */
+.plugins-view__skeleton {
   display: flex;
-  gap: 12px;
-  padding: 18px;
+  flex-direction: column;
+  gap: 16px;
 }
-
-.plugins-view__empty {
-  padding: 20px 16px;
-  border: 1px dashed var(--border);
-  border-radius: var(--radius);
-  color: var(--text-muted);
-  font-size: 13px;
-  text-align: center;
+.plugins-view__skeleton-block {
+  display: block;
+  border-radius: var(--radius-sm);
+  background:
+    linear-gradient(
+      110deg,
+      transparent 28%,
+      color-mix(in srgb, #fff 13%, transparent) 50%,
+      transparent 72%
+    ) 0 0 / 200% 100%,
+    color-mix(in srgb, var(--bg-elevated) 68%, var(--bg-muted));
+  animation: pluginsSkeletonSheen 1.55s cubic-bezier(0.23, 1, 0.32, 1) infinite;
 }
-
-.plugins-view__notice {
-  padding: 10px 12px;
+.plugins-view__skeleton-toolbar {
+  width: min(440px, 70%);
+  height: 36px;
+  border-radius: var(--radius-pill);
+}
+.plugins-view__skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.plugins-view__skeleton-card {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  padding: 16px;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: var(--bg-panel);
+}
+.plugins-view__skeleton-thumb {
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius);
+}
+.plugins-view__skeleton-line {
+  height: 13px;
+}
+.plugins-view__skeleton-line--title {
+  width: 52%;
+  height: 17px;
+}
+.plugins-view__skeleton-line--body {
+  width: 84%;
+}
+@keyframes pluginsSkeletonSheen {
+  to {
+    background-position: -200% 0, 0 0;
+  }
+}
+
+/* ── Installed tab (shared .plugins-home component) — surface-scoped calming ──
+   The Home discovery gallery keeps its solid-violet facet pills; on the Plugins
+   surface we align the active facet pill to the calm accent-tint scope-chip
+   treatment so it reads as one editorial family. Scoped under `.plugins-view`
+   so Home is untouched. */
+.plugins-view .plugins-home__pill.is-active,
+.plugins-view .plugins-home__pill--all.is-active,
+.plugins-view .plugins-home__chip--saved.is-active {
+  background: var(--accent-tint);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  color: color-mix(in srgb, var(--accent) 72%, var(--text-strong));
+}
+.plugins-view .plugins-home__pill.is-active .plugins-home__pill-count,
+.plugins-view .plugins-home__pill--all.is-active .plugins-home__pill-count,
+.plugins-view .plugins-home__chip--saved.is-active .plugins-home__chip-count {
+  color: color-mix(in srgb, var(--accent) 72%, var(--text-strong));
+  opacity: 1;
+}
+.plugins-view .plugins-home__facets {
+  background: transparent;
+}
+
+/* ── Import dialog ────────────────────────────────────────────────────────── */
+.plugins-view__install-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.plugins-view__install-card label,
+.plugins-import-modal__head h2,
+.plugins-view__install-card h3 {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: 13px;
+  font-weight: 600;
+}
+.plugins-import-modal__head h2 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+.plugins-view__install-card h3 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 16px;
+}
+.plugins-view__install-card input {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--bg-subtle);
   color: var(--text);
+  font: inherit;
   font-size: 13px;
 }
-
-.plugins-view__notice.is-success {
-  border-color: color-mix(in srgb, var(--green, #168a4a) 25%, var(--border));
+.plugins-view__install-card input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
-
-.plugins-view__notice.is-error {
-  border-color: var(--red-border);
-  background: var(--red-bg);
-  color: var(--red);
-}
-
-.plugins-view__notice-sub {
-  margin-top: 3px;
+.plugins-view__source-help {
   color: var(--text-muted);
   font-size: 12px;
+  line-height: 1.5;
 }
-
-.plugins-view__notice-log {
-  margin-top: 6px;
-  color: var(--text-muted);
-  font-size: 12px;
-}
-
-.plugins-view__notice-log ul {
-  margin: 6px 0 0;
-  padding-left: 18px;
+.plugins-view__source-help code {
+  padding: 1px 6px;
+  border-radius: var(--radius-xs);
+  background: var(--bg-subtle);
+  color: var(--text);
+  font-size: 11.5px;
 }
 
 .plugins-import-modal__backdrop {
@@ -634,24 +726,25 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: rgba(15, 18, 24, 0.28);
-  backdrop-filter: blur(4px);
+  background: color-mix(in srgb, var(--bg-app, #0a0a12) 62%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
-
 .plugins-import-modal {
-  width: min(760px, 100%);
+  width: min(720px, 100%);
   max-height: min(760px, calc(100vh - 48px));
   overflow: auto;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 18px;
-  border: 1px solid var(--border);
+  padding: 22px;
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
-  background: var(--bg-panel);
-  box-shadow: var(--shadow-lg, 0 20px 60px rgba(0, 0, 0, 0.22));
+  background: var(--bg-elevated);
+  box-shadow:
+    0 40px 90px -40px color-mix(in srgb, var(--accent) 34%, #000),
+    var(--shadow-lg, 0 20px 60px rgba(0, 0, 0, 0.22));
 }
-
 .plugins-import-modal__head,
 .plugins-import-modal__foot {
   display: flex;
@@ -659,98 +752,88 @@
   justify-content: space-between;
   gap: 14px;
 }
-
-.plugins-import-modal__head h2,
-.plugins-view__install-card h3 {
-  margin: 0;
-  color: var(--text-strong);
-}
-
 .plugins-import-modal__close {
   appearance: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   padding: 0;
   border: 1px solid var(--border);
-  border-radius: 50%;
-  background: var(--bg-panel);
+  border-radius: var(--radius-pill);
+  background: var(--bg-subtle);
   color: var(--text-muted);
   cursor: pointer;
+  transition: border-color var(--dur-quick, 140ms) var(--ease-out),
+    color var(--dur-quick, 140ms) var(--ease-out);
 }
-
 .plugins-import-modal__close:hover {
-  color: var(--text);
-  border-color: var(--border-strong);
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
 }
-
 .plugins-import-modal__tabs {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
 }
-
 .plugins-import-modal__choice {
   appearance: none;
   display: flex;
   align-items: flex-start;
-  gap: 9px;
+  gap: 10px;
   min-width: 0;
-  padding: 11px;
+  padding: 12px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--bg-panel);
   color: var(--text-muted);
   text-align: left;
   cursor: pointer;
-  transition: background-color 120ms var(--ease-out), border-color 120ms var(--ease-out), color 120ms var(--ease-out);
+  transition: background-color var(--dur-quick, 140ms) var(--ease-out),
+    border-color var(--dur-quick, 140ms) var(--ease-out),
+    color var(--dur-quick, 140ms) var(--ease-out);
 }
-
 .plugins-import-modal__choice:hover,
 .plugins-import-modal__choice.is-active {
-  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--border));
   background: var(--accent-tint);
-  color: var(--accent);
+  color: color-mix(in srgb, var(--accent) 72%, var(--text-strong));
 }
-
 .plugins-import-modal__choice-icon {
   display: inline-flex;
   flex: 0 0 auto;
   padding-top: 1px;
 }
-
 .plugins-import-modal__choice-copy {
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
-
 .plugins-import-modal__choice-copy span:first-child {
   color: var(--text-strong);
   font-size: 12.5px;
-  font-weight: 650;
+  font-weight: 600;
 }
-
 .plugins-import-modal__choice-copy span:last-child {
   color: var(--text-muted);
   font-size: 11px;
-  line-height: 1.35;
+  line-height: 1.4;
 }
-
+.plugins-import-modal__choice.is-active .plugins-import-modal__choice-copy span:first-child {
+  color: color-mix(in srgb, var(--accent) 72%, var(--text-strong));
+}
 .plugins-import-modal__body {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
-
 .plugins-import-modal__file {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 96px;
+  min-height: 104px;
   padding: 16px;
   border: 1px dashed var(--border);
   border-radius: var(--radius);
@@ -758,85 +841,112 @@
   color: var(--text-muted);
   font-size: 13px;
   cursor: pointer;
+  transition: border-color var(--dur-quick, 140ms) var(--ease-out),
+    color var(--dur-quick, 140ms) var(--ease-out);
 }
-
 .plugins-import-modal__file:hover {
-  border-color: var(--border-strong);
+  border-color: var(--accent);
   color: var(--text);
 }
-
 .plugins-import-modal__file input {
   display: none;
 }
-
 .plugins-view__install-card p,
 .plugins-import-modal__foot p {
   margin: 4px 0 0;
   color: var(--text-muted);
   font-size: 12.5px;
-  line-height: 1.45;
+  line-height: 1.5;
 }
-
 .plugins-import-modal__foot {
   align-items: center;
-  padding-top: 4px;
+  padding-top: 8px;
   border-top: 1px solid var(--border-soft);
 }
 
-@media (max-width: 900px) {
-  .plugins-view__hero,
-  .plugins-view__hero-actions,
-  .plugins-view__row,
+/* ── Reduced motion ───────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .plugins-view__skeleton-block {
+    animation: none;
+  }
   .plugins-view__marketplace,
+  .plugins-view__marketplace:hover,
   .plugins-view__available-card,
-  .plugins-view__available-controls,
-  .plugins-view__source-actions {
+  .plugins-view__available-card:hover {
+    transition: border-color 1ms;
+    transform: none;
+  }
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .plugins-view__available-card,
+  .plugins-view__marketplace {
     flex-direction: column;
   }
-
-  .plugins-view__stats,
-  .plugins-view__tabs,
-  .plugins-view__future-grid {
-    grid-template-columns: 1fr;
-  }
-
   .plugins-view__row-actions,
-  .plugins-view__source-row,
-  .plugins-view__available-controls,
-  .plugins-view__search,
-  .plugins-view__filter,
   .plugins-view__source-actions {
     width: 100%;
   }
-
+  .plugins-view__row-actions .plugins-view__primary,
+  .plugins-view__row-actions .plugins-view__secondary {
+    flex: 1 1 0;
+  }
   .plugins-view__available-controls {
     align-items: stretch;
   }
-
-  .plugins-view__search,
-  .plugins-view__filter {
-    flex: 0 0 auto;
+  .plugins-view__search {
+    flex: 1 1 auto;
     max-width: none;
   }
-
+  .plugins-view__filter {
+    flex: 1 1 auto;
+  }
+  .plugins-view__filter select {
+    flex: 1 1 auto;
+    max-width: none;
+  }
   .plugins-view__source-row {
     flex-direction: column;
   }
-
   .plugins-view__source-row input,
   .plugins-view__source-row select,
-  .plugins-view__filter select,
   .plugins-view__source-row .plugins-view__primary {
     flex: 0 0 auto;
     width: 100%;
   }
-
   .plugins-import-modal__tabs {
     grid-template-columns: 1fr;
   }
-
   .plugins-import-modal__foot {
     align-items: stretch;
     flex-direction: column;
+  }
+}
+
+@media (max-width: 560px) {
+  .plugins-view {
+    gap: 20px;
+  }
+  .plugins-view__scopes {
+    gap: 5px;
+  }
+  .plugins-view__scope {
+    flex: 1 1 40%;
+    justify-content: center;
+  }
+  .plugins-view__cta,
+  .plugins-view__cta-ghost {
+    width: 100%;
+    justify-content: center;
+  }
+  .plugins-view__section-head h2 {
+    font-size: 18px;
+  }
+  .plugins-view__source-actions {
+    flex-wrap: wrap;
+  }
+  .plugins-view__source-actions select {
+    flex: 1 1 100%;
   }
 }

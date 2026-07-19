@@ -16,16 +16,23 @@
 .entry-shell--onboarding {
   position: relative;
   display: flex;
-  align-items: stretch;
-  justify-content: stretch;
-  min-height: 100vh;
+  flex-direction: column;
+  /* Fill the workspace body (viewport minus the tab-bar chrome), NOT the full
+     viewport: `100vh`/`height:100%` resolved to the whole viewport and
+     overflowed the body by the chrome height on mobile, which pushed the
+     sign-in footer below the fold. A column-flex shell + a `flex:1` scroll
+     modal fits the body exactly so the footer is visible at 390×844. */
+  min-height: 100%;
   padding: 0;
   background: var(--bg);
 }
 
 .entry-onboarding-modal {
+  flex: 1 1 auto;
+  /* Let the modal be bounded by the shell (so it scrolls internally) rather
+     than growing to its content and overflowing the viewport. */
+  min-height: 0;
   width: 100%;
-  height: 100vh;
   overflow: auto;
   border-radius: 0;
   background: var(--bg);
@@ -83,6 +90,29 @@
 }
 .entry--rail-open .entry-nav-rail {
   overflow: visible;
+}
+
+/* Nav-button labels ride alongside the icon only in the mobile drawer; on the
+   desktop icon rail they stay hidden (tooltips cover discoverability). */
+.entry-nav-rail__btn-label {
+  display: none;
+}
+/* The "Kinected / DESIGN" wordmark lockup is likewise drawer-only; the docked
+   icon rail shows the mark alone. The `.entry-nav-rail` prefix raises this to a
+   two-class selector so it decisively beats the Wordmark CSS Module's own
+   `.wordmark { display: inline-flex }` (equal single-class specificity, which
+   otherwise won on cascade order and leaked a clipped "Kinected / DESIGN"
+   sliver over the 36px mark on the docked desktop rail — defect C1). */
+.entry-nav-rail .entry-nav-rail__wordmark {
+  display: none;
+}
+/* Scrim behind the mobile drawer. Inert + invisible on desktop; the phone tier
+   below turns it on while the drawer is open. */
+.entry-nav-scrim {
+  display: none;
+  appearance: none;
+  border: 0;
+  padding: 0;
 }
 
 /* Brand slot — the logo, with a collapse button that fades in on hover so the
@@ -619,10 +649,26 @@
 .entry-nav-rail__logo-img {
   position: absolute;
   inset: auto;
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   display: block;
   pointer-events: none;
+}
+/* Seat the neural connection mark in the periwinkle→violet gradient tile on the
+   docked desktop rail (matches the mockup + the mobile drawer's 40px tile),
+   rather than a bare transparent glyph. The `.od-brand-glyph` co-class layers
+   the mark over the tile and wins on specificity over the primitive base. */
+.entry-nav-rail__logo-img.od-brand-glyph {
+  border-radius: 10px;
+  background:
+    url(/brand-mark.png) center / 74% no-repeat,
+    linear-gradient(
+      158deg,
+      color-mix(in srgb, var(--accent) 16%, var(--bg-panel)),
+      color-mix(in srgb, var(--bg-subtle) 88%, var(--bg-panel))
+    );
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 6%, transparent);
 }
 .entry-nav-rail__btn {
   appearance: none;
@@ -914,7 +960,7 @@
   gap: 8px;
   padding: 0 10px;
   border: 1px solid var(--border-soft);
-  border-radius: 9px;
+  border-radius: var(--radius);
   background: var(--bg-subtle);
   color: var(--text);
   font-size: 12.5px;
@@ -974,7 +1020,7 @@
   background: transparent;
   color: var(--text);
   min-height: 30px;
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1263,8 +1309,63 @@
   color: var(--text-faint);
   flex: 0 0 auto;
 }
-.inline-switcher--compact .inline-switcher__chip-text {
+/* Compact chip (the home composer footer, beside the "Design" pill). It must
+   read as a labelled sibling of that pill — not a stray icon-only sprite — so
+   we keep a short text label (just the agent/provider name) and hide only the
+   mode + model fragments. The vendor glyph is seated in a small violet-tinted
+   rounded tile so any multicolor agent mark sits on a consistent surface that
+   stays in the brand's cool family — never a warm outlier competing with the
+   reserved Ember accent or the CTA. */
+.inline-switcher--compact .inline-switcher__chip {
+  padding: 0 10px 0 5px;
+  gap: 7px;
+}
+.inline-switcher--compact .inline-switcher__chip-mode,
+.inline-switcher--compact .inline-switcher__chip-sep,
+.inline-switcher--compact .inline-switcher__chip-model {
   display: none;
+}
+.inline-switcher--compact .inline-switcher__chip-primary {
+  font-weight: 600;
+  color: var(--text-strong);
+}
+.inline-switcher--compact .inline-switcher__chip-icon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  /* Editorial mesh-orb: a periwinkle→violet radial well seated on the brand's
+     cool surface, so any vendor mark (including a warm coral one) sits in the
+     Kinected family instead of floating as a bare warm sprite (defect C5). */
+  background:
+    radial-gradient(
+      120% 120% at 30% 22%,
+      color-mix(in srgb, var(--accent) 34%, var(--bg-panel)),
+      color-mix(in srgb, var(--accent-strong, var(--accent)) 16%, var(--bg-subtle)) 62%,
+      var(--bg-subtle)
+    );
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 12%, transparent),
+    inset 0 0 8px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.inline-switcher--compact .inline-switcher__chip-icon .agent-icon,
+.inline-switcher--compact .inline-switcher__chip-icon img.agent-icon {
+  position: relative;
+  z-index: 1;
+  /* Ease the vendor mark toward the cool orb without stripping its identity. */
+  filter: saturate(0.82);
+}
+.inline-switcher--compact .inline-switcher__chip-icon .agent-icon,
+.inline-switcher--compact .inline-switcher__chip-icon img.agent-icon {
+  width: 16px;
+  height: 16px;
+}
+.inline-switcher--compact .inline-switcher__byok-glyph {
+  width: 16px;
+  height: 16px;
+  border-radius: calc(var(--radius-sm) - 2px);
 }
 .inline-switcher__amr-reminder-dot {
   position: absolute;
@@ -1590,7 +1691,7 @@
   height: 22px;
   padding: 0 10px;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--accent);
   color: #fff;
   font-size: 11px;
@@ -1814,7 +1915,7 @@
   min-height: 17px;
   padding: 2px 6px 2px 5px;
   border: 1px solid var(--model-tag-border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--model-tag-bg);
   color: var(--model-tag-color);
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--bg-panel) 72%, white 28%);
@@ -1865,7 +1966,7 @@
   height: 22px;
   padding: 0;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;
@@ -2010,12 +2111,38 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  isolation: isolate;
+  overflow: hidden;
   width: 100%;
   max-width: none;
   min-height: 100%;
   margin: 0;
   padding: 72px 24px 64px;
   gap: 0;
+}
+/* Sign-in placement of the shared neural-mesh — fills the full cloud section
+   and centers its fade on the brand lockup, tying the sign-in to the Home hero.
+   The topbar, center content, and footer all sit above it (own z-index). */
+.od-hero-mesh--cloud {
+  top: 0;
+  left: 50%;
+  width: min(1240px, 150%);
+  height: 100%;
+  z-index: 0;
+}
+.od-hero-mesh--cloud .od-hero-mesh__svg {
+  opacity: 0.42;
+}
+/* Lift all three regions above the mesh. The topbar and footer keep their own
+   absolute placement (z-index alone is enough); only the in-flow center column
+   needs a stacking context of its own. */
+.onboarding-view--cloud .onboarding-cloud__topbar,
+.onboarding-view--cloud .onboarding-cloud__footer {
+  z-index: 1;
+}
+.onboarding-view--cloud .onboarding-cloud__center {
+  position: relative;
+  z-index: 1;
 }
 
 .onboarding-cloud__topbar {
@@ -2027,13 +2154,42 @@
   gap: 8px;
 }
 
-/* Brand mark above the title; the glyph itself comes from the shared
-   .od-brand-glyph primitive. */
-.onboarding-cloud__logo {
+/* Brand mark above the title — the connection glyph seated in a subtle dark
+   rounded tile (matching the kinected.io header + the approved mockup). The
+   `.od-brand-glyph` co-class sets `background: url(...)`, so we re-declare the
+   background to layer the mark over the tile fill and win on specificity. */
+.onboarding-cloud__logo.od-brand-glyph {
   display: block;
-  width: 52px;
-  height: 52px;
-  margin-bottom: 22px;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 18px;
+  border-radius: 18px;
+  background:
+    url(/brand-mark.png) center / 72% no-repeat,
+    linear-gradient(
+      158deg,
+      color-mix(in srgb, var(--accent) 16%, var(--bg-panel)),
+      color-mix(in srgb, var(--bg-subtle) 86%, var(--bg-panel))
+    );
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 7%, transparent),
+    0 12px 30px -18px color-mix(in srgb, var(--accent) 66%, transparent);
+}
+
+.onboarding-cloud__wordmark[data-layout='stack'] {
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.onboarding-cloud__eyebrow {
+  margin: 0 0 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-soft);
 }
 
 /* Compact, icon-only language switcher used in the cloud landing top bar —
@@ -2087,10 +2243,24 @@
 .onboarding-cloud__title {
   margin: 0;
   color: var(--text-strong);
-  font-size: 30px;
-  font-weight: 700;
-  line-height: 1.15;
+  font-family: var(--display);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1.12;
   letter-spacing: -0.01em;
+}
+/* Signature swash accent on the headline's final word — mirrors
+   .home-hero__title-accent so the sign-in screen shares the brand move. */
+.onboarding-cloud__title-accent {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 500;
+  background: var(--accent-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* italic overhang so the swash tail isn't clipped by the text box */
+  padding-right: 0.08em;
 }
 
 .onboarding-cloud__body {
@@ -2111,24 +2281,34 @@
   margin-top: 32px;
   padding: 0 20px;
   border: 0;
-  border-radius: 14px;
-  background: var(--text-strong);
-  color: var(--bg);
+  border-radius: var(--radius-pill);
+  /* Signature gradient pill CTA (brand v2). */
+  background: var(--accent-grad);
+  color: #fff;
   font-size: 15px;
   font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: var(--cta-glow);
   cursor: pointer;
   transition:
+    filter 160ms cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 160ms cubic-bezier(0.23, 1, 0.32, 1),
     opacity 160ms cubic-bezier(0.23, 1, 0.32, 1),
     transform 140ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .onboarding-cloud__primary:hover:not(:disabled) {
-  /* Keep the dark fill on hover — the global `button:hover` rule in
-     primitives.css would otherwise repaint the background to --bg-subtle and
-     wash the white label away. Opacity alone carries the hover feedback. */
-  background: var(--text-strong);
+  /* Keep the gradient on hover — the global `button:hover` rule in
+     primitives.css would otherwise repaint the background. Brightness +
+     shadow carry the hover feedback. */
+  background: var(--accent-grad);
   border-color: transparent;
-  opacity: 0.88;
+  filter: brightness(1.07) saturate(1.03);
+  box-shadow: var(--cta-glow-hover);
+}
+
+.onboarding-cloud__primary:focus-visible:not(:disabled) {
+  box-shadow: var(--cta-glow-hover);
 }
 
 .onboarding-cloud__primary:active:not(:disabled) {
@@ -2162,22 +2342,68 @@
   color: var(--text-strong);
 }
 
-/* Two secondary links ("local CLI" or "your own key") on one row. */
+/* Two secondary routes ("local coding agent" / "bring your own key") on one
+   row. They read as real, discoverable controls — bordered ghost pills with a
+   leading icon and proper hover/focus-visible affordance — not plain muted
+   words the eye slides past. */
 .onboarding-cloud__alts {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  margin-top: 22px;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 26px;
 }
 
 .onboarding-cloud__alts .onboarding-cloud__secondary {
   margin-top: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--bg-panel) 66%, transparent);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 560;
+  transition:
+    color 160ms cubic-bezier(0.23, 1, 0.32, 1),
+    background-color 160ms cubic-bezier(0.23, 1, 0.32, 1),
+    border-color 160ms cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.onboarding-cloud__alts .onboarding-cloud__secondary:hover {
+  color: var(--text-strong);
+  background: var(--bg-panel);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+
+.onboarding-cloud__alts .onboarding-cloud__secondary:focus-visible {
+  outline: none;
+  color: var(--text-strong);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.onboarding-cloud__secondary-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  color: var(--accent);
 }
 
 .onboarding-cloud__alts-or {
-  color: var(--text-muted);
-  font-size: 14px;
+  color: var(--text-soft);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
 .onboarding-cloud__error {
@@ -2227,7 +2453,7 @@
   width: 56px;
   height: 56px;
   margin-bottom: 4px;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   background: var(--bg-panel);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-xs);
@@ -3528,7 +3754,7 @@
   max-width: 280px;
   padding: 7px 12px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--bg-panel);
   color: var(--text-strong);
   font-size: 13px;
@@ -3557,7 +3783,7 @@
   margin-top: 18px;
   padding: 14px 16px;
   border: 1px solid color-mix(in oklab, var(--accent) 22%, var(--border));
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   background: color-mix(in oklab, var(--accent) 6%, var(--bg-panel));
 }
 .onboarding-view__memory-callout-icon {
@@ -3566,7 +3792,7 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: color-mix(in oklab, var(--accent) 14%, var(--bg-panel));
   color: var(--accent);
   box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--accent) 22%, transparent);
@@ -3769,7 +3995,7 @@
   min-height: 17px;
   padding: 2px 6px 2px 5px;
   border: 1px solid var(--model-tag-border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--model-tag-bg);
   color: var(--model-tag-color);
   box-shadow: inset 0 1px 0 color-mix(in srgb, var(--bg-panel) 72%, white 28%);
@@ -4122,7 +4348,7 @@
 
 .onboarding-view__build-preview-swatches i {
   height: 44px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--accent);
 }
 
@@ -4410,7 +4636,10 @@
     width: 56px;
   }
   .entry-main__inner {
-    padding: 24px 16px 56px;
+    /* Extra bottom room so the fixed "scroll up to explore" hint (pinned to the
+       viewport bottom for new users) never collides with the last in-flow row
+       (…or start a blank project). */
+    padding: 24px 16px 72px;
   }
   .entry-main__inner--wide {
     max-width: 100%;
@@ -4485,7 +4714,7 @@
   .onboarding-view__steps li {
     padding: 8px 10px;
     border: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
-    border-radius: 8px;
+    border-radius: var(--radius);
     background: color-mix(in srgb, var(--bg-panel) 92%, transparent);
   }
 
@@ -4550,7 +4779,7 @@
   .onboarding-view__steps li {
     padding: 8px 10px;
     border: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
-    border-radius: 8px;
+    border-radius: var(--radius);
     background: color-mix(in srgb, var(--bg-panel) 92%, transparent);
   }
 
@@ -4803,5 +5032,216 @@
   .onboarding-view__build-actions .onboarding-view__secondary,
   .onboarding-view__build-actions .onboarding-view__primary {
     flex: 1 1 180px;
+  }
+
+  /* Sign-in secondary routes: stack the two pills vertically and center the
+     "or" between them (the flex-wrap layout let it float to the right of the
+     top pill). Full-width pills read as a clean vertical column. */
+  .onboarding-cloud__alts {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .onboarding-cloud__alts .onboarding-cloud__secondary {
+    width: 100%;
+  }
+  .onboarding-cloud__alts-or {
+    align-self: center;
+  }
+}
+
+/* ============================================================
+   Tablet + phone tier — the entry nav rail becomes a slide-in drawer.
+   At or below 900px the docked icon column is replaced by a fixed,
+   off-canvas drawer with a scrim: it overlays the content instead of
+   squeezing it, so a tablet (e.g. 834px) shows ONE primary nav layer
+   (the workspace tab bar + on-demand drawer) rather than a docked rail
+   competing with the tab bar. The drawer shows icon + label rows for a
+   native touch feel and is dismissed by tapping the scrim, choosing a
+   destination, or the close control. It is offset BELOW the fixed
+   workspace tab bar so its brand header can never be clipped behind it.
+   ============================================================ */
+@media (max-width: 900px) {
+  /* Drop the two-column grid entirely: the rail floats above content as a
+     fixed drawer, so the main scroll column should own the full width. (Keeping
+     the grid would auto-place `main` into the now-empty 0-width rail track once
+     the fixed rail leaves the flow.) */
+  .entry-shell--no-header .entry {
+    display: block;
+    position: relative;
+    height: 100%;
+    /* Grid items default to min-width:auto, which lets a wide descendant (the
+       composer's min-content) blow the column past the viewport. Pin it to the
+       track and clip any residual horizontal bleed (e.g. the hero mesh). */
+    min-width: 0;
+    overflow-x: clip;
+  }
+  .entry-shell--no-header .entry .entry-main {
+    height: 100%;
+    min-width: 0;
+    overflow-x: clip;
+  }
+
+  .entry-nav-rail {
+    position: fixed;
+    /* Offset below the fixed workspace tab bar so the drawer's brand header is
+       never sliced to a sliver behind it. The chrome height variable is set on
+       `.workspace-shell` and inherits down; 38px is the fallback. */
+    top: var(--workspace-tabs-chrome-height, 38px);
+    left: 0;
+    height: calc(100dvh - var(--workspace-tabs-chrome-height, 38px));
+    width: min(84vw, 300px);
+    padding: 16px 12px calc(16px + env(safe-area-inset-bottom, 0px));
+    align-items: stretch;
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border);
+    box-shadow: 24px 0 60px -24px rgba(0, 0, 0, 0.7);
+    transform: translateX(-102%);
+    transition: transform 240ms var(--ease-out);
+    z-index: 1200;
+    overflow-y: auto;
+  }
+  .entry--rail-open .entry-nav-rail {
+    transform: translateX(0);
+  }
+  /* The desktop hairline seam is meaningless on the floating drawer. */
+  .entry-nav-rail::after {
+    display: none;
+  }
+
+  .entry-nav-rail__group,
+  .entry-nav-rail__footer {
+    width: 100%;
+    align-items: stretch;
+  }
+  .entry-nav-rail__group {
+    gap: 3px;
+  }
+
+  /* Brand header row: the full "Kinected / DESIGN" lockup (mark-in-tile +
+     wordmark) on the left, close control on the right. */
+  .entry-nav-rail__brand {
+    width: 100%;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .entry-nav-rail__logo {
+    position: static;
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    width: auto;
+    height: auto;
+    padding: 0;
+    overflow: visible;
+  }
+  /* Seat the connection mark in a subtle dark rounded tile (matching the
+     kinected.io header + the mockup) instead of a bare 30px glyph. The
+     `.od-brand-glyph` co-class re-declares the background to layer the mark
+     over the tile and win on specificity over the desktop rule + primitive. */
+  .entry-nav-rail__logo-img.od-brand-glyph {
+    position: static;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    border-radius: 11px;
+    background:
+      url(/brand-mark.png) center / 74% no-repeat,
+      linear-gradient(
+        158deg,
+        color-mix(in srgb, var(--accent) 15%, var(--bg-panel)),
+        color-mix(in srgb, var(--bg-subtle) 88%, var(--bg-panel))
+      );
+    border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
+    box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 6%, transparent);
+  }
+  .entry-nav-rail__wordmark {
+    display: inline-flex;
+  }
+  .entry-nav-rail .entry-nav-rail__collapse {
+    position: static;
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
+    flex: 0 0 auto;
+  }
+  .entry-nav-rail__logo-divider {
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: var(--border-soft);
+    margin: 2px 0 6px;
+  }
+
+  /* Full-width icon + label rows. */
+  .entry-nav-rail__btn {
+    width: 100%;
+    height: 46px;
+    justify-content: flex-start;
+    gap: 13px;
+    padding: 0 12px;
+    border-radius: var(--radius);
+  }
+  .entry-nav-rail__btn-label {
+    display: inline;
+    font-size: 14px;
+    font-weight: 560;
+    letter-spacing: 0;
+    color: inherit;
+  }
+  /* Hover tooltips are meaningless on touch and would collide with labels. */
+  .entry-nav-rail [data-tooltip]::after {
+    display: none;
+  }
+
+  /* Keep the topbar toggle reachable even while the drawer overlays content. */
+  .entry--rail-open .entry-rail-toggle {
+    display: inline-flex;
+  }
+
+  /* Scrim behind the drawer — offset below the workspace tab bar so the tab
+     bar stays lit and interactive above the drawer session. */
+  .entry-nav-scrim {
+    display: block;
+    position: fixed;
+    top: var(--workspace-tabs-chrome-height, 38px);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1150;
+    background: rgba(6, 6, 12, 0.52);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms var(--ease-out);
+  }
+  .entry--rail-open .entry-nav-scrim {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (max-width: 900px) and (prefers-reduced-motion: reduce) {
+  .entry-nav-rail {
+    transition: none;
+  }
+  .entry-nav-scrim {
+    transition: none;
+  }
+}
+
+/* Phone-only gutter tightening. Kept at ≤560 (not folded into the ≤900 drawer
+   tier) so a tablet keeps its more generous ≤900 padding. */
+@media (max-width: 560px) {
+  .entry-main__inner {
+    padding: 16px 14px 40px;
+  }
+  .entry-main__topbar {
+    padding: 10px 12px 0;
   }
 }

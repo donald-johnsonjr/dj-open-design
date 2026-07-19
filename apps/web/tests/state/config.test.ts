@@ -1336,7 +1336,7 @@ describe('loadConfig', () => {
   it('sets an explicit apiProtocol for new default configs', () => {
     expect(DEFAULT_CONFIG.apiProtocol).toBe('anthropic');
     expect(DEFAULT_CONFIG.configMigrationVersion).toBe(2);
-    expect(DEFAULT_CONFIG.accentColor).toBe('#c96442');
+    expect(DEFAULT_CONFIG.accentColor).toBe('#7b7cf5');
   });
 });
 

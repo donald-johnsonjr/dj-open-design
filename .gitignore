@@ -60,6 +60,12 @@ apps/desktop/vendor/dom-to-pptx/dom-to-pptx.bundle.js
 !.claude/commands/
 .claude/commands/*
 !.claude/commands/od-contribute.md
+# Exception: Kinected sub-agents are part of the product codebase — they encode the
+# A+++ engineering + design standards this product is built to. Personal Claude state
+# (sessions, settings, other agents) stays ignored.
+!.claude/agents/
+.claude/agents/*
+!.claude/agents/kinected-*.md
 .codex/
 .deepseek/
 .antigravitycli/

@@ -34,6 +34,8 @@ import type {
   WorkspaceContextItem,
 } from '@open-design/contracts';
 import { DesignSystemPicker } from './DesignSystemPicker';
+import { HeroMesh } from './HeroMesh';
+import { Wordmark } from './Wordmark';
 import type { SkillSummary } from '../types';
 import { Icon, type IconName } from './Icon';
 import { useAnalytics } from '../analytics/provider';
@@ -1223,13 +1225,26 @@ export const HomeHero = forwardRef<HomeHeroHandle, Props>(function HomeHero(
 
   let optionRenderIndex = 0;
 
+  // Split the headline so its final word can be set in the signature swash
+  // italic + violet gradient (the brand's "amplify your *business*" move).
+  const heroTitle = t('homeHero.title');
+  const heroTitleTrimmed = heroTitle.replace(/\s+$/, '');
+  const lastSpace = heroTitleTrimmed.lastIndexOf(' ');
+  const heroTitleLead = lastSpace === -1 ? '' : heroTitleTrimmed.slice(0, lastSpace);
+  const heroTitleAccent = lastSpace === -1 ? heroTitleTrimmed : heroTitleTrimmed.slice(lastSpace + 1);
+
   return (
     <section ref={homeHeroRef} className="home-hero" data-testid="home-hero">
-      <div className="home-hero__brand" aria-hidden>
-        <span className="home-hero__brand-mark od-brand-glyph" />
-        <span className="home-hero__brand-name">Open Design</span>
+      <HeroMesh />
+      <div className="home-hero__brand">
+        <span className="home-hero__brand-mark od-brand-glyph" aria-hidden />
+        <Wordmark size="sm" aria-label={t('app.brand')} />
       </div>
-      <h1 className="home-hero__title">{t('homeHero.title')}</h1>
+      <p className="home-hero__eyebrow">{t('homeHero.eyebrow')}</p>
+      <h1 className="home-hero__title">
+        {heroTitleLead ? <span>{heroTitleLead} </span> : null}
+        <em className="home-hero__title-accent">{heroTitleAccent}</em>
+      </h1>
       <p className="home-hero__subtitle">
         {t('homeHero.subtitlePrefix')}
       </p>

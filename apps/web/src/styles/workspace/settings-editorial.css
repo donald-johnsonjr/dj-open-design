@@ -1,0 +1,307 @@
+/* ============================================================================
+   Settings — Kinected editorial frame.
+
+   A presentation-only pass that lifts the whole Settings dialog to the same
+   dark, calm, editorial rhythm as the shipped Projects (`DesignsTab`) and
+   Design-systems (`DesignSystemsTab`) surfaces: a tracked-mono eyebrow, a
+   high-contrast Didone masthead, a restrained sidebar whose active row carries
+   the signature periwinkle -> violet gradient rail, and hairline cards on a
+   faintly violet-lit stage.
+
+   EVERY selector here is scoped under `.modal-settings`, so it inherits for all
+   ~16 sections at once and can never leak to another surface. This file is
+   imported last in `index.css`, so it layers on top of the legacy settings
+   rules in `mention-home.css` / `artifacts.css` without editing them (the
+   `settings-polish` style test still reads those source blocks unchanged).
+   Tokens only — no hardcoded colors, no inline styles.
+   ============================================================================ */
+
+/* ── Backdrop — cool the shared warm scrim for the Settings modal only ─────── */
+.modal-backdrop:has(.modal-settings) {
+  background: color-mix(in srgb, var(--bg-app, #0a0a12) 62%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ── Frame ────────────────────────────────────────────────────────────────── */
+.modal.modal-settings {
+  border: 1px solid var(--border-strong);
+  background: var(--bg-elevated);
+  box-shadow:
+    0 40px 90px -40px color-mix(in srgb, var(--accent) 34%, #000),
+    var(--shadow-lg);
+}
+
+/* Faint violet dawn behind the content stage — echoes the hero mesh glow.
+   Sits at z0 behind the opaque header (z2) and the transparent content (z1),
+   fixed to the modal so it never scrolls with the rows. */
+.modal.modal-settings::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 46%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(120% 140% at 82% -10%,
+      color-mix(in srgb, var(--accent) 12%, transparent) 0%,
+      transparent 60%);
+}
+
+/* ── Masthead — mono eyebrow + Didone title ───────────────────────────────── */
+.modal-settings .modal-head {
+  gap: 10px;
+}
+.modal-settings .modal-head .kicker {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+/* Light theme: --text-soft (#8a8a9c) is only 3.39:1 on the near-white header —
+   below AA for this small tracked label. Deepen to --text-muted (~7:1) in the
+   light paths (explicit light + system/light-OS); dark keeps the softer tone.
+   The same shape guards every light-theme AA fix below. */
+[data-theme='light'] .modal-settings .modal-head .kicker {
+  color: var(--text-muted);
+}
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) .modal-settings .modal-head .kicker {
+    color: var(--text-muted);
+  }
+}
+.modal-settings .modal-head h2 {
+  font-family: var(--display);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.04;
+  color: var(--text-strong);
+  font-size: clamp(1.75rem, 1.35rem + 1.4vw, 2.35rem);
+}
+.modal-settings .modal-head-line {
+  column-gap: 18px;
+}
+.modal-settings .modal-head-line > h2 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: clamp(1.65rem, 1.3rem + 1.2vw, 2.1rem);
+  letter-spacing: -0.015em;
+  line-height: 1.06;
+  color: var(--text-strong);
+}
+.modal-settings .modal-head-line > .subtitle {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.modal-settings .modal-head .subtitle {
+  color: var(--text-muted);
+}
+
+/* ── Sidebar rail ─────────────────────────────────────────────────────────── */
+.modal-settings .settings-sidebar {
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border-soft);
+  padding: 18px 12px;
+  gap: 3px;
+}
+
+.modal-settings .settings-nav-item {
+  position: relative;
+  gap: 12px;
+  padding: 8px 12px 8px 14px;
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  transition:
+    color var(--dur-quick, 140ms) var(--ease-out),
+    background-color var(--dur-quick, 140ms) var(--ease-out);
+}
+.modal-settings .settings-nav-item:hover {
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+  color: var(--text);
+}
+.modal-settings .settings-nav-item svg {
+  color: var(--text-soft);
+  opacity: 1;
+  transition: color var(--dur-quick, 140ms) var(--ease-out);
+}
+.modal-settings .settings-nav-item:hover svg {
+  color: var(--text);
+}
+.modal-settings .settings-nav-item strong {
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+/* Active — accent tint pill + signature gradient rail + accent label/icon. */
+.modal-settings .settings-nav-item.active,
+.modal-settings .settings-nav-item.active:hover {
+  background: var(--accent-tint);
+  color: var(--accent);
+}
+.modal-settings .settings-nav-item.active strong {
+  font-weight: 600;
+  color: color-mix(in srgb, var(--accent) 85%, var(--text-strong));
+}
+.modal-settings .settings-nav-item.active svg {
+  color: var(--accent);
+}
+/* Light theme: the global inline --accent (#7b7cf5, applied in both themes by
+   the accent picker) lands at only ~4:1 on the pale tint pill. Deepen the
+   active label + icon toward --text so it clears AA (~5:1) in the light paths;
+   dark is unaffected. The gradient rail + tint pill stay as-is. */
+[data-theme='light'] .modal-settings .settings-nav-item.active,
+[data-theme='light'] .modal-settings .settings-nav-item.active:hover,
+[data-theme='light'] .modal-settings .settings-nav-item.active strong,
+[data-theme='light'] .modal-settings .settings-nav-item.active svg {
+  color: color-mix(in srgb, var(--accent) 66%, var(--text));
+}
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) .modal-settings .settings-nav-item.active,
+  html:not([data-theme]) .modal-settings .settings-nav-item.active:hover,
+  html:not([data-theme]) .modal-settings .settings-nav-item.active strong,
+  html:not([data-theme]) .modal-settings .settings-nav-item.active svg {
+    color: color-mix(in srgb, var(--accent) 66%, var(--text));
+  }
+}
+.modal-settings .settings-nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  height: 20px;
+  width: 3px;
+  transform: translateY(-50%);
+  border-radius: var(--radius-pill);
+  background: var(--accent-grad);
+}
+.modal-settings .settings-nav-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* ── Content stage ────────────────────────────────────────────────────────── */
+.modal-settings .settings-content {
+  gap: 16px;
+}
+
+/* Section-local headings read as calm editorial labels, not dev captions. */
+.modal-settings .settings-content .section-head h3,
+.modal-settings .settings-content .settings-notify-card h4,
+.modal-settings .settings-content .settings-about-diagnostics h4 {
+  color: var(--text-strong);
+  letter-spacing: -0.005em;
+}
+
+/* ── Cards — hairline panels that warm to accent on hover ─────────────────── */
+.modal-settings .settings-content .settings-notify-card,
+.modal-settings .settings-content .settings-about-diagnostics,
+.modal-settings .settings-content .settings-language-tile,
+.modal-settings .settings-content .toggle-row,
+.modal-settings .settings-content .media-provider-row,
+.modal-settings .settings-content .project-location-card {
+  border-radius: var(--radius-lg);
+  transition:
+    border-color var(--dur-quick, 140ms) var(--ease-out),
+    background-color var(--dur-quick, 140ms) var(--ease-out);
+}
+.modal-settings .settings-content .settings-notify-card:hover,
+.modal-settings .settings-content .settings-about-diagnostics:hover {
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+}
+
+.modal-settings .settings-content .empty-card {
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--accent) 4%, var(--bg-subtle));
+  border-color: var(--border);
+  line-height: 1.55;
+}
+
+/* Language tiles — active reads as a calm violet chip. */
+.modal-settings .settings-content .settings-language-tile.active {
+  background: var(--accent-tint);
+}
+
+/* ── Segmented control — active tab warms to a raised accent chip ─────────── */
+.modal-settings .settings-content .seg-control {
+  background: var(--bg-subtle);
+  border-color: var(--border);
+}
+.modal-settings .settings-content .seg-btn.active {
+  background: var(--bg-elevated);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, #000 30%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 24%, transparent);
+}
+.modal-settings .settings-content .seg-btn.active .seg-title {
+  color: var(--text-strong);
+}
+.modal-settings .settings-content .seg-btn.active svg {
+  color: var(--accent);
+}
+
+/* ── Chrome (close / fullscreen) — accent-lit focus ───────────────────────── */
+.modal-settings .settings-chrome-btn:hover {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  color: var(--accent);
+}
+
+/* ── Mobile — the sidebar becomes a calm chip scroller ────────────────────── */
+@media (max-width: 760px) {
+  /* Pin the sidebar chip-row to its content height; without this the grid's
+     default `align-content: stretch` balloons the (short) sidebar row on
+     compact sections, leaving a tall empty band above the controls. */
+  .modal-settings .modal-body {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .modal-settings .settings-sidebar {
+    align-items: center;
+    gap: 6px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border-soft);
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 20px, #000 calc(100% - 20px), transparent);
+    mask-image: linear-gradient(to right, transparent, #000 20px, #000 calc(100% - 20px), transparent);
+  }
+  .modal-settings .settings-nav-item {
+    min-width: 0;
+    width: auto;
+    flex: 0 0 auto;
+    align-self: center;
+    /* Clear the 44px touch-target guideline (was 36px) without changing the
+       chip's visual weight much — vertical growth is centered. */
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: var(--radius-pill);
+    background: var(--bg-subtle);
+    border-color: var(--border-soft);
+    white-space: nowrap;
+  }
+  .modal-settings .settings-nav-item.active,
+  .modal-settings .settings-nav-item.active:hover {
+    background: var(--accent-tint);
+    border-color: color-mix(in srgb, var(--accent) 34%, var(--border));
+  }
+  /* The gradient rail becomes a leading dot on the horizontal chip. */
+  .modal-settings .settings-nav-item.active::before {
+    left: 8px;
+    top: 50%;
+    height: 6px;
+    width: 6px;
+    border-radius: var(--radius-pill);
+  }
+  .modal-settings .settings-nav-item.active {
+    padding-left: 22px;
+  }
+}
+
+/* ── Reduced motion ───────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .modal-settings .settings-nav-item,
+  .modal-settings .settings-content .settings-notify-card,
+  .modal-settings .settings-content .settings-about-diagnostics {
+    transition: none;
+  }
+}

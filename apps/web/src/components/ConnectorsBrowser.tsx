@@ -32,6 +32,7 @@ import {
 import { hasConnectorStatusChanges } from './connectors-state';
 import { ConnectorLogo, useResolvedTheme } from './ConnectorLogo';
 import { Icon } from './Icon';
+import { EmptyState } from './EmptyState';
 import { CenteredLoader } from './Loading';
 
 const CONNECTOR_AUTH_PENDING_STORAGE_KEY = 'od-connectors-authorization-pending';
@@ -1004,23 +1005,26 @@ export function ConnectorsBrowser({
               aria-label={t('connectors.gateTitle')}
               data-testid="connector-gate"
             >
-              <a
-                className="connector-gate-card"
-                href="https://app.composio.dev"
-                target="_blank"
-                rel="noreferrer"
-                onClick={() => onConnectorsTabClick?.('gate_card')}
-              >
-                <div className="connector-gate-icon" aria-hidden>
-                  <Icon name="settings" size={20} />
-                </div>
-                <h3 className="connector-gate-title">{t('connectors.gateTitle')}</h3>
-                <p className="connector-gate-body">{t('connectors.gateBody')}</p>
-                <span className="connector-gate-cta">
-                  {t('settings.connectorsGetApiKey')}
-                  <Icon name="external-link" size={12} />
-                </span>
-              </a>
+              <EmptyState
+                compact
+                mesh={false}
+                className="connector-gate-empty"
+                eyebrow={t('entry.tabConnectors')}
+                title={t('connectors.gateTitle')}
+                body={t('connectors.gateBody')}
+                action={
+                  <a
+                    className="connector-gate-cta"
+                    href="https://app.composio.dev"
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => onConnectorsTabClick?.('gate_card')}
+                  >
+                    {t('settings.connectorsGetApiKey')}
+                    <Icon name="external-link" size={12} />
+                  </a>
+                }
+              />
             </div>
           ) : null}
         </div>

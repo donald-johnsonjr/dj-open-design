@@ -455,7 +455,7 @@ describe('DesignsTab select mode', () => {
 
     expect(screen.getByText('54m ago')).toBeTruthy();
 
-    fireEvent.click(screen.getByRole('button', { name: 'Your designs' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Yours' }));
 
     expect(screen.getByText('54m ago')).toBeTruthy();
     expect(screen.queryByText('1h ago')).toBeNull();

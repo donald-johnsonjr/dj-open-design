@@ -31,6 +31,35 @@ overuse. Hard caps:
   CTA on the same screen.
 - Hover/focus rings count as accent. Ration accordingly.
 
+## The neutral ramp carries the design
+
+70–90% of pixels are neutral, so the neutrals are the design — not the
+accent. Build a real ramp with intentional steps, not one grey lightened
+by opacity:
+
+- Aim for **5–7 neutral steps** between `--bg` and `--fg` (background,
+  surface, subtle border, strong border, muted text, secondary text,
+  foreground). Even spacing in perceptual lightness reads as considered.
+- Derive borders and dividers from the ramp, not from `--accent`. A
+  hairline `--border` all-round beats a colored edge.
+- Don't fake depth with a stack of near-identical greys. If two surfaces
+  are one step apart and never adjacent, collapse them.
+
+## Interaction states are derived, not invented
+
+Hover/active/selected colors must come from the existing tokens, never a
+new hand-picked hue:
+
+- **Hover** — shift one ramp step (surface → subtle) or overlay
+  `color-mix(in srgb, var(--accent) 8%, transparent)`. Don't jump to a
+  brighter unrelated color.
+- **Active/pressed** — one step darker/more-saturated than hover, plus
+  the 2px motion from `animation-discipline.md` if it's a button.
+- **Selected** — a low-alpha accent tint fill, not a full-saturation
+  accent block, unless it's the single primary action.
+- **Disabled** — reduce to a muted neutral; never keep accent color on a
+  disabled control.
+
 ## Contrast minimums
 
 Run these as gates, not goals:

@@ -274,7 +274,11 @@ describe('workspace tabs chrome styles', () => {
     const hairlineColor = 'color-mix(in srgb, var(--border) 64%, transparent)';
     expect(ruleValue(chrome, 'border-bottom')).toBe('0');
     expect(ruleValue(projectChrome, 'border-bottom')).toBe('0');
-    expect(ruleValue(rail, 'border-right')).toBe('0');
+    // Desktop rail carries no hard border (hairline seam via ::after). The
+    // mobile drawer legitimately overrides this with a border + shadow, so
+    // assert the base rule keeps border-right: 0 rather than the media-blind
+    // helper's last-wins value.
+    expect(rail).toContain('border-right: 0;');
     expect(ruleValue(chromeDivider, 'height')).toBe('1px');
     expect(ruleValue(chromeDivider, 'background')).toBe(hairlineColor);
     expect(ruleValue(chromeDivider, 'transform')).toBe('scaleY(0.5)');

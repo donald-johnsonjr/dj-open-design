@@ -1,0 +1,146 @@
+/* In-style empty state — the brand mark on a faint neural mesh, a Didone line,
+   and one gradient pill. Calm, editorial, no spot illustration. */
+
+.root {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 440px;
+  padding: 56px 24px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Compact focal stage — for panel-internal empties and height-constrained
+   modals (Settings dialog). Drops the tall min-height and softens the mark,
+   type and rhythm so the same editorial treatment fits without a giant void. */
+.compact {
+  min-height: 0;
+  padding: 32px 24px;
+}
+.compact .mark {
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  margin-bottom: 2px;
+}
+.compact .title {
+  font-size: clamp(1.3rem, 1.05rem + 1vw, 1.6rem);
+}
+.compact .stage {
+  gap: 11px;
+}
+
+/* The shared HeroMesh is absolutely positioned; dim + center it behind the copy
+   so it reads as atmosphere, never a graphic competing with the headline. */
+.mesh {
+  opacity: 0.5;
+}
+.compact .mesh {
+  opacity: 0.38;
+}
+
+.stage {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  max-width: 44ch;
+}
+
+.mark {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 6px;
+  border-radius: 16px;
+  background:
+    url(/brand-mark.png) center / 70% no-repeat,
+    linear-gradient(
+      158deg,
+      color-mix(in srgb, var(--accent) 18%, var(--bg-panel)),
+      color-mix(in srgb, var(--bg-subtle) 86%, var(--bg-panel))
+    );
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 7%, transparent),
+    0 8px 30px -14px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.eyebrow {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+/* Light theme: --text-soft (~3.3:1 on the near-white canvas) is below AA for
+   this small tracked-mono eyebrow. Deepen to --text-muted (~7:1) in the light
+   paths (explicit light + system/light-OS), matching the sibling PageHeader
+   masthead eyebrows; dark keeps the softer editorial tone. One rule lifts every
+   EmptyState consumer — Projects, Design systems, Plugins, MCP, Connectors. */
+:global([data-theme='light']) .eyebrow {
+  color: var(--text-muted);
+}
+@media (prefers-color-scheme: light) {
+  :global(html:not([data-theme])) .eyebrow {
+    color: var(--text-muted);
+  }
+}
+
+.title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: clamp(1.5rem, 1.1rem + 1.8vw, 2.15rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--text-strong);
+  text-wrap: balance;
+}
+
+.accent {
+  font-style: italic;
+  background: var(--accent-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--accent);
+}
+
+.body {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .stage {
+    animation: emptyStateRise 340ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  }
+}
+
+@keyframes emptyStateRise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

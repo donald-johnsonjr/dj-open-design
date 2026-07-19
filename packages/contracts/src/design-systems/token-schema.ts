@@ -212,6 +212,9 @@ export const BRAND_EXTENSIONS: Readonly<Record<string, readonly string[]>> = {
   default: [
     "--space-20", // 80px — used as section-y-desktop's twin; only default needs it
   ],
+  kinected: [
+    "--accent-warm", // Ember #F0603A — warm kinetic counter-accent, design-system-only
+  ],
   openai: [
     "--space-16", // 64px — major section gap in OpenAI's DESIGN.md §5 spacing scale
   ],

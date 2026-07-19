@@ -65,8 +65,8 @@ const systems: DesignSystemSummary[] = [
   },
 ];
 
-// The active scope's first row auto-selects into the detail pane, so a title
-// can appear twice (row + detail). Scope row lookups to the sidebar list.
+// Editorial index → detail model: rows open the specimen spread on click.
+// Scope row lookups to the index list.
 function list() {
   return within(screen.getByTestId('design-systems-list'));
 }
@@ -75,8 +75,17 @@ function openOfficialPresets() {
   fireEvent.click(screen.getByRole('tab', { name: 'Official presets' }));
 }
 
+function openYourSystems() {
+  fireEvent.click(screen.getByRole('tab', { name: 'Your systems' }));
+}
+
+// Open a system's detail spread by clicking its editorial index row.
+function openCard(id: string) {
+  fireEvent.click(screen.getByTestId(`design-system-card-${id}`));
+}
+
 describe('DesignSystemsTab', () => {
-  it('renders structured list and preview skeletons while design systems load', () => {
+  it('renders a branded index skeleton while design systems load', () => {
     const { container } = render(
       <DesignSystemsTab
         loading
@@ -88,14 +97,13 @@ describe('DesignSystemsTab', () => {
       />,
     );
 
-    expect(screen.getByTestId('design-systems-sidebar-skeleton')).toBeTruthy();
-    expect(screen.getByTestId('design-systems-preview-skeleton')).toBeTruthy();
+    expect(screen.getByTestId('design-systems-index-skeleton')).toBeTruthy();
     expect(screen.getByTestId('design-systems-loading-row-0')).toBeTruthy();
     expect(screen.getByText('Loading design systems…')).toBeTruthy();
     expect(container.querySelector('.loading-spinner')).toBeNull();
   });
 
-  it('keeps the summary-derived kit visible while the selected system detail resolves', async () => {
+  it('keeps the summary-derived kit visible while the opened system detail resolves', async () => {
     let resolveDetail!: (value: Awaited<ReturnType<typeof fetchDesignSystem>>) => void;
     vi.mocked(fetchDesignSystem).mockImplementationOnce(
       () => new Promise((resolve) => {
@@ -111,6 +119,9 @@ describe('DesignSystemsTab', () => {
         onOpenSystem={() => {}}
       />,
     );
+
+    openYourSystems();
+    openCard('user:acme');
 
     expect(screen.getByTestId('design-kit-view-user:acme')).toBeTruthy();
     expect(screen.queryByTestId('design-system-detail-loading-user:acme')).toBeNull();
@@ -155,14 +166,15 @@ describe('DesignSystemsTab', () => {
       />,
     );
 
-    // "Your systems" is the default scope: Acme shows, Linear (a preset) does not.
-    expect(screen.getByTestId('design-systems-create').textContent).toContain('Create');
-    expect(screen.getByTestId('design-system-card-user:acme')).toBeTruthy();
-    expect(screen.queryByTestId('design-system-card-linear')).toBeNull();
-
-    openOfficialPresets();
+    // The preset library is the default scope so the 152 curated systems surface
+    // immediately: Linear (a preset) shows, Acme (a user system) does not.
+    expect(screen.getByTestId('design-systems-create').textContent).toContain('New system');
     expect(screen.getByTestId('design-system-card-linear')).toBeTruthy();
     expect(list().queryByText('Acme Design System')).toBeNull();
+
+    openYourSystems();
+    expect(screen.getByTestId('design-system-card-user:acme')).toBeTruthy();
+    expect(list().queryByText('Linear')).toBeNull();
   });
 
   it('shows the user system scenario (summary) as the row subtitle, not a generic placeholder', () => {
@@ -175,6 +187,8 @@ describe('DesignSystemsTab', () => {
         onOpenSystem={() => {}}
       />,
     );
+
+    openYourSystems();
 
     // The user row's subtitle now reads the scenario (summary) instead of the
     // repeated "Design system" placeholder it used to show.
@@ -199,8 +213,10 @@ describe('DesignSystemsTab', () => {
     fireEvent.click(screen.getByTestId('design-systems-create'));
     expect(onCreate).toHaveBeenCalledOnce();
 
-    // Acme is the only user system, so it auto-selects into the detail pane,
-    // exposing the agent edit action that routes back into the authoring flow.
+    // Opening Acme's spread exposes the agent edit action that routes back into
+    // the authoring flow.
+    openYourSystems();
+    openCard('user:acme');
     fireEvent.click(await screen.findByRole('button', { name: /Edit with agent/i }));
     expect(onOpenSystem).toHaveBeenCalledWith('user:acme');
   });
@@ -218,7 +234,8 @@ describe('DesignSystemsTab', () => {
     );
 
     openOfficialPresets();
-    // Linear auto-selects into the read-only detail pane.
+    openCard('linear');
+    // Linear opens the read-only detail spread.
     await screen.findByTestId('design-kit-view-linear');
     // A built-in preset is browse-only: no agent edit affordance, and the
     // redundant top showcase cover (with its preview button) has been removed.
@@ -240,6 +257,7 @@ describe('DesignSystemsTab', () => {
     );
 
     openOfficialPresets();
+    openCard('linear');
     // "Make default" now lives in the detail's ⋯ overflow menu.
     fireEvent.click(await screen.findByTestId('design-kit-more-actions'));
     fireEvent.click(screen.getByRole('menuitem', { name: 'Default for new chats' }));
@@ -263,6 +281,8 @@ describe('DesignSystemsTab', () => {
       />,
     );
 
+    openYourSystems();
+    openCard('user:acme');
     const toggle = await screen.findByRole('button', { name: 'Draft' });
     fireEvent.click(toggle);
 
@@ -298,6 +318,8 @@ describe('DesignSystemsTab', () => {
       />,
     );
 
+    openYourSystems();
+    openCard('user:acme');
     fireEvent.click(await screen.findByTestId('design-kit-more-actions'));
     fireEvent.click(screen.getByRole('menuitem', { name: 'Download design system (.zip + SKILLS.md)' }));
 

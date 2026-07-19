@@ -11,21 +11,21 @@ function cssBlock(selector: string): string {
 }
 
 describe('default app background colors', () => {
-  it('uses the release light background color by default', () => {
+  it('defines the Kinected light-theme background in :root', () => {
     const root = cssBlock(':root');
 
-    expect(root).toContain('--bg: #faf9f7;');
-    expect(root).toContain('--bg-app: #faf9f7;');
+    expect(root).toContain('--bg: #fafafc;');
+    expect(root).toContain('--bg-app: #fafafc;');
   });
 
-  it('keeps the dark theme background unchanged', () => {
+  it('uses the Kinected dark navy background for the dark theme (the default)', () => {
     const dark = cssBlock('[data-theme="dark"]');
 
-    expect(dark).toContain('--bg: #1a1917;');
-    expect(dark).toContain('--bg-app: #1a1917;');
+    expect(dark).toContain('--bg: #0a0a12;');
+    expect(dark).toContain('--bg-app: #0a0a12;');
   });
 
-  it('prefers platform UI fonts over optional local app fonts', () => {
+  it('prefers platform UI fonts over optional local app fonts for body/UI', () => {
     const root = cssBlock(':root');
     const sans = /--sans:\s*([^;]+);/.exec(root)?.[1];
 

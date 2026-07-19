@@ -1034,6 +1034,7 @@ export interface Dict {
   'homeHero.templatesScrollHint': string;
   'homeHero.templatesCollapse': string;
   'homeHero.subtitlePrefix': string;
+  'homeHero.eyebrow': string;
   'homeHero.placeholder': string;
   'homeHero.placeholderActive': string;
   // Rotating typewriter placeholder scenarios + idle hint (home-hero carousel).
@@ -1311,6 +1312,9 @@ export interface Dict {
   'pluginsHome.commercialCategory.design-craft': string;
   'pluginsView.lede': string;
   'pluginsView.importPlugin': string;
+  'pluginsView.catalogCount': string;
+  'pluginsView.mastheadTitleLead': string;
+  'pluginsView.mastheadTitleAccent': string;
   'pluginsView.agentContext': string;
   'pluginsView.summaryAria': string;
   'pluginsView.areasAria': string;
@@ -1381,6 +1385,8 @@ export interface Dict {
   'skillPluginCandidate.contributeToMain': string;
   'skillPluginCandidate.repoDescription': string;
   'integrations.kicker': string;
+  'integrations.mastheadTitleLead': string;
+  'integrations.mastheadTitleAccent': string;
   'integrations.lede': string;
   'integrations.agentReady': string;
   'integrations.areasAria': string;
@@ -2097,6 +2103,14 @@ export interface Dict {
   'designs.searchPlaceholder': string;
   'designs.emptyNoProjects': string;
   'designs.emptyNoMatch': string;
+  'designs.mastheadEyebrow': string;
+  'designs.projectCount': string;
+  'designs.mastheadTitleLead': string;
+  'designs.mastheadTitleAccent': string;
+  'designs.mastheadSubtitle': string;
+  'designs.emptyTitleLead': string;
+  'designs.emptyTitleAccent': string;
+  'designs.emptyBody': string;
   'designs.deleteTitle': string;
   'designs.deleteConfirm': string;
   'designs.cardFreeform': string;
@@ -2360,6 +2374,24 @@ export interface Dict {
   'ds.tokens': string;
   'ds.specToggle': string;
   'ds.specLoading': string;
+  'ds.mastheadTitleLead': string;
+  'ds.mastheadTitleAccent': string;
+  'ds.mastheadSubtitle': string;
+  'ds.presetsCountLabel': string;
+  'ds.newSystem': string;
+  'ds.featuredEyebrow': string;
+  'ds.featuredActiveEyebrow': string;
+  'ds.featuredBody': string;
+  'ds.featuredTags': string;
+  'ds.density': string;
+  'ds.densityComfortable': string;
+  'ds.densityCompact': string;
+  'ds.backToIndex': string;
+  'ds.keyboardHint': string;
+  'ds.sectionResults': string;
+  'ds.emptyMineTitle': string;
+  'ds.emptyMineAccent': string;
+  'ds.browsePresets': string;
 
   // Avatar menu (project topbar)
   'avatar.title': string;

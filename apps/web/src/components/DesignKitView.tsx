@@ -242,6 +242,13 @@ export type DesignKitActionFeedbackTone = 'success' | 'error' | 'loading';
 export interface DesignKitViewProps {
   kit: DesignKit;
   variant?: 'panel' | 'compact';
+  /**
+   * Crisp display name for the header hero, overriding `kit.name`. Presets parse
+   * a verbose DESIGN.md heading (e.g. "Design System Inspired by Vercel") into
+   * `kit.name`; the Design Systems detail passes the terse system title
+   * ("Vercel") so the hero matches the editorial index/masthead voice.
+   */
+  displayName?: string;
   /** Rendered next to the title (status badges). */
   badgeSlot?: ReactNode;
   /** Rendered on the header's right (primary action buttons). */
@@ -293,6 +300,7 @@ export interface DesignKitViewProps {
 function DesignKitViewInner({
   kit,
   variant = 'panel',
+  displayName,
   badgeSlot,
   actionsSlot,
   headerMenuActions,
@@ -320,6 +328,7 @@ function DesignKitViewInner({
 }: DesignKitViewProps) {
   const t = useT();
   const compact = variant === 'compact';
+  const heroName = displayName?.trim() || kit.name;
   const [coverPreviewOpen, setCoverPreviewOpen] = useState(false);
   const [tokens, setTokens] = useState<BrandTokenSubset | null>(null);
   const [dsTheme, setDsTheme] = useState<'light' | 'dark'>('light');
@@ -579,6 +588,13 @@ function DesignKitViewInner({
 
   const dsKitUrl = dsTheme === 'dark' ? kit.system?.kitDarkUrl ?? kit.system?.kitUrl : kit.system?.kitUrl;
   const canUpload = Boolean(kit.canUpload && onUploadModule);
+  // The read-only Kinected house preset ships no favicon/logoSrc, so the generic
+  // logo fallback would render a bare "K" monogram on the bright checkerboard
+  // logo-display surface — the loudest, brightest panel on an otherwise dark
+  // editorial spread. For that preset only, render the real neural-mesh brand
+  // mark on a dark tile matching the nav-rail avatar. Gated on !canUpload so an
+  // editable fork of the system keeps its upload affordance untouched.
+  const isKinectedPreset = !canUpload && kit.designSystemId === 'kinected';
   const canEditDesignMd = Boolean(designMd?.canEdit !== false && designMd?.onSave);
   const anyActionBusy = Boolean(actionBusy);
   const designMdModules = useMemo<Record<DesignMdModuleId, DesignMdModuleSpec>>(
@@ -1132,7 +1148,7 @@ function DesignKitViewInner({
           ) : null}
           <div className={styles.previewHeadText}>
             <div className={styles.previewTitleRow}>
-              <h2 className={styles.previewName}>{kit.name}</h2>
+              <h2 className={styles.previewName}>{heroName}</h2>
               {badgeSlot}
             </div>
             {!stickyHeader && kit.tagline ? <p className={styles.previewTagline}>{kit.tagline}</p> : null}
@@ -1254,6 +1270,34 @@ function DesignKitViewInner({
                   ) : null}
                   {kit.logoNotes ? <p className={styles.logoNotes}>{kit.logoNotes}</p> : null}
                 </>
+              ) : isKinectedPreset ? (
+                // Kinected house preset: seat the real neural-mesh mark on a dark
+                // rounded tile (the nav-rail avatar / EmptyState treatment) over a
+                // calm editorial panel, instead of the bare "K" on the bright
+                // checkerboard surface.
+                <div className={`${styles.logoStage} ${styles.logoStageFallback} ${styles.logoStageBrand}`}>
+                  <span
+                    className={`${styles.logoStageBrandMark} od-brand-glyph`}
+                    role="img"
+                    aria-label={heroName}
+                  />
+                </div>
+              ) : !canUpload ? (
+                // Read-only presets can't upload, so the dashed "No logo yet"
+                // upload box would read as unfinished on the flagship. Render the
+                // brand mark via the same favicon/monogram fallback the rail tile
+                // uses so every preset shows a real mark instead (issue #3).
+                <div className={`${styles.logoStage} ${styles.logoStageFallback}`}>
+                  <BrandLogo
+                    brandId={kit.brandId}
+                    logoSrc={kit.logoSrc}
+                    host={kit.host}
+                    name={heroName}
+                    faviconSize={128}
+                    className={styles.logoStageImg}
+                    fallbackClassName={styles.logoStageMonogram}
+                  />
+                </div>
               ) : (
                 emptyModule(t('ds.moduleEmptyLogo'), 'logo')
               )}

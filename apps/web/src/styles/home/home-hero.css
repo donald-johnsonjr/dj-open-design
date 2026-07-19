@@ -18,59 +18,193 @@
 /* Hero — large centered prompt input */
 .home-hero {
   position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 14px;
-  padding: 32px 0 8px;
+  padding: clamp(28px, 6vw, 68px) 0 8px;
+}
+/* Faint violet atmosphere behind the hero — a large, very low-opacity radial
+   glow, never a flat block (brand v2). */
+.home-hero::before {
+  content: '';
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1000px, 130%);
+  height: 560px;
+  background: radial-gradient(
+    ellipse 60% 60% at 50% 34%,
+    color-mix(in srgb, var(--accent) 20%, transparent),
+    transparent 66%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+/* ---------- Signature neural-mesh constellation ----------
+   A crisp inline SVG network echoing the Kinected logo's mesh head. Sits
+   behind the hero content at very low opacity, masked to a soft radial fade so
+   it dissolves into the canvas at the edges, with a slow parallax drift. */
+.od-hero-mesh {
+  position: absolute;
+  top: -6%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1180px, 138%);
+  height: 118%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  -webkit-mask-image: radial-gradient(
+    ellipse 62% 58% at 50% 40%,
+    #000 0%,
+    color-mix(in srgb, #000 34%, transparent) 55%,
+    transparent 78%
+  );
+  mask-image: radial-gradient(
+    ellipse 62% 58% at 50% 40%,
+    #000 0%,
+    color-mix(in srgb, #000 34%, transparent) 55%,
+    transparent 78%
+  );
+}
+.od-hero-mesh__svg {
+  position: absolute;
+  inset: -4% -4% -4% -4%;
+  width: 108%;
+  height: 108%;
+  opacity: 0.5;
+  transform-origin: 50% 42%;
+  animation: home-hero-mesh-drift 34s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.od-hero-mesh__lines line {
+  stroke: color-mix(in srgb, var(--accent) 62%, var(--text-faint));
+  stroke-width: 0.75;
+  opacity: 0.32;
+}
+.od-hero-mesh__nodes circle {
+  fill: color-mix(in srgb, var(--accent) 74%, var(--text));
+  opacity: 0.55;
+}
+@keyframes home-hero-mesh-drift {
+  0% {
+    transform: translate3d(-8px, -4px, 0) scale(1.01);
+  }
+  100% {
+    transform: translate3d(10px, 6px, 0) scale(1.05);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .od-hero-mesh__svg {
+    animation: none;
+  }
+}
+.home-hero__brand,
+.home-hero__eyebrow,
+.home-hero__title,
+.home-hero__subtitle {
+  position: relative;
+  z-index: 1;
 }
 .home-hero__brand {
-  position: relative;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-  font-size: 13px;
+  gap: 11px;
+  margin-bottom: 2px;
 }
-/* The brand glyph is a self-shaped superellipse tile (rendered through
-   .od-brand-glyph), so it needs no panel disc behind it. */
-.home-hero__brand-mark {
-  position: absolute;
-  top: 50%;
-  right: calc(100% + 8px);
-  transform: translateY(-50%);
-  width: 26px;
-  height: 26px;
+/* The brand glyph is the real gradient connection mark (rendered through
+   .od-brand-glyph), seated in a subtle dark rounded tile (matching the
+   kinected.io header + the approved mockup) rather than floating bare. The
+   `.od-brand-glyph` co-class sets `background: url(...)`, so we re-declare the
+   background here to layer the mark over the tile fill and win on specificity. */
+.home-hero__brand-mark.od-brand-glyph {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 12px;
+  padding: 0;
+  background:
+    url(/brand-mark.png) center / 74% no-repeat,
+    linear-gradient(
+      158deg,
+      color-mix(in srgb, var(--accent) 15%, var(--bg-panel)),
+      color-mix(in srgb, var(--bg-subtle) 88%, var(--bg-panel))
+    );
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 6%, transparent),
+    0 6px 18px -12px color-mix(in srgb, var(--accent) 60%, transparent);
 }
-.home-hero__brand-name {
-  font-family: var(--serif);
+.home-hero__eyebrow {
+  margin: 8px 0 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  /* Match the app-wide editorial masthead eyebrow (PageHeader): 600 weight,
+     0.22em tracking, so Home reads as part of the same system. */
   font-weight: 600;
-  font-size: 16px;
-  color: var(--text-strong);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  text-align: center;
+}
+/* Light theme: --text-soft (~3.4:1 on the near-white canvas) is below AA for
+   these small tracked labels. Deepen to --text-muted (~7:1) in the light paths
+   (explicit light + system/light-OS), matching the masthead eyebrow fix used
+   across every other surface; dark keeps the softer editorial tone. */
+[data-theme='light'] .home-hero__eyebrow,
+[data-theme='light'] .home-hero__template-heading {
+  color: var(--text-muted);
+}
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) .home-hero__eyebrow,
+  html:not([data-theme]) .home-hero__template-heading {
+    color: var(--text-muted);
+  }
 }
 .home-hero__title {
-  margin: 0;
-  font-family: var(--serif);
-  font-weight: 600;
-  font-size: 40px;
-  letter-spacing: -0.02em;
+  margin: 6px 0 0;
+  font-family: var(--display);
+  font-weight: 500;
+  /* Fluid Didone display: ~32px on a phone → ~56px on desktop, scaling
+     smoothly with the viewport so the headline never crowds a narrow screen. */
+  font-size: clamp(2rem, 1.15rem + 4.1vw, 3.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.012em;
   color: var(--text-strong);
   text-align: center;
+  max-width: 15ch;
+  text-wrap: balance;
+}
+/* The signature move: the headline's final word set in swash italic, painted
+   with the periwinkle→violet gradient. */
+.home-hero__title-accent {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 500;
+  background: var(--accent-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* italic overhang so the swash tail isn't clipped by the text box */
+  padding-right: 0.08em;
 }
 .home-hero__subtitle {
-  margin: 0;
+  margin: 6px 0 0;
   color: var(--text-muted);
-  font-size: 13.5px;
+  font-size: 14.5px;
   text-align: center;
-  max-width: 540px;
-  line-height: 1.55;
+  max-width: 480px;
+  line-height: 1.6;
 }
 .home-hero__subtitle kbd {
   font: inherit;
   font-size: 11.5px;
   padding: 1px 5px;
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
   background: var(--bg-subtle);
 }
 /* ---------- Output-type tab bar ----------
@@ -406,16 +540,54 @@
   z-index: 2;
   width: 100%;
   max-width: 720px;
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
+  /* Crafted panel: a faint top-lit gradient surface over the panel color so the
+     card reads as a considered object, not a flat rounded box. */
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent-tint) 26%, var(--bg-panel)),
+      var(--bg-panel) 42%
+    );
+  border: 1px solid color-mix(in srgb, var(--border) 88%, var(--accent) 12%);
   border-radius: var(--radius-lg);
-  box-shadow: none;
-  padding: 14px 14px 10px;
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--text-strong) 5%, transparent) inset,
+    0 18px 44px -30px rgba(0, 0, 0, 0.7);
+  padding: 14px 16px 11px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 0;
-  transition: border-color 120ms var(--ease-out), box-shadow 120ms var(--ease-out);
+  margin-top: 4px;
+  transition:
+    border-color 160ms var(--ease-out),
+    box-shadow 160ms var(--ease-out),
+    background 160ms var(--ease-out);
+}
+/* Signature gradient edge — a periwinkle→violet hairline riding the card's top
+   rim, echoing the logo/CTA gradient. Kept whisper-quiet at rest, it brightens
+   as the composer takes focus. */
+.home-hero__input-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--accent) 40%, transparent),
+    transparent 34%,
+    transparent 66%,
+    color-mix(in srgb, var(--accent) 26%, transparent)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  /* Whisper-quiet at rest so the corners read refined rather than hot; the
+     focus-within rule below brings it to full strength. */
+  opacity: 0.45;
+  pointer-events: none;
+  transition: opacity 160ms var(--ease-out);
 }
 /* While one of the composer's popovers is open, the whole card (a stacking
    context) is lifted so the popover escapes above the static home content
@@ -440,7 +612,13 @@
 }
 .home-hero__input-card:focus-within {
   border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
-  box-shadow: none;
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--text-strong) 6%, transparent) inset,
+    0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent),
+    0 22px 50px -30px rgba(0, 0, 0, 0.75);
+}
+.home-hero__input-card:focus-within::before {
+  opacity: 1;
 }
 .home-hero__input-card.is-drag-active {
   border-color: color-mix(in srgb, var(--accent) 56%, var(--border));
@@ -614,17 +792,24 @@
   min-width: 0;
 }
 .home-hero__lexical .composer-input-editor {
-  min-height: 64px;
+  /* Resting empty height: two comfortable lines. Kept tight so the card reads
+     as a ready composer, not a hollow well (the placeholder sits top-aligned).
+     With the card's 14px top pad + 10px footer gap this lands the empty band
+     above the footer row at ~100px. */
+  min-height: 76px;
   max-height: var(--home-hero-prompt-max-height, 180px);
 }
 .home-hero__lexical .composer-editable {
-  min-height: 64px;
+  min-height: 76px;
   padding: 8px 4px;
 }
 .home-hero__lexical .composer-input-placeholder {
-  top: 8px;
+  top: 9px;
   left: 4px;
   color: var(--text-soft);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
 }
 /* Typewriter placeholder carousel — a pointer-events-none overlay aligned to
    the editor's first text line (matches .composer-input-placeholder metrics).
@@ -632,14 +817,16 @@
    blanked behind it. See home-hero/PlaceholderCarousel.tsx. */
 .home-hero__lexical .home-hero__carousel {
   position: absolute;
-  top: 8px;
+  top: 9px;
   left: 4px;
   right: 8px;
   display: flex;
   align-items: center;
   pointer-events: none;
   user-select: none;
-  font-size: 13.5px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
   line-height: 1.6;
   color: var(--text-soft);
   overflow: hidden;
@@ -1039,23 +1226,18 @@
   min-width: 0;
   flex: 0 1 auto;
 }
+/* The composer chip reads as a labelled sibling of the "Design" pill — the
+   tiled vendor glyph + a short agent name — not a bare icon-only sprite. The
+   width cap grows enough to hold the name (ellipsised past that) and the
+   `.inline-switcher--compact` rules (entry-layout.css) own the tile + label. */
 .home-hero__execution-switcher .inline-switcher {
   min-width: 0;
-  width: 58px;
-  max-width: 58px;
+  max-width: 168px;
 }
 .home-hero__execution-switcher .inline-switcher__chip {
-  width: 58px;
   height: 32px;
-  max-width: 58px;
-  justify-content: space-between;
-  padding: 0 8px 0 9px;
-  gap: 4px;
+  max-width: 168px;
   border-radius: var(--radius-sm);
-}
-.home-hero__execution-switcher .inline-switcher__chip-icon {
-  width: 20px;
-  height: 20px;
 }
 .home-hero__execution-switcher .inline-switcher__chip-chevron {
   flex: 0 0 auto;
@@ -2082,38 +2264,42 @@
     content: none;
   }
 }
+/* Signature gradient pill CTA (brand v2) — the periwinkle→violet "Send"
+   action. Token-driven via var(--accent-grad) so it tracks the brand. */
 .home-hero__submit {
   appearance: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  min-width: 64px;
-  height: 32px;
-  padding: 0 16px;
+  gap: 7px;
+  min-width: 68px;
+  height: 34px;
+  padding: 0 18px;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--accent);
-  background: var(--accent);
-  color: white;
-  box-shadow: var(--shadow-xs);
+  border: 0;
+  background: var(--accent-grad);
+  color: #fff;
+  box-shadow: var(--cta-glow);
   cursor: pointer;
   font: inherit;
   font-size: 12.5px;
   font-weight: 650;
+  letter-spacing: 0.02em;
   line-height: 1;
   transition:
-    background-color 140ms cubic-bezier(0.23, 1, 0.32, 1),
-    border-color 140ms cubic-bezier(0.23, 1, 0.32, 1),
+    filter 140ms cubic-bezier(0.23, 1, 0.32, 1),
     box-shadow 140ms cubic-bezier(0.23, 1, 0.32, 1),
     transform 140ms cubic-bezier(0.23, 1, 0.32, 1),
     opacity 140ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 .home-hero__submit:hover:not(:disabled) {
-  background: var(--accent-hover);
-  border-color: var(--accent-hover);
-  box-shadow: var(--shadow-sm);
+  filter: brightness(1.07) saturate(1.03);
+  box-shadow: var(--cta-glow-hover);
 }
-.home-hero__submit:active:not(:disabled) { transform: translateY(1px); box-shadow: var(--shadow-xs); }
+.home-hero__submit:focus-visible {
+  box-shadow: var(--cta-glow-hover);
+}
+.home-hero__submit:active:not(:disabled) { transform: translateY(1px); box-shadow: var(--cta-glow); }
 .home-hero__submit:disabled {
   opacity: 0.5;
   cursor: default;
@@ -2272,7 +2458,7 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   /* Favicons are drawn for a light browser tab, so keep the tile light in both
      themes; the border keeps it defined on a light page. */
   background: #fff;
@@ -2587,7 +2773,7 @@
   align-self: flex-start;
   max-width: 100%;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--bg-subtle);
   color: var(--text-muted);
   font-size: 10px;
@@ -2719,9 +2905,6 @@
 }
 
 @media (max-width: 900px) {
-  .home-hero__title {
-    font-size: 30px;
-  }
   .home-hero__prompt-examples-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2758,10 +2941,12 @@
   .home-hero__execution-switcher {
     flex-basis: auto;
   }
+  /* Keep the labelled + tiled chip on tablet/phone too (matches the phone
+     mockup's "[tile] Claude" pill); the footer wraps rather than squeezing it
+     back to an icon-only sprite. */
   .home-hero__execution-switcher .inline-switcher,
   .home-hero__execution-switcher .inline-switcher__chip {
-    width: 58px;
-    max-width: 58px;
+    max-width: 168px;
   }
 }
 
@@ -2781,6 +2966,88 @@
   }
   .home-hero__plugin-preset-preview .plugins-home__html-iframe {
     transform: scale(0.134);
+  }
+}
+
+/* ---------- Phone tier (≤560): tighten the hero rhythm ---------- */
+@media (max-width: 560px) {
+  .home-hero {
+    gap: 11px;
+    padding-top: clamp(20px, 5vw, 34px);
+  }
+  .home-hero__brand-mark.od-brand-glyph {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+    border-radius: 11px;
+  }
+  .home-hero__eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+  }
+  .home-hero__subtitle {
+    font-size: 13.5px;
+    max-width: 34ch;
+  }
+  .home-hero__input-card {
+    padding: 13px 13px 10px;
+    border-radius: var(--radius-md);
+  }
+  /* Composer footer — a deliberate two-row arrangement on phones: the leading
+     tools (+ / Template) occupy the top row, the mode / model / Send cluster
+     sits right-aligned on its own row beneath. Replaces the accidental wrap
+     where + and Template stacked inside foot-left while the Send cluster
+     floated at mid-height. Even row-gap keeps the vertical rhythm intentional. */
+  .home-hero__input-foot {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+  .home-hero__foot-left {
+    flex: 1 1 100%;
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+  .home-hero__foot-right {
+    flex: 1 1 100%;
+    justify-content: flex-end;
+  }
+  /* The mesh is quietened on a phone so it never competes with the tight
+     headline, and the drift is dropped to save battery. */
+  .od-hero-mesh__svg {
+    opacity: 0.34;
+    animation: none;
+  }
+  /* Scenario templates stay a clean full-bleed horizontal scroll — snapping so
+     each card lands square in view like a native mobile carousel. */
+  .home-hero__scenario-cards-wrap {
+    width: 100%;
+  }
+  .home-hero__type-tabs.home-hero__scenario-cards {
+    scroll-snap-type: x mandatory;
+    gap: 12px;
+    padding: 2px 14px 12px;
+  }
+  .home-hero__scenario-card.home-hero__type-tab {
+    flex-basis: 76%;
+    max-width: 260px;
+    scroll-snap-align: center;
+  }
+  .home-hero__scenario-card-art {
+    height: 96px;
+  }
+}
+
+/* ---------- Small phone tier (≤430) ---------- */
+@media (max-width: 430px) {
+  /* The two-row footer (see ≤560) gives the Send cluster its own full row, so
+     the paper-plane keeps its label even on the tightest phones — the row has
+     room and a labelled pill reads more considered than an icon-only stub. The
+     leading tools row just tightens its inter-control gap. */
+  .home-hero__foot-left {
+    gap: 4px;
+  }
+  .home-hero__submit {
+    padding: 0 16px;
   }
 }
 
@@ -2805,9 +3072,12 @@
 }
 .home-hero__template-heading {
   padding: 0 2px;
-  color: var(--text-muted);
-  font-size: 12.5px;
-  font-weight: 600;
+  color: var(--text-soft);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   line-height: 1.3;
   text-align: center;
 }
@@ -2858,6 +3128,8 @@
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scrollbar-width: thin;
+  /* Drives the editorial 01 / 02 / 03 index printed on each scenario card. */
+  counter-reset: home-hero-template;
 }
 
 /* Edge hover zones: hovering an edge auto-scrolls the rail in that direction so
@@ -2920,7 +3192,8 @@
 }
 
 .home-hero__scenario-card.home-hero__type-tab {
-  flex: 0 0 156px;
+  counter-increment: home-hero-template;
+  flex: 0 0 168px;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
@@ -2928,25 +3201,29 @@
   min-height: 0;
   padding: 0;
   border-radius: var(--radius-lg);
+  border-color: color-mix(in srgb, var(--border) 90%, transparent);
   background: var(--bg-panel);
   text-align: left;
   overflow: hidden;
 }
 .home-hero__scenario-card.home-hero__type-tab:hover:not(:disabled) {
-  transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--accent) 34%, var(--border));
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
   background: var(--bg-panel);
-  box-shadow: var(--shadow-sm);
+  box-shadow:
+    0 14px 30px -20px color-mix(in srgb, var(--accent) 60%, #000),
+    var(--shadow-sm);
 }
 .home-hero__scenario-card.home-hero__type-tab.is-active {
   border-color: color-mix(in srgb, var(--accent) 48%, var(--border));
 }
 
 .home-hero__scenario-card-art {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 74px;
+  height: 78px;
   color: var(--accent);
   background: radial-gradient(
     120% 120% at 30% 20%,
@@ -2954,6 +3231,29 @@
     var(--bg-subtle)
   );
   border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+}
+/* Editorial numbered index — mono 01 / 02 / 03 in the art's top-left, echoing
+   the kinected.io "ways we work" numbering. Reserved-width via a leading zero
+   through the decimal-leading-zero counter style. */
+.home-hero__scenario-card-art::before {
+  content: counter(home-hero-template, decimal-leading-zero);
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--text-faint);
+  transition: color 160ms var(--ease-out);
+}
+/* The single, deliberate Ember moment: the editorial 01 / 02 / 03 index warms
+   to the brand's counter-accent as the card is engaged — a human/kinetic spark
+   echoing kinected.io. Reserved to this one interaction, never repeated as
+   decoration. Routed through --accent-warm (no raw hex). */
+.home-hero__scenario-card:hover:not(:disabled) .home-hero__scenario-card-art::before,
+.home-hero__scenario-card.is-active .home-hero__scenario-card-art::before {
+  color: var(--accent-warm);
 }
 /* Illustrative intent thumbnail (ScenarioArt). A small hover lift on the art
    keeps the card feeling responsive now that the hint no longer animates. */
@@ -3056,7 +3356,7 @@
   justify-content: center;
   margin-left: -5px;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: transparent;
   color: var(--text-faint);
   cursor: pointer;

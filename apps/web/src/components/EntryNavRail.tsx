@@ -11,6 +11,7 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { EntryHelpMenu } from './EntryHelpMenu';
 import { Icon } from './Icon';
+import { Wordmark } from './Wordmark';
 import { useT } from '../i18n';
 import { LIBRARY_UI_VISIBLE } from '../features/libraryUi';
 
@@ -59,6 +60,10 @@ function NavButton({ active, ariaLabel, tooltip, onClick, disabled, testId, chil
       {...(testId ? { 'data-testid': testId } : {})}
     >
       {children}
+      {/* Label rides alongside the icon only in the mobile slide-in drawer
+         (hidden on the desktop icon rail via CSS). Gives the touch nav a native,
+         legible row layout instead of icon-only guesswork. */}
+      <span className="entry-nav-rail__btn-label">{tooltip}</span>
     </button>
   );
 }
@@ -117,6 +122,15 @@ export function EntryNavRail({
           >
             <span
               className="entry-nav-rail__logo-img od-brand-glyph"
+              aria-hidden="true"
+            />
+            {/* Wordmark rides alongside the mark only in the mobile slide-in
+               drawer (hidden on the desktop icon rail via CSS), giving the
+               drawer a proper "Kinected / DESIGN" brand header instead of a
+               clipped sliver. */}
+            <Wordmark
+              size="sm"
+              className="entry-nav-rail__wordmark"
               aria-hidden="true"
             />
           </button>

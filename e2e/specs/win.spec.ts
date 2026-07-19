@@ -1144,7 +1144,7 @@ async function fetchPackagedHealth(daemonUrl: string): Promise<HealthEvalValue> 
       health: await response.json() as HealthEvalValue['health'],
       href: daemonUrl,
       status: response.status,
-      title: 'Open Design Beta',
+      title: 'Kinected Design Beta',
     };
   } finally {
     clearTimeout(timeout);

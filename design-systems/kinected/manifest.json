@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "od-design-system-project/v1",
+  "id": "kinected",
+  "name": "Kinected",
+  "category": "Digital Transformation & Advisory",
+  "description": "Kinected Design brand system — dark-first editorial: near-black navy canvas, high-contrast Didone serif with swash-italic violet accents, uppercase tracked mono labels, and a periwinkle→violet signature gradient. Technology in service of the why.",
+  "source": {
+    "type": "bundled",
+    "origin": "Kinected Solutions (kinected.io) — authored brand system"
+  },
+  "files": {
+    "design": "DESIGN.md",
+    "tokens": "tokens.css",
+    "components": "components.html"
+  },
+  "craft": {
+    "applies": [],
+    "suggested": [
+      "color",
+      "accessibility-baseline",
+      "typography"
+    ],
+    "exemptions": []
+  }
+}

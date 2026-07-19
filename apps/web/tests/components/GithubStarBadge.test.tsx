@@ -1,12 +1,21 @@
 // @vitest-environment jsdom
 
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import type { OpenDesignGithubRepoResponse } from '@open-design/contracts';
 
 const originalFetch = globalThis.fetch;
 
 describe('GithubStarBadge', () => {
+  beforeAll(async () => {
+    // GithubStarBadge renders the shared <Icon> primitive, which barrel-imports
+    // the full @phosphor-icons/react set. Its first cold evaluation under vitest
+    // costs several seconds; charged to the first `it` it would blow the default
+    // 5s budget and flake the two fetch-timing assertions. Warm the module graph
+    // once here (in a hook, not a test) so every case below re-imports it hot.
+    await import('../../src/components/GithubStarBadge');
+  }, 30000);
+
   afterEach(() => {
     cleanup();
     globalThis.fetch = originalFetch;

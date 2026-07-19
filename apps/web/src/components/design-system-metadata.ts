@@ -6,6 +6,23 @@ export function isUserSystem(system: DesignSystemSummary): boolean {
   return system.source === 'user' || system.isEditable === true;
 }
 
+// The auto-generated package boilerplate most bundled presets carry as their
+// manifest description, e.g. "Bundled Open Design package for Vercel, derived
+// from curated DESIGN.md, tokens.css, and components.html fixtures." It repeats
+// verbatim across the library, leaks internal fixture filenames, and surfaces
+// the retired "Open Design" product name — so the editorial index suppresses it
+// and shows only the name + category + palette for that row. Genuine
+// human-authored summaries never match this shape, so they keep rendering.
+const BOILERPLATE_SUMMARY =
+  /^Bundled Open Design package for .+, derived from curated DESIGN\.md, tokens\.css, and components\.html fixtures\.?$/;
+
+export function isBoilerplateDesignSystemSummary(
+  summary: string | null | undefined,
+): boolean {
+  if (!summary) return false;
+  return BOILERPLATE_SUMMARY.test(summary.trim());
+}
+
 function brandKey(value: string): string {
   return value.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '');
 }
