@@ -142,11 +142,27 @@
   margin: 8px 0 0;
   font-family: var(--mono);
   font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.18em;
+  /* Match the app-wide editorial masthead eyebrow (PageHeader): 600 weight,
+     0.22em tracking, so Home reads as part of the same system. */
+  font-weight: 600;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--text-soft);
   text-align: center;
+}
+/* Light theme: --text-soft (~3.4:1 on the near-white canvas) is below AA for
+   these small tracked labels. Deepen to --text-muted (~7:1) in the light paths
+   (explicit light + system/light-OS), matching the masthead eyebrow fix used
+   across every other surface; dark keeps the softer editorial tone. */
+[data-theme='light'] .home-hero__eyebrow,
+[data-theme='light'] .home-hero__template-heading {
+  color: var(--text-muted);
+}
+@media (prefers-color-scheme: light) {
+  html:not([data-theme]) .home-hero__eyebrow,
+  html:not([data-theme]) .home-hero__template-heading {
+    color: var(--text-muted);
+  }
 }
 .home-hero__title {
   margin: 6px 0 0;
