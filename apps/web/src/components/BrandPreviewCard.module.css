@@ -683,6 +683,44 @@
   line-height: 1;
 }
 
+/* Kinected house preset: replace the bright checkerboard logo-display surface
+   with a calm editorial panel (a faint top-lit violet glow over a subtle
+   surface) so the flagship's brightest module falls back in line with the dark
+   brand. Theme-adaptive via tokens, mirroring the nav-rail avatar tile. */
+.logoStageBrand {
+  background:
+    radial-gradient(
+      120% 150% at 50% 0%,
+      color-mix(in srgb, var(--accent) 10%, transparent),
+      transparent 62%
+    ),
+    var(--bg-subtle);
+  border-color: color-mix(in srgb, var(--accent) 18%, var(--border));
+}
+/* The neural-mesh mark seated on the periwinkle→violet gradient tile — the same
+   treatment as the nav-rail avatar (`.entry-nav-rail__logo-img.od-brand-glyph`)
+   and the EmptyState mark, scaled up for the logo module. */
+.logoStageBrandMark {
+  width: 128px;
+  height: 128px;
+  border-radius: var(--radius-lg);
+  background:
+    url(/brand-mark.png) center / 72% no-repeat,
+    linear-gradient(
+      158deg,
+      color-mix(in srgb, var(--accent) 18%, var(--bg-panel)),
+      color-mix(in srgb, var(--bg-subtle) 86%, var(--bg-panel))
+    );
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 7%, transparent),
+    0 10px 34px -16px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+.compact .logoStageBrandMark {
+  width: 84px;
+  height: 84px;
+}
+
 .logoThumbs {
   display: flex;
   flex-wrap: wrap;

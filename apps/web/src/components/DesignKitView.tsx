@@ -588,6 +588,13 @@ function DesignKitViewInner({
 
   const dsKitUrl = dsTheme === 'dark' ? kit.system?.kitDarkUrl ?? kit.system?.kitUrl : kit.system?.kitUrl;
   const canUpload = Boolean(kit.canUpload && onUploadModule);
+  // The read-only Kinected house preset ships no favicon/logoSrc, so the generic
+  // logo fallback would render a bare "K" monogram on the bright checkerboard
+  // logo-display surface — the loudest, brightest panel on an otherwise dark
+  // editorial spread. For that preset only, render the real neural-mesh brand
+  // mark on a dark tile matching the nav-rail avatar. Gated on !canUpload so an
+  // editable fork of the system keeps its upload affordance untouched.
+  const isKinectedPreset = !canUpload && kit.designSystemId === 'kinected';
   const canEditDesignMd = Boolean(designMd?.canEdit !== false && designMd?.onSave);
   const anyActionBusy = Boolean(actionBusy);
   const designMdModules = useMemo<Record<DesignMdModuleId, DesignMdModuleSpec>>(
@@ -1263,6 +1270,18 @@ function DesignKitViewInner({
                   ) : null}
                   {kit.logoNotes ? <p className={styles.logoNotes}>{kit.logoNotes}</p> : null}
                 </>
+              ) : isKinectedPreset ? (
+                // Kinected house preset: seat the real neural-mesh mark on a dark
+                // rounded tile (the nav-rail avatar / EmptyState treatment) over a
+                // calm editorial panel, instead of the bare "K" on the bright
+                // checkerboard surface.
+                <div className={`${styles.logoStage} ${styles.logoStageFallback} ${styles.logoStageBrand}`}>
+                  <span
+                    className={`${styles.logoStageBrandMark} od-brand-glyph`}
+                    role="img"
+                    aria-label={heroName}
+                  />
+                </div>
               ) : !canUpload ? (
                 // Read-only presets can't upload, so the dashed "No logo yet"
                 // upload box would read as unfinished on the flagship. Render the
