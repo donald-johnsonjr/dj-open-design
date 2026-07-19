@@ -15,6 +15,20 @@ export interface EmptyStateProps {
   body?: ReactNode;
   /** Primary action(s) — typically one gradient-pill CTA. */
   action?: ReactNode;
+  /**
+   * Compact focal stage: drops the tall 440px min-height and shrinks the
+   * mark, type and rhythm so the treatment fits a panel-internal empty or a
+   * height-constrained modal (e.g. the Settings dialog) without a giant void.
+   * The full-height default stays for first-session, full-page focal moments.
+   */
+  compact?: boolean;
+  /**
+   * Render the neural-mesh atmosphere behind the copy. Defaults to `true`.
+   * Set `false` when the surrounding surface already supplies atmosphere
+   * (e.g. an overlay gate with its own blurred backdrop) so the mesh does
+   * not double up.
+   */
+  mesh?: boolean;
   className?: string;
   'data-testid'?: string;
 }
@@ -32,15 +46,19 @@ export function EmptyState({
   trailing,
   body,
   action,
+  compact = false,
+  mesh = true,
   className,
   'data-testid': dataTestId,
 }: EmptyStateProps) {
   return (
     <div
-      className={[styles.root, className].filter(Boolean).join(' ')}
+      className={[styles.root, compact ? styles.compact : null, className]
+        .filter(Boolean)
+        .join(' ')}
       data-testid={dataTestId}
     >
-      <HeroMesh className={styles.mesh} />
+      {mesh ? <HeroMesh className={styles.mesh} /> : null}
       <div className={styles.stage}>
         <span className={`${styles.mark} od-brand-glyph`} aria-hidden="true" />
         {eyebrow ? <p className={styles.eyebrow}>{eyebrow}</p> : null}

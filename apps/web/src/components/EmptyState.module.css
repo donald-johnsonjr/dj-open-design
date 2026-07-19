@@ -12,10 +12,33 @@
   isolation: isolate;
 }
 
+/* Compact focal stage — for panel-internal empties and height-constrained
+   modals (Settings dialog). Drops the tall min-height and softens the mark,
+   type and rhythm so the same editorial treatment fits without a giant void. */
+.compact {
+  min-height: 0;
+  padding: 32px 24px;
+}
+.compact .mark {
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  margin-bottom: 2px;
+}
+.compact .title {
+  font-size: clamp(1.3rem, 1.05rem + 1vw, 1.6rem);
+}
+.compact .stage {
+  gap: 11px;
+}
+
 /* The shared HeroMesh is absolutely positioned; dim + center it behind the copy
    so it reads as atmosphere, never a graphic competing with the headline. */
 .mesh {
   opacity: 0.5;
+}
+.compact .mesh {
+  opacity: 0.38;
 }
 
 .stage {
@@ -55,6 +78,19 @@
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--text-soft);
+}
+/* Light theme: --text-soft (~3.3:1 on the near-white canvas) is below AA for
+   this small tracked-mono eyebrow. Deepen to --text-muted (~7:1) in the light
+   paths (explicit light + system/light-OS), matching the sibling PageHeader
+   masthead eyebrows; dark keeps the softer editorial tone. One rule lifts every
+   EmptyState consumer — Projects, Design systems, Plugins, MCP, Connectors. */
+:global([data-theme='light']) .eyebrow {
+  color: var(--text-muted);
+}
+@media (prefers-color-scheme: light) {
+  :global(html:not([data-theme])) .eyebrow {
+    color: var(--text-muted);
+  }
 }
 
 .title {

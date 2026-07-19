@@ -37,6 +37,7 @@ import { fetchAgents } from '../providers/registry';
 import type { AgentInfo } from '../types';
 import { isVisibleLocalCliAgent } from '../utils/visibleAgents';
 import { Icon } from './Icon';
+import { EmptyState } from './EmptyState';
 import { useT } from '../i18n';
 
 interface Props {
@@ -503,12 +504,14 @@ export const McpClientSection = forwardRef<McpClientSectionHandle, Props>(
       ) : null}
 
       {rows.length === 0 ? (
-        <div className="empty-card">
-          <strong>{t('mcpClient.emptyTitle')}</strong>
-          <p className="hint">
-            {t('mcpClient.emptyBody')}
-          </p>
-        </div>
+        <EmptyState
+          compact
+          className="mcp-empty-state"
+          data-testid="mcp-servers-empty"
+          eyebrow={t('integrations.tabLabel.mcp')}
+          title={t('mcpClient.emptyTitle')}
+          body={t('mcpClient.emptyBody')}
+        />
       ) : (
         <div className="mcp-rows">
           {rows.map((row, idx) => (

@@ -97,9 +97,12 @@
   color: var(--text-muted);
 }
 
-/* Soften the panel-internal empty / gate blocks so they read as calm editorial
-   focal stages instead of hard dashed boxes. Scoped to the Integrations
-   surface — the Settings dialog keeps its own treatment. */
+/* Soften the panel-internal empty blocks (e.g. the shared Skills empty-card)
+   so they read as calm editorial focal stages instead of hard dashed boxes.
+   Scoped to the Integrations surface — the Settings dialog keeps its own
+   treatment. The MCP empty and the Connectors gate now route through the
+   shared editorial EmptyState primitive, which carries its own framing in
+   both contexts. */
 .integrations-view .empty-card {
   border-style: solid;
   border-color: var(--border);
@@ -108,12 +111,6 @@
 }
 .integrations-view .empty-card strong {
   color: var(--text-strong);
-}
-.integrations-view .connector-gate-card {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--bg-panel);
-  box-shadow: var(--shadow-sm);
 }
 
 /* ── Use-everywhere guide — editorial frame around the shared guide panel ───── */
